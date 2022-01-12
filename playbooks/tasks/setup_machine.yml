@@ -1,20 +1,3 @@
-- name: Setup name and keys
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Add SSH keys from Github users
-      loop: "{{ github_user_pubkeys }}"
-      authorized_key:
-        user: "{{ ansible_user }}"
-        state: present
-        key: "https://github.com/{{ item }}.keys"
-  roles:
-    # Prepare system to be managed by Ansible.
-    - role: robertdebock.bootstrap
-      tags: [bootstrap]
-
-
 - name: set hostname
   hosts: all
   become: true
@@ -29,36 +12,76 @@
         line: '{{ ansible_host }} {{ inventory_hostname }}'
 
 - name: Setup general tools used and update system
-  hosts:
-    - all
-  become: true
-  gather_facts: true  # Needed to check if 'ansible_distribution_release' is 'bionic'
+  hosts: all
+  become: yes
+  gather_facts: true
+  vars:
+    docker_compose_version: "1.29.2"
   tasks:
-    - name: Ubuntu universe repo and update
-      block:
-        - name: Debug distribution
-          debug:
-            var: ansible_distribution_release
-        # Necessary for Docker install to find dependencies in ubuntu 18
-        - name: Add universe repository
-          apt_repository:
-            repo: "deb http://archive.ubuntu.com/ubuntu {{ansible_distribution_release}} universe"
-            state: present
-          when: (ansible_distribution_release == 'bionic') or (ansible_distribution_release == 'focal')
-        - name: Run "apt-get update" to ensure available packages are up to date
-          apt:
-            update_cache: yes
-            upgrade: yes
-    - name: Docker with dependencies and user role
-      block:
-        - name: Docker
-          include_role:
-            name: geerlingguy.docker
-        - name: Docker Python wrapper
-          apt:
-            name: python3-docker
-            state: present
-        - name: Add ansible user to docker group
-          shell: 'usermod -aG docker {{ ansible_user }}'
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+
+    - name: Upgrade all apt packages
+      apt: upgrade=dist
+
+    - name: Install dependencies
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - gnupg-agent
+      
+    - name: Add an apt signing key for Docker
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add apt repository for stable version
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - docker-ce
+        - docker-ce-cli 
+        - containerd.io
+        - python3-docker
+
+    - name: Add user to docker group
+      user:
+        name: "{{ansible_user}}"
+        group: docker
+
+    - name: Check is docker-compose installed
+      stat: path=/usr/local/bin/docker-compose
+      register: is_docker_compose_installed
+
+    - name: Download docker-compose {{ docker_compose_version }}
+      when: is_docker_compose_installed.stat.exists == False
+      get_url:
+        url : https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+        dest: ~/docker-compose
+        mode: '+x'
+
+    - name: Check docker-compose downloaded
+      stat: path=~/docker-compose
+      register: docker_compose
+
+    - name: Move docker-compose to /usr/local/bin/docker-compose
+      command: mv ~/docker-compose /usr/local/bin/docker-compose
+      when: docker_compose.stat.exists
+
     - name: Unconditionally reboot the machine with all defaults
       reboot:
