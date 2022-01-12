@@ -2,7 +2,6 @@
 # generic ansible config information
 ##############################################
 ansible_user: "ubuntu"
-ansible_sudo_pass: "hdiucYUDOIHDviuD15"
 github_user_pubkeys:
   - example
 
