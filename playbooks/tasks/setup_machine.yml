@@ -65,21 +65,23 @@
         group: docker
 
     - name: Check is docker-compose installed
-      shell: command -v docker-compose >/dev/null 2>&1
+      stat: path=/usr/local/bin/docker-compose
       register: is_docker_compose_installed
-      ignore_errors: yes
 
     - name: Download docker-compose {{ docker_compose_version }}
-      when: is_docker_compose_installed.rc != 0
+      when: is_docker_compose_installed.stat.exists == False
       get_url:
         url : https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
         dest: ~/docker-compose
         mode: '+x'
 
-    - name: Check docker-compose exists
+    - name: Check docker-compose downloaded
       stat: path=~/docker-compose
       register: docker_compose
 
     - name: Move docker-compose to /usr/local/bin/docker-compose
       command: mv ~/docker-compose /usr/local/bin/docker-compose
       when: docker_compose.stat.exists
+
+    - name: Unconditionally reboot the machine with all defaults
+      reboot:

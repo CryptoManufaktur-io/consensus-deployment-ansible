@@ -1,6 +1,6 @@
 # Example testnet
 
-This directory contains the configs required to run an example testnet. 
+This directory contains the configs required to run an example testnet.
 
 ## Assumption
 
@@ -26,7 +26,7 @@ This directory contains the configs required to run an example testnet.
 - Replace the `testnets/efoundation/inventory/inventory.ini`
 - Generate the keys from the mnemonic by running the `generate_keys.sh` file (after exporting the mnemonic)
 - Modify the client distribution in `select_keys_for_clients.sh` and run the script to get keys in the needed format
-- If needed, modify the `testnets/efoundation/custom_config_data/` folder with the `genesis.ssz` and `eth2_config.yaml`
+- If needed, modify the `testnets/efoundation/custom_config_data/` folder with the `genesis.ssz` and `config.yaml`
 - Modify the `testnets/efoundation/inventory/group_vars/eth2client_<client_name>.yml` if required
 - Check the inventory with `ansible-inventory -i testnets/efoundation/inventory/inventory.ini --list`
 - Run the playbook to run all beacon nodes and validators with `ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
@@ -39,13 +39,13 @@ Note!!: Assumptions made for the updating process:
 touch the keys: it will lead to format errors!
 
 - Update `inventory.ini` if needed
-- Make the required changes in the `inventory/group_vars` folder, the flags and image names are organized as `eth2client_<client-name>` 
+- Make the required changes in the `inventory/group_vars` folder, the flags and image names are organized as `eth2client_<client-name>`
 - There are flags separately listed for beacon node and validator, make changes as needed. All clients work as separate
-beacon node/validator except for nimbus (runs both in one container). 
+beacon node/validator except for nimbus (runs both in one container).
 - Run `ansible-inventory -i testnets/efoundation/inventory/inventory.ini --list` to confirm the inventory is loaded as expected,
 check if the change shows up in the inventory variables
-- Run `ansible-playbook -i testnets/efoundation/inventory/inventory.ini consensus-deployment-ansible/playbooks/update_beacon_and_validator.yml`. 
+- Run `ansible-playbook -i testnets/efoundation/inventory/inventory.ini consensus-deployment-ansible/playbooks/update_beacon_and_validator.yml`.
 This will stop existing beacon and validator containers and re-start them with the new config or versions. No key or beacon db is changed.
-- If you wish to change the client distribution or want to fully wipe and re-deploy the entire node, then please run 
+- If you wish to change the client distribution or want to fully wipe and re-deploy the entire node, then please run
 `ansible-playbook -i testnets/efoundation/inventory/inventory.ini consensus-deployment-ansible/playbooks/setup_beacon_and_validators_full.yml`
-- Manually check the grafana dashboards or ssh into the instance and confirm changes. 
+- Manually check the grafana dashboards or ssh into the instance and confirm changes.

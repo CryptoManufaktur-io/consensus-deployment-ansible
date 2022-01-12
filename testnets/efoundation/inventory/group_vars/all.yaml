@@ -2,6 +2,8 @@
 # generic ansible config information
 ##############################################
 ansible_user: "ubuntu"
+ansible_sudo_pass: ""
+public_ip_address: "{{ansible_host}}"
 github_user_pubkeys:
   - example
 
@@ -86,4 +88,4 @@ beacon_log_level: info
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
-separate_validator_process_enabled: true
+separate_validator_process_enabled: false
