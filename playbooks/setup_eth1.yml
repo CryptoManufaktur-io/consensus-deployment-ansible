@@ -1,0 +1,6 @@
+---
+- import_playbook: tasks/setup_machine.yml
+  vars:
+    variable_host: "eth1"
+
+- import_playbook: tasks/start_geth.yml

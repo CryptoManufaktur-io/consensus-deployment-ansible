@@ -12,13 +12,14 @@ github_user_pubkeys:
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
 eth1endpoint_nimbus: wss://url
-eth1endpoint: https://url
+eth1endpoint: "http://{{ hostvars['eth1-' + inventory_hostname.split('-')[1]]['public_ip_address'] }}:{{ eth1_rpc_port }}"
 
 ##############################################
 # testnet specific information
 ##############################################
 testnet_type: prater
 eth2_network_name: prater
+eth1_network: goerli
 
 # enter bootnodes here if needed
 #bootnode_enrs:
@@ -68,6 +69,7 @@ local_validator_host_archive: "{{inventory_dir}}/../selected_validator_keys/host
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
+eth1_node_dir: "{{home_dir}}/eth1"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -85,6 +87,7 @@ beacon_log_level: info
 ##############################################
 # container names
 ##############################################
+eth1_container_name: eth1_geth
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25

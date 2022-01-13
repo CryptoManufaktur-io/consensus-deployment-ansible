@@ -1,0 +1,33 @@
+##############################################
+# image name and image location
+##############################################
+eth1_image_name: ethereum/client-go
+
+##############################################
+# volume mappings on remote host
+##############################################
+eth1_volumes:
+  - "{{eth1_node_dir}}:/.ethereum"
+
+##############################################
+# arguments to run the containers with
+##############################################
+eth1_start_args: >
+   --{{ eth1_network }} 
+   --http 
+   --http.port {{ eth1_rpc_port }} 
+   --http.addr 0.0.0.0 
+   --ws 
+   --ws.api eth,net,web3 
+   --ws.port {{ eth1_ws_rpc_port }} 
+
+##############################################
+# memory limits
+##############################################
+eth1_memory: 2000M
+eth1_kernel_memory: 2500M
+
+##############################################
+# file permissions and user ids
+##############################################
+eth1_user_id: "1000:1000"
