@@ -2,16 +2,24 @@
   hosts: eth1
   gather_facts: true
   tasks:
+    - name: Get info on container if running
+      docker_container_info:
+        name: "{{ eth1_container_name }}"
+      register: result
+
     - name: Creates eth1 dir
+      when: result.exists == False
       file:
         path: "{{eth1_node_dir}}"
         state: directory
 
     - name: Modify permissions to match user-group inside docker image
+      when: result.exists == False
       shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
       become: true
 
     - name: Start Eth1 container
+      when: result.exists == False
       docker_container:
         name: "{{ eth1_container_name }}"
         state: started
@@ -20,6 +28,8 @@
         ports:
           - "{{ eth1_rpc_port }}:{{ eth1_rpc_port }}"
           - "{{ eth1_ws_rpc_port }}:{{ eth1_ws_rpc_port }}"
+          - "30303:30303"
+          - "30304:30304"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{eth1_kernel_memory}}"
