@@ -12,7 +12,8 @@ github_user_pubkeys:
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
 eth1endpoint_nimbus: wss://url
-eth1endpoint: "http://{{ hostvars['eth1-' + inventory_hostname.split('-')[1]]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+eth1endpoint: "http://{{ hostvars[eth1_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+#eth1endpoint: "https://goerli.infura.io/v3/e476a2f7eeec4c249b6aa4577e51d8cb"
 
 ##############################################
 # testnet specific information
@@ -29,7 +30,7 @@ eth1_network: goerli
 ##############################################
 # enter pushgateway config if needed
 pushgateway_ip: ip-here
-push_metrics_enabled: false
+push_metrics_enabled: true
 
 ##############################################
 # ports to configure
@@ -92,3 +93,28 @@ beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
 separate_validator_process_enabled: false
+
+##############################################
+# prometheus
+##############################################
+prometheus_scrape_configs:
+- job_name: "node"
+  file_sd_configs:
+  - files:
+    - "/etc/prometheus/file_sd/node.yml"
+    
+- job_name: "{{ beacon_container_name }}"
+  metrics_path: "/metrics"
+  static_configs:
+  - targets:
+    - localhost:{{ beacon_metrics_port }}
+    labels:
+      env: "{{ inventory_hostname }}"
+    
+- job_name: "{{ validator_container_name }}"
+  metrics_path: "/metrics"
+  static_configs:
+  - targets:
+    - localhost:{{ validator_metrics_port }}
+    labels:
+      env: "{{ inventory_hostname }}"

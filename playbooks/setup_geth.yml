@@ -1,6 +1,8 @@
 ---
+# setups up the machine with docker, updates apt cache
 - import_playbook: tasks/setup_machine.yml
   vars:
     variable_host: "eth1"
 
+# Start geth
 - import_playbook: tasks/start_geth.yml

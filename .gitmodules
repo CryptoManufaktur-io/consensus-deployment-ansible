@@ -7,3 +7,6 @@
 [submodule "robertdebock.bootstrap"]
 	path = robertdebock.bootstrap
 	url = https://github.com/robertdebock/ansible-role-bootstrap
+[submodule "external_roles/cloudalchemy.prometheus"]
+	path = external_roles/cloudalchemy.prometheus
+	url = https://github.com/cloudalchemy/ansible-prometheus

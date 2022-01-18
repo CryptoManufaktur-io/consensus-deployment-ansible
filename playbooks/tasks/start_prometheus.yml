@@ -1,0 +1,13 @@
+---
+- name: Start prometheus metrics collection
+  hosts: [beacon, validator]
+  gather_facts: true
+  roles:
+  - cloudalchemy.prometheus
+  vars:
+    prometheus_targets:
+      node:
+      - targets:
+        - localhost:9100
+        labels:
+          env: "{{ inventory_hostname }}"

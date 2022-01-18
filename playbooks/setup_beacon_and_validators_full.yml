@@ -1,8 +1,8 @@
 ---
-# setups up the machine with docker, updates apt cache, adds user keys
+# setups up the machine with docker, updates apt cache
 - import_playbook: tasks/setup_machine.yml
   vars:
-    variable_host: "all:!eth1"
+    variable_host: "all:!eth1:!global_federation"
 
 # stop any running beacon/validator docker image, remove existing validator keys and beacon node data
 - import_playbook: tasks/stop_and_wipe_beacon_and_validator.yml
@@ -26,3 +26,9 @@
 # install node_exporter and metric pusher
 - import_playbook: tasks/deploy_node_exporter_and_metric_pusher.yml
   when: push_metrics_enabled
+
+# stars prometheus
+- import_playbook: tasks/start_prometheus.yml
+
+# # stars grafana
+# - import_playbook: tasks/start_grafana.yml
