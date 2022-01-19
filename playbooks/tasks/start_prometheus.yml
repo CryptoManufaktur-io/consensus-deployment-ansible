@@ -1,13 +1,32 @@
 ---
 - name: Start prometheus metrics collection
-  hosts: [beacon, validator]
+  hosts: [dc_local, global_federation]
   gather_facts: true
   roles:
   - cloudalchemy.prometheus
   vars:
     prometheus_targets:
-      node:
-      - targets:
-        - localhost:9100
-        labels:
-          env: "{{ inventory_hostname }}"
+      node_exporter:
+        - targets:
+            - localhost:9100
+          labels:
+            env: "{{ inventory_hostname }}"
+            instance: "{{ inventory_hostname }}_node_exporter"
+
+      prometheus:
+        - targets:
+            - localhost:9090
+          labels:
+            env: "{{ inventory_hostname }}"
+            instance: "{{ inventory_hostname }}_prometheus"
+
+    prometheus_scrape_configs:
+      - job_name: "servicediscovery"
+        metrics_path: "/metrics"
+        scrape_interval: 15s
+        file_sd_configs:
+          - files:
+              - "{{ prometheus_config_dir }}/file_sd/prometheus.yml"
+              - "{{ prometheus_config_dir }}/file_sd/node_exporter.yml"
+              - "{{ prometheus_config_dir }}/file_sd/*.yml"
+

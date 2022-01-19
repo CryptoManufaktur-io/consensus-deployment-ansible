@@ -4,5 +4,10 @@
   vars:
     variable_host: "eth1"
 
+# install node_exporter
+- import_playbook: tasks/deploy_node_exporter.yml
+  vars:
+    variable_host: "eth1"
+
 # Start geth
 - import_playbook: tasks/start_geth.yml

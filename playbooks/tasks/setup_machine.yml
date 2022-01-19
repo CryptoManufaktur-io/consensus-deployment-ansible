@@ -4,7 +4,7 @@
   tasks:
     - name: Set hostname
       hostname:
-        name: "{{ inventory_hostname }}"
+        name: "{{ inventory_hostname | replace('_', '') }}"
 
     - name: add myself to /etc/hosts
       lineinfile:
@@ -16,7 +16,7 @@
       lineinfile:
         dest: /etc/hosts
         regexp: '^eth1'
-        line: "{{ hostvars['eth1-' + inventory_hostname.split('-')[1]]['public_ip_address'] }} eth1"
+        line: "{{ hostvars[hostvars[inventory_hostname].eth1_host]['public_ip_address'] }} eth1"
 
 - name: Setup general tools used and update system
   hosts: "{{ variable_host | default('all') }}"

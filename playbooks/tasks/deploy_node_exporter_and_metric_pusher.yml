@@ -1,5 +1,5 @@
 - name: Start node exporter
-  hosts: beacon, validator
+  hosts: "{{ variable_host | default('beacon, validator') }}"
   gather_facts: true
   roles:
     - cloudalchemy.node-exporter

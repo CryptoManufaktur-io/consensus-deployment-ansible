@@ -12,7 +12,7 @@ github_user_pubkeys:
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
 eth1endpoint_nimbus: wss://url
-eth1endpoint: "http://{{ hostvars[eth1_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].eth1_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
 #eth1endpoint: "https://goerli.infura.io/v3/e476a2f7eeec4c249b6aa4577e51d8cb"
 
 ##############################################
@@ -94,27 +94,20 @@ validator_container_name: validator
 hi_peer_count: 25
 separate_validator_process_enabled: false
 
+
 ##############################################
-# prometheus
+# grafana settings
 ##############################################
-prometheus_scrape_configs:
-- job_name: "node"
-  file_sd_configs:
-  - files:
-    - "/etc/prometheus/file_sd/node.yml"
-    
-- job_name: "{{ beacon_container_name }}"
-  metrics_path: "/metrics"
-  static_configs:
-  - targets:
-    - localhost:{{ beacon_metrics_port }}
-    labels:
-      env: "{{ inventory_hostname }}"
-    
-- job_name: "{{ validator_container_name }}"
-  metrics_path: "/metrics"
-  static_configs:
-  - targets:
-    - localhost:{{ validator_metrics_port }}
-    labels:
-      env: "{{ inventory_hostname }}"
+grafana_container_name: grafana
+grafana_image_name: grafana/grafana-enterprise:8.2.1
+grafana_user_id: "1000:1000"
+grafana_start_args: ""
+local_grafana_data_dir: "{{inventory_dir}}/../grafana_data"
+local_grafana_data_archive: "{{inventory_dir}}/../grafana_data.tar.gz"
+grafana_dir: "{{home_dir}}/grafana_data"
+
+grafana_volumes:
+  - "{{grafana_dir}}:/var/lib/grafana"
+
+grafana_memory: 5000M
+grafana_kernel_memory: 5500M

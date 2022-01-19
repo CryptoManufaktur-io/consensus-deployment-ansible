@@ -25,6 +25,14 @@ This directory contains the configs required to run an efoundation testnet.
 
 `export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES && export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"`
 
+## Setting up
+
+`1. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth.yml`
+
+`2. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
+
+`3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
+
 ## Usage
 
 - Replace the `testnets/efoundation/inventory/inventory.ini`

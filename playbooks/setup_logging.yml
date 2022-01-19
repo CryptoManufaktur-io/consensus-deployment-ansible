@@ -1,0 +1,17 @@
+---
+# setups up the machine with docker, updates apt cache
+- import_playbook: tasks/setup_machine.yml
+  vars:
+    variable_host: "dc_local, global_federation"
+
+# install node_exporter
+- import_playbook: tasks/deploy_node_exporter.yml
+
+# Start prometheus
+- import_playbook: tasks/start_prometheus.yml
+
+# Start grafana
+- import_playbook: tasks/start_grafana.yml
+
+# Register nodes
+- import_playbook: tasks/start_register_logging.yml

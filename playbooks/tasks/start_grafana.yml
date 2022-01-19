@@ -1,0 +1,44 @@
+- name: Start grafana
+  hosts: [dc_local, global_federation]
+  gather_facts: true
+  serial: 20
+  tasks:
+    - name: Creates grafana dir
+      file:
+        path: "{{grafana_dir}}"
+        state: directory
+
+    - name: Archive local_grafana_data_dir dir to prepare for upload
+      archive:
+        path: "{{local_grafana_data_dir}}/*"
+        dest: "{{local_grafana_data_archive}}"
+      delegate_to: localhost
+
+    - name: Upload grafana data to remote
+      unarchive:
+        src: "{{ local_grafana_data_archive }}"
+        dest: "{{ grafana_dir }}"
+
+    - name: Modify permissions to match user-group inside docker image
+      shell: chown -R "{{ ansible_user }}" "{{ home_dir }}/grafana_data"
+      become: true
+
+    - name: Start grafana container
+      docker_container:
+        name: "{{ grafana_container_name }}"
+        state: started
+        image: "{{ grafana_image_name }}"
+        pull: true
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{grafana_kernel_memory}}"
+        network_mode: host
+        restart: "{{ grafana_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{grafana_volumes}}"
+        memory: "{{grafana_memory}}"
+        memory_swap: "{{grafana_memory}}"
+        command: "{{ grafana_start_args }}"
+        env: "{{ grafana_env | default({}) }}"
+        user: "{{ grafana_user_id }}"
