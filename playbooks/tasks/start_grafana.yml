@@ -1,5 +1,5 @@
 - name: Start grafana
-  hosts: [dc_local, global_federation]
+  hosts: "{{ variable_host }}"
   gather_facts: true
   serial: 20
   tasks:
@@ -20,7 +20,7 @@
         dest: "{{ grafana_dir }}"
 
     - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ home_dir }}/grafana_data"
+      shell: chown -R "{{ ansible_user }}" "{{ grafana_dir }}"
       become: true
 
     - name: Start grafana container

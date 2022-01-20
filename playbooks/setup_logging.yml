@@ -6,12 +6,28 @@
 
 # install node_exporter
 - import_playbook: tasks/deploy_node_exporter.yml
+  vars:
+    variable_host: "dc_local, global_federation"
 
-# Start prometheus
+# Start prometheus dc local
 - import_playbook: tasks/start_prometheus.yml
+  vars:
+    variable_host: "dc_local"
+    enable_remote_write: "true"
+    enable_remote_receiver: "true"
+
+# Start prometheus global_federation
+- import_playbook: tasks/start_prometheus.yml
+  vars:
+    variable_host: "global_federation"
+    enable_remote_receiver: "true"
 
 # Start grafana
 - import_playbook: tasks/start_grafana.yml
+  vars:
+    variable_host: "global_federation"
 
-# Register nodes
-- import_playbook: tasks/start_register_logging.yml
+# register node for metrics
+- import_playbook: tasks/start_registermetrics_node.yml
+  vars:
+    variable_host: "dc_local, global_federation"

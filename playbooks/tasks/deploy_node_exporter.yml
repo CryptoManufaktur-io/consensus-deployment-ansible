@@ -1,5 +1,5 @@
 - name: Start node exporter
-  hosts: "{{ variable_host | default('dc_local, global_federation') }}"
+  hosts: "{{ variable_host }}"
   gather_facts: true
   roles:
     - cloudalchemy.node-exporter

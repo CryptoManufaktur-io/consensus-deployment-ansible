@@ -2,7 +2,7 @@
 # setups up the machine with docker, updates apt cache
 - import_playbook: tasks/setup_machine.yml
   vars:
-    variable_host: "all:!eth1:!global_federation:!dc_local"
+    variable_host: "beacon, validator"
 
 # stop any running beacon/validator docker image, remove existing validator keys and beacon node data
 - import_playbook: tasks/stop_and_wipe_beacon_and_validator.yml
@@ -23,6 +23,21 @@
 - import_playbook: tasks/start_validator.yml
   when: separate_validator_process_enabled
 
-# install node_exporter and metric pusher
-- import_playbook: tasks/deploy_node_exporter_and_metric_pusher.yml
-  when: push_metrics_enabled
+# install node_exporter
+- import_playbook: tasks/deploy_node_exporter.yml
+  vars:
+    variable_host: "beacon, validator"
+
+# Start prometheus
+- import_playbook: tasks/start_prometheus.yml
+  vars:
+    variable_host: "beacon, validator"
+    enable_remote_write: "true"
+
+# register node for metrics
+- import_playbook: tasks/start_registermetrics_node.yml
+  vars:
+    variable_host: "beacon, validator"
+
+# register beacon and validator for metrics
+- import_playbook: tasks/start_registermetrics_beacon_validator.yml

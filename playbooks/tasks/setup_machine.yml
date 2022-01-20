@@ -1,5 +1,5 @@
 - name: set hostname
-  hosts: "{{ variable_host | default('all') }}"
+  hosts: "{{ variable_host }}"
   become: true
   tasks:
     - name: Set hostname
@@ -11,15 +11,9 @@
         dest: /etc/hosts
         regexp: '^{{ ansible_host }}='
         line: '{{ ansible_host }} {{ inventory_hostname }}'
-        
-    - name: add eth1 to /etc/hosts
-      lineinfile:
-        dest: /etc/hosts
-        regexp: '^eth1'
-        line: "{{ hostvars[hostvars[inventory_hostname].eth1_host]['public_ip_address'] }} eth1"
 
 - name: Setup general tools used and update system
-  hosts: "{{ variable_host | default('all') }}"
+  hosts: "{{ variable_host }}"
   become: yes
   gather_facts: true
   vars:

@@ -9,5 +9,16 @@
   vars:
     variable_host: "eth1"
 
+# Start prometheus
+- import_playbook: tasks/start_prometheus.yml
+  vars:
+    variable_host: "eth1"
+    enable_remote_write: "true"
+
 # Start geth
 - import_playbook: tasks/start_geth.yml
+
+# register node for metrics
+- import_playbook: tasks/start_registermetrics_node.yml
+  vars:
+    variable_host: "eth1"
