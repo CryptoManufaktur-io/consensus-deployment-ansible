@@ -4,6 +4,9 @@
 [submodule "external_roles/geerlingguy.docker"]
 	path = external_roles/geerlingguy.docker
 	url = https://github.com/geerlingguy/ansible-role-docker
-[submodule "robertdebock.bootstrap"]
-	path = robertdebock.bootstrap
+[submodule "external_roles/cloudalchemy.prometheus"]
+	path = external_roles/cloudalchemy.prometheus
+	url = https://github.com/cloudalchemy/ansible-prometheus
+[submodule "external_roles/robertdebock.bootstrap"]
+	path = external_roles/robertdebock.bootstrap
 	url = https://github.com/robertdebock/ansible-role-bootstrap

@@ -55,6 +55,7 @@ validator_start_args: >
   --server={{beacon_endpoint}}
   --graffiti="{{graffiti}}"
   --http --http-port={{validator_rpc_port}}
+  
 ##############################################
 # memory limits
 ##############################################

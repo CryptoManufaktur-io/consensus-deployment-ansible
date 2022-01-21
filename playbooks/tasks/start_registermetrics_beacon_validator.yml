@@ -1,0 +1,27 @@
+- name: Start Register beacon metrics
+  hosts: [beacon]
+  gather_facts: true
+  tasks:
+    - name: Register beacon metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/beacon.yml"
+        content: |
+          - labels:
+              env: {{ inventory_hostname }}
+              instance: {{ inventory_hostname }}_beacon
+            targets:
+            - localhost:{{ beacon_metrics_port }}
+
+- name: Start Register validator metrics
+  hosts: [validator]
+  gather_facts: true
+  tasks:
+    - name: Register validator metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/validator.yml"
+        content: |
+          - labels:
+              env: {{ inventory_hostname }}
+              instance: {{ inventory_hostname }}_validator
+            targets:
+            - localhost:{{ validator_metrics_port }}

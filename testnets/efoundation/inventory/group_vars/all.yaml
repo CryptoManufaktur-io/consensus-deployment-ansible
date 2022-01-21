@@ -2,7 +2,6 @@
 # generic ansible config information
 ##############################################
 ansible_user: "ubuntu"
-ansible_sudo_pass: ""
 public_ip_address: "{{ansible_host}}"
 github_user_pubkeys:
   - example
@@ -12,13 +11,15 @@ github_user_pubkeys:
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
 eth1endpoint_nimbus: wss://url
-eth1endpoint: https://url
+eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+#eth1endpoint: "https://goerli.infura.io/v3/e476a2f7eeec4c249b6aa4577e51d8cb"
 
 ##############################################
 # testnet specific information
 ##############################################
 testnet_type: prater
 eth2_network_name: prater
+eth1_network: goerli
 
 # enter bootnodes here if needed
 #bootnode_enrs:
@@ -28,7 +29,7 @@ eth2_network_name: prater
 ##############################################
 # enter pushgateway config if needed
 pushgateway_ip: ip-here
-push_metrics_enabled: false
+push_metrics_enabled: true
 
 ##############################################
 # ports to configure
@@ -68,6 +69,7 @@ local_validator_host_archive: "{{inventory_dir}}/../selected_validator_keys/host
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
+eth1_node_dir: "{{home_dir}}/eth1"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -85,7 +87,45 @@ beacon_log_level: info
 ##############################################
 # container names
 ##############################################
+eth1_container_name: eth1_geth
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
 separate_validator_process_enabled: false
+
+##############################################
+# prometheus settings
+##############################################
+prometheus_container_name: prometheus
+prometheus_image_name: prom/prometheus
+prometheus_user_id: "1000:1000"
+prometheus_rreceiver_start_args: "--enable-feature=remote-write-receiver --config.file=/etc/prometheus/prometheus.yml"
+prometheus_start_args: "--config.file=/etc/prometheus/prometheus.yml"
+prometheus_data_dir: "{{home_dir}}/prometheus_data"
+prometheus_config_dir: "{{home_dir}}/prometheus_config"
+prometheus_file_sd_dir: "{{prometheus_config_dir}}/file_sd"
+prometheus_scrape_intervals: "10s"
+
+prometheus_volumes:
+  - "{{prometheus_data_dir}}:/prometheus"
+  - "{{prometheus_config_dir}}:/etc/prometheus"
+
+prometheus_memory: 5000M
+prometheus_kernel_memory: 5500M
+
+##############################################
+# grafana settings
+##############################################
+grafana_container_name: grafana
+grafana_image_name: grafana/grafana-enterprise:8.2.1
+grafana_user_id: "1000:1000"
+grafana_start_args: ""
+local_grafana_data_dir: "{{inventory_dir}}/../grafana_data"
+local_grafana_data_archive: "{{inventory_dir}}/../grafana_data.tar.gz"
+grafana_dir: "{{home_dir}}/grafana_data"
+
+grafana_volumes:
+  - "{{grafana_dir}}:/var/lib/grafana"
+
+grafana_memory: 5000M
+grafana_kernel_memory: 5500M

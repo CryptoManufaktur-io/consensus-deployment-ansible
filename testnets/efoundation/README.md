@@ -1,6 +1,6 @@
-# Example testnet
+# Efoundation testnet
 
-This directory contains the configs required to run an example testnet.
+This directory contains the configs required to run an efoundation testnet.
 
 ## Assumption
 
@@ -21,6 +21,18 @@ This directory contains the configs required to run an example testnet.
 
 `ansible -i testnets/efoundation/inventory/inventory.ini -m ping all`
 
+- Mac error fix
+
+`export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES && export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"`
+
+## Setting up
+
+`1. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth.yml`
+
+`2. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
+
+`3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
+
 ## Usage
 
 - Replace the `testnets/efoundation/inventory/inventory.ini`
@@ -38,7 +50,7 @@ Note!!: Assumptions made for the updating process:
     - Please do not change the `client_type`(lighthouse/teku/etc), the playbook `update-beacon-and-validator.yml` doesn't
 touch the keys: it will lead to format errors!
 
-- Update `inventory.ini` if needed
+- Update `testnets/efoundation/inventory/inventory.ini` if needed
 - Make the required changes in the `inventory/group_vars` folder, the flags and image names are organized as `eth2client_<client-name>`
 - There are flags separately listed for beacon node and validator, make changes as needed. All clients work as separate
 beacon node/validator except for nimbus (runs both in one container).

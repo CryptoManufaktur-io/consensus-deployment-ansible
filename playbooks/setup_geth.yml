@@ -1,0 +1,24 @@
+---
+# setups up the machine with docker, updates apt cache
+- import_playbook: tasks/setup_machine.yml
+  vars:
+    variable_host: "eth1"
+
+# install node_exporter
+- import_playbook: tasks/deploy_node_exporter.yml
+  vars:
+    variable_host: "eth1"
+
+# Start prometheus
+- import_playbook: tasks/start_prometheus.yml
+  vars:
+    variable_host: "eth1"
+    enable_remote_write: "true"
+
+# Start geth
+- import_playbook: tasks/start_geth.yml
+
+# register node for metrics
+- import_playbook: tasks/start_registermetrics_node.yml
+  vars:
+    variable_host: "eth1"

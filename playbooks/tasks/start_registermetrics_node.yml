@@ -1,0 +1,13 @@
+- name: Start Register node exporter metrics
+  hosts: "{{ variable_host }}"
+  gather_facts: true
+  tasks:
+    - name: Register node exporter metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/node.yml"
+        content: |
+          - labels:
+              env: {{ inventory_hostname }}
+              instance: {{ inventory_hostname }}_node
+            targets:
+            - localhost:9100
