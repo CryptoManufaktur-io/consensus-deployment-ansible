@@ -34,10 +34,5 @@
     variable_host: "beacon, validator"
     enable_remote_write: "true"
 
-# register node for metrics
-- import_playbook: tasks/start_registermetrics_node.yml
-  vars:
-    variable_host: "beacon, validator"
-
 # register beacon and validator for metrics
 - import_playbook: tasks/start_registermetrics_beacon_validator.yml

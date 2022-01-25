@@ -7,8 +7,7 @@
         dest: "{{ prometheus_file_sd_dir }}/beacon.yml"
         content: |
           - labels:
-              env: {{ inventory_hostname }}
-              instance: {{ inventory_hostname }}_beacon
+              instance: beacon
             targets:
             - localhost:{{ beacon_metrics_port }}
 
@@ -21,7 +20,6 @@
         dest: "{{ prometheus_file_sd_dir }}/validator.yml"
         content: |
           - labels:
-              env: {{ inventory_hostname }}
-              instance: {{ inventory_hostname }}_validator
+              instance: validator
             targets:
             - localhost:{{ validator_metrics_port }}

@@ -17,8 +17,3 @@
 
 # Start geth
 - import_playbook: tasks/start_geth.yml
-
-# register node for metrics
-- import_playbook: tasks/start_registermetrics_node.yml
-  vars:
-    variable_host: "eth1"

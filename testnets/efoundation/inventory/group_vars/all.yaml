@@ -97,21 +97,108 @@ separate_validator_process_enabled: false
 # prometheus settings
 ##############################################
 prometheus_container_name: prometheus
-prometheus_image_name: prom/prometheus
+prometheus_image_name: prom/prometheus:v2.32.1
 prometheus_user_id: "1000:1000"
-prometheus_rreceiver_start_args: "--enable-feature=remote-write-receiver --config.file=/etc/prometheus/prometheus.yml"
-prometheus_start_args: "--config.file=/etc/prometheus/prometheus.yml"
+prometheus_start_args: >
+  --config.file=/etc/prometheus/prometheus.yml 
+  --log.level=warn 
+  --storage.tsdb.path=/prometheus 
+  --storage.tsdb.max-block-duration=2h 
+  --storage.tsdb.min-block-duration=2h
+prometheus_rreceiver_start_args: "{{ prometheus_start_args }} --enable-feature=remote-write-receiver"
 prometheus_data_dir: "{{home_dir}}/prometheus_data"
 prometheus_config_dir: "{{home_dir}}/prometheus_config"
 prometheus_file_sd_dir: "{{prometheus_config_dir}}/file_sd"
 prometheus_scrape_intervals: "10s"
-
+prometheus_remote_write_url: "9090/api/v1/write"
 prometheus_volumes:
   - "{{prometheus_data_dir}}:/prometheus"
   - "{{prometheus_config_dir}}:/etc/prometheus"
-
 prometheus_memory: 5000M
 prometheus_kernel_memory: 5500M
+
+##############################################
+# thanos settings
+##############################################
+thanos_image_name: thanosio/thanos:v0.24.0
+thanos_user_id: "1000:1000"
+thanos_memory: 5000M
+thanos_kernel_memory: 5500M
+thanos_conf_dir: "{{home_dir}}/thanos_conf"
+thanos_data_dir: "{{home_dir}}/thanos_data"
+local_thanos_conf_dir: "{{inventory_dir}}/../thanos_conf"
+local_thanos_conf_archive: "{{inventory_dir}}/../thanos_conf.tar.gz"
+thanos_volumes:
+  - "{{thanos_conf_dir}}:/etc/thanos"
+  - "{{thanos_data_dir}}:/data"
+thanos_etc_hosts: >
+  { 
+    "prometheus" : "{{ ansible_host_private }}" 
+  }
+thanos_remote_write_url: "10903/api/v1/receive"
+
+thanos_store_container_name: thanos-store
+thanos_store_start_args: >
+  store
+  --debug.name=thanos-store
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --data-dir=/data/store
+  --objstore.config-file=/etc/thanos/bucket.yml
+
+thanos_receive_container_name: thanos-receive
+thanos_receive_start_args: >
+  receive
+  --debug.name=thanos-receive
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --objstore.config-file=/etc/thanos/bucket.yml
+  --tsdb.path=/data/receive
+  --label='receive="true"'
+  --remote-write.address=0.0.0.0:10903
+
+thanos_sidecar_container_name: thanos-sidecar
+thanos_sidecar_start_args: >
+  sidecar
+  --debug.name=thanos-sidecar
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --objstore.config-file=/etc/thanos/bucket.yml
+  --tsdb.path=/data/sidecar
+  --prometheus.url=http://prometheus:9090
+
+thanos_query_container_name: thanos-query
+thanos_query_start_args: >
+  query
+  --debug.name=thanos-query
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --store=thanos-store:10091
+  --store=thanos-receive:10091
+  --store=thanos-sidecar:10091
+
+thanos_compact_container_name: thanos-compact
+thanos_compact_start_args: >
+  compact
+  --debug.name=thanos-compact
+  --log.level=debug
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --data-dir=/data/compactor
+  --objstore.config-file=/etc/thanos/bucket.yml
+  --wait
 
 ##############################################
 # grafana settings
@@ -123,9 +210,7 @@ grafana_start_args: ""
 local_grafana_data_dir: "{{inventory_dir}}/../grafana_data"
 local_grafana_data_archive: "{{inventory_dir}}/../grafana_data.tar.gz"
 grafana_dir: "{{home_dir}}/grafana_data"
-
 grafana_volumes:
   - "{{grafana_dir}}:/var/lib/grafana"
-
 grafana_memory: 5000M
 grafana_kernel_memory: 5500M

@@ -7,3 +7,4 @@ custom_config.data.tar.gz
 #external_roles
 **/inventory.ini
 **/grafana_data**
+**/thanos_conf**

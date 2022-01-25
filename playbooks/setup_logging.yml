@@ -14,20 +14,18 @@
   vars:
     variable_host: "dc_local"
     enable_remote_write: "true"
+    remote_write_to: "thanos"
     enable_remote_receiver: "true"
 
 # Start prometheus global_federation
 - import_playbook: tasks/start_prometheus.yml
   vars:
     variable_host: "global_federation"
-    enable_remote_receiver: "true"
 
 # Start grafana
 - import_playbook: tasks/start_grafana.yml
   vars:
     variable_host: "global_federation"
 
-# register node for metrics
-- import_playbook: tasks/start_registermetrics_node.yml
-  vars:
-    variable_host: "dc_local, global_federation"
+# register thanos
+- import_playbook: tasks/start_thanos.yml

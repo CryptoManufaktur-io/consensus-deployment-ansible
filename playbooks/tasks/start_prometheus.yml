@@ -23,42 +23,39 @@
       shell: chown -R "{{ ansible_user }}" "{{ prometheus_config_dir }}"
       become: true
 
-    - name: Create prometheus configuration file with remote write
-      copy:
-        dest: "{{ prometheus_config_dir }}/prometheus.yml"
-        content: |
-          global:
-            scrape_interval: {{ prometheus_scrape_intervals }}
-
-          scrape_configs:
-            - job_name: "{{ inventory_hostname }}"
-              scrape_interval: {{ prometheus_scrape_intervals }}
-              static_configs:
-                - targets: ['localhost:9090']
-              file_sd_configs:
-              - files:
-                - "/etc/prometheus/file_sd/*.yml"
-
-          remote_write:
-            - url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write"
-      when: enable_remote_write | default('false') == 'true'
-
     - name: Create prometheus configuration file without remote write
       copy:
         dest: "{{ prometheus_config_dir }}/prometheus.yml"
         content: |
           global:
             scrape_interval: {{ prometheus_scrape_intervals }}
+            external_labels:
+              cluster: '{{ inventory_hostname }}'
 
           scrape_configs:
-            - job_name: "{{ inventory_hostname }}"
-              scrape_interval: {{ prometheus_scrape_intervals }}
+            - job_name: '{{ inventory_hostname }}'
               static_configs:
-                - targets: ['localhost:9090']
+                - targets: 
+                  - 'localhost:9090'
+                  labels:
+                    instance: 'prometheus'
+
+                - targets: 
+                  - 'localhost:9100'
+                  labels:
+                    instance: 'node-exporter'
+
               file_sd_configs:
               - files:
-                - "/etc/prometheus/file_sd/*.yml"
-      when: enable_remote_write | default('false') == 'false'
+                - '/etc/prometheus/file_sd/*.yml'
+
+    - name: Add remote write to thanos if enable_remote_write is true AND remote_write_to is thanos
+      blockinfile:
+        path: "{{ prometheus_config_dir }}/prometheus.yml"
+        block: |
+          remote_write:
+            - url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:{{ prometheus_remote_write_url if (remote_write_to | default('prometheus')) == 'prometheus' else thanos_remote_write_url }}"
+      when: enable_remote_write | default('false') == 'true'
 
     - name: Start prometheus container
       docker_container:
