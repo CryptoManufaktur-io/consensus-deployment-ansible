@@ -19,6 +19,11 @@
         src: "{{ local_grafana_data_archive }}"
         dest: "{{ grafana_dir }}"
 
+    - name: Remove {{local_grafana_data_archive}} archive after upload
+      file:
+        path: "{{ local_grafana_data_archive }}"
+        state: absent
+
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ grafana_dir }}"
       become: true
@@ -42,3 +47,12 @@
         command: "{{ grafana_start_args }}"
         env: "{{ grafana_env | default({}) }}"
         user: "{{ grafana_user_id }}"
+
+    - name: Register metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/grafana.yml"
+        content: |
+          - labels:
+              instance: grafana
+            targets:
+            - localhost:3000

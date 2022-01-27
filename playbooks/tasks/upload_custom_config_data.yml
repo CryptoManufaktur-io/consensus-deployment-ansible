@@ -8,8 +8,13 @@
       path: "{{local_custom_config_data_host_dir}}/*"
       dest: "{{local_custom_config_data_host_archive}}"
     delegate_to: localhost
+
   - name: Upload config data to remote
     unarchive:
       src: "{{ local_custom_config_data_host_archive }}"
       dest: "{{ testnet_dir }}/"
 
+  - name: Remove {{local_custom_config_data_host_archive}} archive after upload
+    file:
+      path: "{{ local_custom_config_data_host_archive }}"
+      state: absent

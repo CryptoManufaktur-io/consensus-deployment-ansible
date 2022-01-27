@@ -13,14 +13,15 @@
 - import_playbook: tasks/start_prometheus.yml
   vars:
     variable_host: "dc_local"
-    enable_remote_write: "true"
-    remote_write_to: "thanos"
     enable_remote_receiver: "true"
+    # write to thanos global receive
+    remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:10903/api/v1/receive"
 
 # Start prometheus global_federation
 - import_playbook: tasks/start_prometheus.yml
   vars:
     variable_host: "global_federation"
+    enable_remote_receiver: "true"
 
 # Start grafana
 - import_playbook: tasks/start_grafana.yml
@@ -29,3 +30,21 @@
 
 # register thanos
 - import_playbook: tasks/start_thanos.yml
+
+# Start promtail
+- import_playbook: tasks/start_promtail.yml
+  vars:
+    variable_host: "dc_local"
+    push_receiver: "true"
+    loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push"
+
+# Start promtail
+- import_playbook: tasks/start_promtail.yml
+  vars:
+    variable_host: "global_federation"
+    loki_url: "http://localhost:3100/loki/api/v1/push"
+
+# Start loki
+- import_playbook: tasks/start_loki.yml
+  vars:
+    variable_host: "global_federation"

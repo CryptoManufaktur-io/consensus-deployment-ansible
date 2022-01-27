@@ -13,7 +13,14 @@
 - import_playbook: tasks/start_prometheus.yml
   vars:
     variable_host: "eth1"
-    enable_remote_write: "true"
+    # write to prometheus dc local
+    remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write"
 
 # Start geth
 - import_playbook: tasks/start_geth.yml
+
+# Start promtail
+- import_playbook: tasks/start_promtail.yml
+  vars:
+    variable_host: "eth1"
+    loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"
