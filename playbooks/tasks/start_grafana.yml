@@ -39,8 +39,8 @@
         kernel_memory: "{{grafana_kernel_memory}}"
         network_mode: host
         restart: "{{ grafana_require_restart | default(false) }}"
-        log_options: "{{ json_log_options }}"
-        log_driver: "{{ json_log_driver }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
         volumes: "{{grafana_volumes}}"
         memory: "{{grafana_memory}}"
         memory_swap: "{{grafana_memory}}"

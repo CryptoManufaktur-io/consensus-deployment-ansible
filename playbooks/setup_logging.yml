@@ -23,7 +23,7 @@
     variable_host: "globalfederation"
     enable_remote_receiver: "true"
 
-# Start grafana
+# Start grafana.
 - import_playbook: tasks/start_grafana.yml
   vars:
     variable_host: "globalfederation"
@@ -35,6 +35,7 @@
 - import_playbook: tasks/start_promtail.yml
   vars:
     variable_host: "dclocal"
+    push_receiver: "true"
     promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push"
 
 # Start promtail global logging

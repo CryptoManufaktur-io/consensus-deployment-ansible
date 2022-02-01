@@ -69,19 +69,12 @@ testnet_dir: "{{home_dir}}/custom_config_data"
 # common log config
 ##############################################
 common_log_options:
-  mode: non-blocking
-  max-buffer-size: 4m
-  loki-retries: 3
-  loki-url: "http://localhost:3500/loki/api/v1/push"
-common_log_driver: loki
-
-json_log_options:
-  max-file: "10"
+  max-file: 3
   max-size: 30m
   mode: non-blocking
   max-buffer-size: 4m
-json_log_driver: json-file
-
+  tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}"
+common_log_driver: json-file
 beacon_log_level: info
 
 
@@ -214,14 +207,15 @@ grafana_kernel_memory: 5500M
 ##############################################
 promtail_image_name: grafana/promtail:latest
 promtail_container_name: promtail
-promtail_user_id: "1000:1000"
+promtail_user_id: "0:0"
 promtail_config_dir: "{{ home_dir }}/promtail_conf"
 local_promtail_conf_dir: "{{inventory_dir}}/../promtail_conf"
 promtail_start_args: >
   -config.file=/mnt/config/config.yml
 promtail_volumes:
-  - "/var/log:/var/log"
+  - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
   - "{{promtail_config_dir}}:/mnt/config"
+  - "/etc/machine-id:/etc/machine-id:ro"
 promtail_memory: 5000M
 promtail_kernel_memory: 5500M
 
@@ -233,10 +227,12 @@ loki_image_name: grafana/loki:latest
 loki_container_name: loki
 loki_user_id: "1000:1000"
 loki_config_dir: "{{ home_dir }}/loki_conf"
+loki_data_dir: "{{ home_dir }}/loki_data"
 local_loki_conf_dir: "{{inventory_dir}}/../loki_conf"
 loki_start_args: >
   -config.file=/mnt/config/config.yml
 loki_volumes:
   - "{{loki_config_dir}}:/mnt/config"
+  - "{{loki_data_dir}}:/tmp"
 loki_memory: 5000M
 loki_kernel_memory: 5500M

@@ -73,12 +73,6 @@
         name: "{{ansible_user}}"
         group: docker
 
-    - name: Install and enable loki plugin
-      shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions"
-      register: loki_result
-      failed_when: "(loki_result.rc >= 1) and not ('already exists' in loki_result.stderr)"
-      changed_when: "(loki_result.rc == 0) and ('Installed plugin' in loki_result.stdout)"
-
     - name: Check is docker-compose installed
       stat: path=/usr/local/bin/docker-compose
       register: is_docker_compose_installed
@@ -99,5 +93,5 @@
       when: docker_compose.stat.exists
 
     - name: Unconditionally reboot the machine with all defaults when docker is installed
-      when: dockerexist.stat.exists == False or ((loki_result.rc == 0) and ('Installed plugin' in loki_result.stdout))
+      when: dockerexist.stat.exists == False
       reboot:

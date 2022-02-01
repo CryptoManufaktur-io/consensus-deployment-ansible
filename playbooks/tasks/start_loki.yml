@@ -6,6 +6,11 @@
       file:
         path: "{{ loki_config_dir }}"
         state: directory
+    
+    - name: Creates loki data dir
+      file:
+        path: "{{ loki_data_dir }}"
+        state: directory
 
     - name: Copy loki conf to remote
       copy:
@@ -13,7 +18,7 @@
         dest: "{{ loki_config_dir }}"
 
     - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}"
+      shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}" && chown -R "{{ ansible_user }}" "{{ loki_data_dir }}"
       become: true
 
     - name: Start loki container
@@ -28,8 +33,8 @@
         etc_hosts: "{{ docker_etc_hosts }}"
         network_mode: host
         restart: "{{ loki_require_restart | default(false) }}"
-        log_options: "{{ json_log_options }}"
-        log_driver: "{{ json_log_driver }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
         volumes: "{{loki_volumes}}"
         command: "{{ loki_start_args }}"
         memory: "{{loki_memory}}"

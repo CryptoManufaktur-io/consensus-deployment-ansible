@@ -24,7 +24,7 @@
         regexp: "##inventory_hostname##"
         replace: "{{ inventory_hostname }}"
 
-    - name: Enable receiver get docker logs
+    - name: Enable receiver when set to receive
       blockinfile:
         path: "{{ promtail_config_dir }}/config.yml"
         block: |
@@ -35,6 +35,7 @@
                 grpc_listen_port: 3600
               labels:
                 pushserver: {{ inventory_hostname }}_push
+      when: push_receiver | default('false') == 'true'
 
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
@@ -51,8 +52,8 @@
         kernel_memory: "{{promtail_kernel_memory}}"
         network_mode: host
         restart: "{{ promtail_require_restart | default(false) }}"
-        log_options: "{{ json_log_options }}"
-        log_driver: "{{ json_log_driver }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
         volumes: "{{promtail_volumes}}"
         memory: "{{promtail_memory}}"
         memory_swap: "{{promtail_memory}}"

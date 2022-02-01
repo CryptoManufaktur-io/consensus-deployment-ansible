@@ -27,7 +27,4 @@ schema_config:
         prefix: index_
         period: 24h
 
-ruler:
-  alertmanager_url: http://dockerhost:9093
-
 
