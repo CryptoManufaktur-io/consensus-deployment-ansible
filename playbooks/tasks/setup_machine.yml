@@ -4,7 +4,7 @@
   tasks:
     - name: Set hostname
       hostname:
-        name: "{{ inventory_hostname | replace('_', '') }}"
+        name: "{{ inventory_hostname }}"
 
     - name: add myself to /etc/hosts
       lineinfile:
@@ -40,22 +40,22 @@
       
     - name: Check reboot required if docker not installed
       stat: path=/usr/bin/docker
-      register: reboot
+      register: dockerexist
 
     - name: Add an apt signing key for Docker
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
     - name: Add apt repository for stable version
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
 
     - name: Install Docker
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       apt:
         name: "{{ packages }}"
         state: present
@@ -68,10 +68,16 @@
         - python3-docker
 
     - name: Add user to docker group
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       user:
         name: "{{ansible_user}}"
         group: docker
+
+    - name: Install and enable loki plugin
+      shell: "docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions"
+      register: loki_result
+      failed_when: "(loki_result.rc >= 1) and not ('already exists' in loki_result.stderr)"
+      changed_when: "(loki_result.rc == 0) and ('Installed plugin' in loki_result.stdout)"
 
     - name: Check is docker-compose installed
       stat: path=/usr/local/bin/docker-compose
@@ -93,5 +99,5 @@
       when: docker_compose.stat.exists
 
     - name: Unconditionally reboot the machine with all defaults when docker is installed
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False or ((loki_result.rc == 0) and ('Installed plugin' in loki_result.stdout))
       reboot:

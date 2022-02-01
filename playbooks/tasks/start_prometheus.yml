@@ -1,7 +1,6 @@
 - name: Start prometheus
   hosts: "{{ variable_host }}"
-  gather_facts: true
-  serial: 20
+  gather_facts: false
   tasks:
     - name: Creates prometheus data dir
       file:
@@ -13,30 +12,13 @@
         path: "{{ prometheus_config_dir }}"
         state: directory
 
-    - name: Archive local_prometheus_conf_dir dir to prepare for upload
-      archive:
-        path: "{{local_prometheus_conf_dir}}/*"
-        dest: "{{local_prometheus_conf_archive}}"
-      delegate_to: localhost
-
-    - name: Upload prometheus conf to remote
-      unarchive:
-        src: "{{ local_prometheus_conf_archive }}"
+    - name: Copy prometheus conf to remote
+      copy:
+        src: "{{ local_prometheus_conf_dir }}/"
         dest: "{{ prometheus_config_dir }}"
 
-    - name: Remove {{local_prometheus_conf_archive}} archive after upload
-      file:
-        path: "{{ local_prometheus_conf_archive }}"
-        state: absent
-
-    - name: Creates prometheus file_sd dir
-      file:
-        path: "{{ prometheus_file_sd_dir }}"
-        state: directory
-
     - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ prometheus_data_dir }}"
-      shell: chown -R "{{ ansible_user }}" "{{ prometheus_config_dir }}"
+      shell: chown -R "{{ ansible_user }}" "{{ prometheus_data_dir }}" && chown -R "{{ ansible_user }}" "{{ prometheus_config_dir }}"
       become: true
 
     - name: Replace variable in conf file

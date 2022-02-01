@@ -1,27 +1,16 @@
 - name: Start loki
   hosts: "{{ variable_host }}"
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Creates loki config dir
       file:
         path: "{{ loki_config_dir }}"
         state: directory
 
-    - name: Archive local_loki_conf_dir dir to prepare for upload
-      archive:
-        path: "{{local_loki_conf_dir}}/*"
-        dest: "{{local_loki_conf_archive}}"
-      delegate_to: localhost
-
-    - name: Upload loki conf to remote
-      unarchive:
-        src: "{{ local_loki_conf_archive }}"
+    - name: Copy loki conf to remote
+      copy:
+        src: "{{ local_loki_conf_dir }}/"
         dest: "{{ loki_config_dir }}"
-
-    - name: Remove {{local_loki_conf_archive}} archive after upload
-      file:
-        path: "{{ local_loki_conf_archive }}"
-        state: absent
 
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}"
@@ -39,8 +28,8 @@
         etc_hosts: "{{ docker_etc_hosts }}"
         network_mode: host
         restart: "{{ loki_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
+        log_options: "{{ json_log_options }}"
+        log_driver: "{{ json_log_driver }}"
         volumes: "{{loki_volumes}}"
         command: "{{ loki_start_args }}"
         memory: "{{loki_memory}}"
@@ -48,7 +37,7 @@
         env: "{{ loki_env | default({}) }}"
         user: "{{ loki_user_id }}"
 
-    - name: Register metrics to prometheus
+    - name: Register loki metrics to prometheus
       copy:
         dest: "{{ prometheus_file_sd_dir }}/loki.yml"
         content: |

@@ -3,8 +3,6 @@
 ##############################################
 ansible_user: "ubuntu"
 public_ip_address: "{{ansible_host}}"
-github_user_pubkeys:
-  - example
 docker_etc_hosts: >
   { 
     "dockerhost" : "{{ ansible_host_private }}" 
@@ -24,16 +22,6 @@ eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['publi
 testnet_type: prater
 eth2_network_name: prater
 eth1_network: goerli
-
-# enter bootnodes here if needed
-#bootnode_enrs:
-
-##############################################
-# metric information
-##############################################
-# enter pushgateway config if needed
-pushgateway_ip: ip-here
-push_metrics_enabled: true
 
 ##############################################
 # ports to configure
@@ -73,7 +61,7 @@ local_validator_host_archive: "{{inventory_dir}}/../selected_validator_keys/host
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/eth1"
+eth1_node_dir: "{{home_dir}}/geth"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -81,17 +69,25 @@ testnet_dir: "{{home_dir}}/custom_config_data"
 # common log config
 ##############################################
 common_log_options:
+  mode: non-blocking
+  max-buffer-size: 4m
+  loki-retries: 3
+  loki-url: "http://localhost:3500/loki/api/v1/push"
+common_log_driver: loki
+
+json_log_options:
   max-file: "10"
   max-size: 30m
   mode: non-blocking
   max-buffer-size: 4m
-common_log_driver: json-file
+json_log_driver: json-file
+
 beacon_log_level: info
+
 
 ##############################################
 # container names
 ##############################################
-eth1_container_name: eth1_geth
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
@@ -114,7 +110,6 @@ prometheus_data_dir: "{{home_dir}}/prometheus_data"
 prometheus_config_dir: "{{home_dir}}/prometheus_config"
 prometheus_file_sd_dir: "{{prometheus_config_dir}}/file_sd"
 local_prometheus_conf_dir: "{{inventory_dir}}/../prometheus_conf"
-local_prometheus_conf_archive: "{{inventory_dir}}/../prometheus_conf.tar.gz"
 prometheus_volumes:
   - "{{prometheus_data_dir}}:/prometheus"
   - "{{prometheus_config_dir}}:/etc/prometheus"
@@ -131,7 +126,6 @@ thanos_kernel_memory: 5500M
 thanos_conf_dir: "{{home_dir}}/thanos_conf"
 thanos_data_dir: "{{home_dir}}/thanos_data"
 local_thanos_conf_dir: "{{inventory_dir}}/../thanos_conf"
-local_thanos_conf_archive: "{{inventory_dir}}/../thanos_conf.tar.gz"
 thanos_volumes:
   - "{{thanos_conf_dir}}:/etc/thanos"
   - "{{thanos_data_dir}}:/data"
@@ -223,7 +217,6 @@ promtail_container_name: promtail
 promtail_user_id: "1000:1000"
 promtail_config_dir: "{{ home_dir }}/promtail_conf"
 local_promtail_conf_dir: "{{inventory_dir}}/../promtail_conf"
-local_promtail_conf_archive: "{{inventory_dir}}/../promtail_conf.tar.gz"
 promtail_start_args: >
   -config.file=/mnt/config/config.yml
 promtail_volumes:
@@ -241,7 +234,6 @@ loki_container_name: loki
 loki_user_id: "1000:1000"
 loki_config_dir: "{{ home_dir }}/loki_conf"
 local_loki_conf_dir: "{{inventory_dir}}/../loki_conf"
-local_loki_conf_archive: "{{inventory_dir}}/../loki_conf.tar.gz"
 loki_start_args: >
   -config.file=/mnt/config/config.yml
 loki_volumes:

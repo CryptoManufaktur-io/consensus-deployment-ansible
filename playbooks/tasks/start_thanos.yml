@@ -1,7 +1,6 @@
 - name: Start thanos
-  hosts: "global_federation"
-  gather_facts: true
-  serial: 20
+  hosts: "globalfederation"
+  gather_facts: false
   tasks:
     - name: Creates thanos data dir
       file:
@@ -13,21 +12,10 @@
         path: "{{thanos_conf_dir}}"
         state: directory
 
-    - name: Archive local_thanos_conf_dir dir to prepare for upload
-      archive:
-        path: "{{local_thanos_conf_dir}}/*"
-        dest: "{{local_thanos_conf_archive}}"
-      delegate_to: localhost
-
-    - name: Upload thanos conf to remote
-      unarchive:
-        src: "{{ local_thanos_conf_archive }}"
+    - name: Copy thanos conf to remote
+      copy:
+        src: "{{ local_thanos_conf_dir }}/"
         dest: "{{ thanos_conf_dir }}"
-
-    - name: Remove {{local_thanos_conf_archive}} archive after upload
-      file:
-        path: "{{ local_thanos_conf_archive }}"
-        state: absent
         
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ thanos_data_dir }}" && chown -R "{{ ansible_user }}" "{{ thanos_conf_dir }}"
@@ -46,6 +34,8 @@
         ports:
           - "19001:9001"
         restart_policy: unless-stopped
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
         network_mode: thanos
         entrypoint: "sh"
         command: "-c 'mkdir -p /data/thanos && minio server /data --console-address :9001'"
@@ -127,7 +117,6 @@
         image: "{{ thanos_image_name }}"
         pull: true
         ports:
-        ports:
           - "10903:10903"
           - "10904:10902"
         restart_policy: unless-stopped
@@ -166,7 +155,7 @@
         env: "{{ thanos_env | default({}) }}"
         user: "{{ thanos_user_id }}"
 
-    - name: Register metrics to prometheus
+    - name: Register thanos metrics to prometheus
       copy:
         dest: "{{ prometheus_file_sd_dir }}/thanos.yml"
         content: |

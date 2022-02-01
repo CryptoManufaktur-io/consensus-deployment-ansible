@@ -1,7 +1,6 @@
 - name: Start grafana
   hosts: "{{ variable_host }}"
-  gather_facts: true
-  serial: 20
+  gather_facts: false
   tasks:
     - name: Creates grafana dir
       file:
@@ -23,6 +22,7 @@
       file:
         path: "{{ local_grafana_data_archive }}"
         state: absent
+      delegate_to: localhost
 
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ grafana_dir }}"
@@ -39,8 +39,8 @@
         kernel_memory: "{{grafana_kernel_memory}}"
         network_mode: host
         restart: "{{ grafana_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
+        log_options: "{{ json_log_options }}"
+        log_driver: "{{ json_log_driver }}"
         volumes: "{{grafana_volumes}}"
         memory: "{{grafana_memory}}"
         memory_swap: "{{grafana_memory}}"
@@ -48,7 +48,7 @@
         env: "{{ grafana_env | default({}) }}"
         user: "{{ grafana_user_id }}"
 
-    - name: Register metrics to prometheus
+    - name: Register grafana metrics to prometheus
       copy:
         dest: "{{ prometheus_file_sd_dir }}/grafana.yml"
         content: |

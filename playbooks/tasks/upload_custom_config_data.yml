@@ -18,3 +18,4 @@
     file:
       path: "{{ local_custom_config_data_host_archive }}"
       state: absent
+    delegate_to: localhost

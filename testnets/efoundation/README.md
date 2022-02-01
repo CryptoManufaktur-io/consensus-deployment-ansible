@@ -33,6 +33,7 @@ This directory contains the configs required to run an efoundation testnet.
 
 `3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
 
+Tail docker loki plugin logs `sudo journalctl -f -u docker.service | grep loki`
 ## Usage
 
 - Replace the `testnets/efoundation/inventory/inventory.ini`

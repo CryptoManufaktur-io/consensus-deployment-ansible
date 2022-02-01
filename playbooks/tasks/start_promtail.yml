@@ -1,52 +1,40 @@
 - name: Start promtail
   hosts: "{{ variable_host }}"
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Creates promtail config dir
       file:
         path: "{{ promtail_config_dir }}"
         state: directory
 
-    - name: Archive local_promtail_conf_dir dir to prepare for upload
-      archive:
-        path: "{{local_promtail_conf_dir}}/*"
-        dest: "{{local_promtail_conf_archive}}"
-      delegate_to: localhost
-
-    - name: Upload promtail conf to remote
-      unarchive:
-        src: "{{ local_promtail_conf_archive }}"
+    - name: Copy promtail conf to remote
+      copy:
+        src: "{{ local_promtail_conf_dir }}/"
         dest: "{{ promtail_config_dir }}"
 
-    - name: Replace variable in conf file
+    - name: Replace promtail_loki_url variable in conf file
       replace:
         path: "{{ promtail_config_dir }}/config.yml"
-        regexp: '##loki_url##'
-        replace: '{{loki_url}}'
+        regexp: '##promtail_loki_url##'
+        replace: '{{promtail_loki_url}}'
 
     - name: Replace variable in conf file
       replace:
         path: "{{ promtail_config_dir }}/config.yml"
-        regexp: '##inventory_hostname##'
-        replace: '{{inventory_hostname}}'
+        regexp: "##inventory_hostname##"
+        replace: "{{ inventory_hostname }}"
 
-    - name: Enable receiver when set to receive
+    - name: Enable receiver get docker logs
       blockinfile:
         path: "{{ promtail_config_dir }}/config.yml"
         block: |
-          - job_name: {{ inventory_hostname | replace('-', '_') }}_push
+          - job_name: {{ inventory_hostname }}_push
             loki_push_api:
               server:
                 http_listen_port: 3500
                 grpc_listen_port: 3600
               labels:
-                pushserver: {{ inventory_hostname | replace('-', '_') }}_push
-      when: push_receiver | default('false') == 'true'
-
-    - name: Remove {{local_promtail_conf_archive}} archive after upload
-      file:
-        path: "{{ local_promtail_conf_archive }}"
-        state: absent
+                pushserver: {{ inventory_hostname }}_push
 
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
@@ -63,8 +51,8 @@
         kernel_memory: "{{promtail_kernel_memory}}"
         network_mode: host
         restart: "{{ promtail_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
+        log_options: "{{ json_log_options }}"
+        log_driver: "{{ json_log_driver }}"
         volumes: "{{promtail_volumes}}"
         memory: "{{promtail_memory}}"
         memory_swap: "{{promtail_memory}}"
@@ -72,7 +60,7 @@
         env: "{{ promtail_env | default({}) }}"
         user: "{{ promtail_user_id }}"
 
-    - name: Register metrics to prometheus
+    - name: Register promtail metrics to prometheus
       copy:
         dest: "{{ prometheus_file_sd_dir }}/promtail.yml"
         content: |

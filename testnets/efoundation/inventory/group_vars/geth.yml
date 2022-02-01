@@ -2,6 +2,7 @@
 # image name and image location
 ##############################################
 eth1_image_name: ethereum/client-go:stable
+eth1_container_name: eth1_geth
 
 ##############################################
 # volume mappings on remote host

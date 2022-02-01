@@ -42,4 +42,4 @@
 - import_playbook: tasks/start_promtail.yml
   vars:
     variable_host: "beacon, validator"
-    loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"
+    promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"

@@ -2,49 +2,48 @@
 # setups up the machine with docker, updates apt cache
 - import_playbook: tasks/setup_machine.yml
   vars:
-    variable_host: "dc_local, global_federation"
+    variable_host: "dclocal, globalfederation"
 
 # install node_exporter
 - import_playbook: tasks/deploy_node_exporter.yml
   vars:
-    variable_host: "dc_local, global_federation"
+    variable_host: "dclocal, globalfederation"
 
 # Start prometheus dc local
 - import_playbook: tasks/start_prometheus.yml
   vars:
-    variable_host: "dc_local"
+    variable_host: "dclocal"
     enable_remote_receiver: "true"
     # write to thanos global receive
     remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:10903/api/v1/receive"
 
-# Start prometheus global_federation
+# Start prometheus globalfederation
 - import_playbook: tasks/start_prometheus.yml
   vars:
-    variable_host: "global_federation"
+    variable_host: "globalfederation"
     enable_remote_receiver: "true"
 
 # Start grafana
 - import_playbook: tasks/start_grafana.yml
   vars:
-    variable_host: "global_federation"
+    variable_host: "globalfederation"
 
 # register thanos
 - import_playbook: tasks/start_thanos.yml
 
-# Start promtail
+# Start promtail dc local
 - import_playbook: tasks/start_promtail.yml
   vars:
-    variable_host: "dc_local"
-    push_receiver: "true"
-    loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push"
+    variable_host: "dclocal"
+    promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push"
 
-# Start promtail
+# Start promtail global logging
 - import_playbook: tasks/start_promtail.yml
   vars:
-    variable_host: "global_federation"
-    loki_url: "http://localhost:3100/loki/api/v1/push"
+    variable_host: "globalfederation"
+    promtail_loki_url: "http://localhost:3100/loki/api/v1/push"
 
-# Start loki
+# Start loki global
 - import_playbook: tasks/start_loki.yml
   vars:
-    variable_host: "global_federation"
+    variable_host: "globalfederation"
