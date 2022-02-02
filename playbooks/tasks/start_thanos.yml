@@ -25,24 +25,6 @@
       docker_network:
         name: thanos
 
-    - name: Start minio s3 test container
-      docker_container:
-        name: "minio"
-        state: started
-        image: "minio/minio:latest"
-        pull: true
-        ports:
-          - "19001:9001"
-        restart_policy: unless-stopped
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        network_mode: thanos
-        entrypoint: "sh"
-        command: "-c 'mkdir -p /data/thanos && minio server /data --console-address :9001'"
-        env:
-          MINIO_ROOT_USER: EXAMPLEKEY
-          MINIO_ROOT_PASSWORD: EXAMPLESECRET
-
     - name: Start thanos store container 10907
       docker_container:
         name: "{{ thanos_store_container_name }}"

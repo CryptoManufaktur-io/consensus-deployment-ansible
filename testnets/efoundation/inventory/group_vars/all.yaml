@@ -233,6 +233,6 @@ loki_start_args: >
   -config.file=/mnt/config/config.yml
 loki_volumes:
   - "{{loki_config_dir}}:/mnt/config"
-  - "{{loki_data_dir}}:/tmp"
+  - "{{loki_data_dir}}:/loki"
 loki_memory: 5000M
 loki_kernel_memory: 5500M
