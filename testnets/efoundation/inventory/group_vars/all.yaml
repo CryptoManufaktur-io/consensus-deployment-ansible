@@ -193,11 +193,19 @@ grafana_container_name: grafana
 grafana_image_name: grafana/grafana-enterprise:8.2.1
 grafana_user_id: "1000:1000"
 grafana_start_args: ""
-local_grafana_data_dir: "{{inventory_dir}}/../grafana_data"
-local_grafana_data_archive: "{{inventory_dir}}/../grafana_data.tar.gz"
-grafana_dir: "{{home_dir}}/grafana_data"
+local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
+local_grafana_conf_archive: "{{inventory_dir}}/../grafana_conf.tar.gz"
+grafana_data_dir: "{{home_dir}}/grafana_data"
+grafana_conf_dir: "{{home_dir}}/grafana_conf"
 grafana_volumes:
-  - "{{grafana_dir}}:/var/lib/grafana"
+  - "{{grafana_data_dir}}:/var/lib/grafana"
+  - "{{grafana_conf_dir}}:/etc/grafana/provisioning/"
+grafana_env: >
+  {
+    "GF_SECURITY_ADMIN_USER" : "admin",
+    "GF_SECURITY_ADMIN_PASSWORD" : "foobar",
+    "GF_USERS_ALLOW_SIGN_UP" : "false"
+  }
 grafana_memory: 5000M
 grafana_kernel_memory: 5500M
 
@@ -216,6 +224,7 @@ promtail_volumes:
   - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
   - "{{promtail_config_dir}}:/mnt/config"
   - "/etc/machine-id:/etc/machine-id:ro"
+  - /var/log:/var/log:ro
 promtail_memory: 5000M
 promtail_kernel_memory: 5500M
 

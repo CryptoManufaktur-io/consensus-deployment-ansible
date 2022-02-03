@@ -23,11 +23,6 @@
     variable_host: "globalfederation"
     enable_remote_receiver: "true"
 
-# Start grafana.
-- import_playbook: tasks/start_grafana.yml
-  vars:
-    variable_host: "globalfederation"
-
 # register thanos
 - import_playbook: tasks/start_thanos.yml
 
@@ -46,5 +41,10 @@
 
 # Start loki global
 - import_playbook: tasks/start_loki.yml
+  vars:
+    variable_host: "globalfederation"
+
+# Start grafana.
+- import_playbook: tasks/start_grafana.yml
   vars:
     variable_host: "globalfederation"

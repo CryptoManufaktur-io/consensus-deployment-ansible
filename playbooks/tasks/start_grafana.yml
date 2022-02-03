@@ -2,30 +2,35 @@
   hosts: "{{ variable_host }}"
   gather_facts: false
   tasks:
-    - name: Creates grafana dir
+    - name: Creates grafana data dir
       file:
-        path: "{{grafana_dir}}"
+        path: "{{grafana_data_dir}}"
         state: directory
 
-    - name: Archive local_grafana_data_dir dir to prepare for upload
+    - name: Creates grafana conf dir
+      file:
+        path: "{{grafana_conf_dir}}"
+        state: directory
+
+    - name: Archive local_grafana_conf_dir dir to prepare for upload
       archive:
-        path: "{{local_grafana_data_dir}}/*"
-        dest: "{{local_grafana_data_archive}}"
+        path: "{{local_grafana_conf_dir}}/*"
+        dest: "{{local_grafana_conf_archive}}"
       delegate_to: localhost
 
-    - name: Upload grafana data to remote
+    - name: Upload grafana conf to remote
       unarchive:
-        src: "{{ local_grafana_data_archive }}"
-        dest: "{{ grafana_dir }}"
+        src: "{{ local_grafana_conf_archive }}"
+        dest: "{{ grafana_conf_dir }}"
 
-    - name: Remove {{local_grafana_data_archive}} archive after upload
+    - name: Remove {{local_grafana_conf_archive}} archive after upload
       file:
-        path: "{{ local_grafana_data_archive }}"
+        path: "{{ local_grafana_conf_archive }}"
         state: absent
       delegate_to: localhost
 
     - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ grafana_dir }}"
+      shell: chown -R "{{ ansible_user }}" "{{ grafana_data_dir }}" && chown -R "{{ ansible_user }}" "{{ grafana_conf_dir }}"
       become: true
 
     - name: Start grafana container
