@@ -1,64 +1,39 @@
 - name: Start prometheus
   hosts: "{{ variable_host }}"
-  gather_facts: true
-  serial: 20
+  gather_facts: false
   tasks:
     - name: Creates prometheus data dir
       file:
         path: "{{ prometheus_data_dir }}"
         state: directory
 
-    - name: Creates prometheus targets dir
+    - name: Creates prometheus conf dir
       file:
         path: "{{ prometheus_config_dir }}"
         state: directory
 
-    - name: Creates prometheus file_sd dir
-      file:
-        path: "{{ prometheus_file_sd_dir }}"
-        state: directory
+    - name: Copy prometheus conf to remote
+      copy:
+        src: "{{ local_prometheus_conf_dir }}/"
+        dest: "{{ prometheus_config_dir }}"
 
     - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ prometheus_data_dir }}"
-      shell: chown -R "{{ ansible_user }}" "{{ prometheus_config_dir }}"
+      shell: chown -R "{{ ansible_user }}" "{{ prometheus_data_dir }}" && chown -R "{{ ansible_user }}" "{{ prometheus_config_dir }}"
       become: true
 
-    - name: Create prometheus configuration file with remote write
-      copy:
-        dest: "{{ prometheus_config_dir }}/prometheus.yml"
-        content: |
-          global:
-            scrape_interval: {{ prometheus_scrape_intervals }}
+    - name: Replace variable in conf file
+      replace:
+        path: "{{ prometheus_config_dir }}/config.yml"
+        regexp: '##inventory_hostname##'
+        replace: '{{ inventory_hostname }}'
 
-          scrape_configs:
-            - job_name: "{{ inventory_hostname }}"
-              scrape_interval: {{ prometheus_scrape_intervals }}
-              static_configs:
-                - targets: ['localhost:9090']
-              file_sd_configs:
-              - files:
-                - "/etc/prometheus/file_sd/*.yml"
-
+    - name: Add remote write if remote_write_url is present
+      blockinfile:
+        path: "{{ prometheus_config_dir }}/config.yml"
+        block: |
           remote_write:
-            - url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write"
-      when: enable_remote_write | default('false') == 'true'
-
-    - name: Create prometheus configuration file without remote write
-      copy:
-        dest: "{{ prometheus_config_dir }}/prometheus.yml"
-        content: |
-          global:
-            scrape_interval: {{ prometheus_scrape_intervals }}
-
-          scrape_configs:
-            - job_name: "{{ inventory_hostname }}"
-              scrape_interval: {{ prometheus_scrape_intervals }}
-              static_configs:
-                - targets: ['localhost:9090']
-              file_sd_configs:
-              - files:
-                - "/etc/prometheus/file_sd/*.yml"
-      when: enable_remote_write | default('false') == 'false'
+            - url: "{{ remote_write_url }}"
+      when: remote_write_url | default('') != ''
 
     - name: Start prometheus container
       docker_container:
@@ -76,6 +51,6 @@
         volumes: "{{prometheus_volumes}}"
         memory: "{{prometheus_memory}}"
         memory_swap: "{{prometheus_memory}}"
-        command: "{{ prometheus_rreceiver_start_args if (enable_remote_receiver | default('false')) == 'true' else prometheus_start_args }}"
+        command: "{{ prometheus_rw_start_args if (enable_remote_receiver | default('false')) == 'true' else prometheus_start_args }}"
         env: "{{ prometheus_env | default({}) }}"
         user: "{{ prometheus_user_id }}"

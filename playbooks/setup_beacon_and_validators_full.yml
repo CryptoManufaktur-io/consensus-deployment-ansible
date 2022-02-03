@@ -32,12 +32,14 @@
 - import_playbook: tasks/start_prometheus.yml
   vars:
     variable_host: "beacon, validator"
-    enable_remote_write: "true"
-
-# register node for metrics
-- import_playbook: tasks/start_registermetrics_node.yml
-  vars:
-    variable_host: "beacon, validator"
+    # write to prometheus dc local
+    remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write"
 
 # register beacon and validator for metrics
 - import_playbook: tasks/start_registermetrics_beacon_validator.yml
+
+# Start promtail
+- import_playbook: tasks/start_promtail.yml
+  vars:
+    variable_host: "beacon, validator"
+    promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"

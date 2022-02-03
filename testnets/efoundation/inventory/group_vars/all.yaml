@@ -3,8 +3,10 @@
 ##############################################
 ansible_user: "ubuntu"
 public_ip_address: "{{ansible_host}}"
-github_user_pubkeys:
-  - example
+docker_etc_hosts: >
+  { 
+    "dockerhost" : "{{ ansible_host_private }}" 
+  }
 
 ##############################################
 # eth1 endpoints
@@ -20,16 +22,6 @@ eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['publi
 testnet_type: prater
 eth2_network_name: prater
 eth1_network: goerli
-
-# enter bootnodes here if needed
-#bootnode_enrs:
-
-##############################################
-# metric information
-##############################################
-# enter pushgateway config if needed
-pushgateway_ip: ip-here
-push_metrics_enabled: true
 
 ##############################################
 # ports to configure
@@ -69,7 +61,7 @@ local_validator_host_archive: "{{inventory_dir}}/../selected_validator_keys/host
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/eth1"
+eth1_node_dir: "{{home_dir}}/geth"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -77,17 +69,18 @@ testnet_dir: "{{home_dir}}/custom_config_data"
 # common log config
 ##############################################
 common_log_options:
-  max-file: "10"
+  max-file: 3
   max-size: 30m
   mode: non-blocking
   max-buffer-size: 4m
+  tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}"
 common_log_driver: json-file
 beacon_log_level: info
+
 
 ##############################################
 # container names
 ##############################################
-eth1_container_name: eth1_geth
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
@@ -97,21 +90,101 @@ separate_validator_process_enabled: false
 # prometheus settings
 ##############################################
 prometheus_container_name: prometheus
-prometheus_image_name: prom/prometheus
+prometheus_image_name: prom/prometheus:v2.32.1
 prometheus_user_id: "1000:1000"
-prometheus_rreceiver_start_args: "--enable-feature=remote-write-receiver --config.file=/etc/prometheus/prometheus.yml"
-prometheus_start_args: "--config.file=/etc/prometheus/prometheus.yml"
+prometheus_start_args: >
+  --config.file=/etc/prometheus/config.yml 
+  --log.level=warn 
+  --storage.tsdb.path=/prometheus 
+  --storage.tsdb.max-block-duration=2h 
+  --storage.tsdb.min-block-duration=2h
+prometheus_rw_start_args: "{{ prometheus_start_args }} --enable-feature=remote-write-receiver"
 prometheus_data_dir: "{{home_dir}}/prometheus_data"
 prometheus_config_dir: "{{home_dir}}/prometheus_config"
 prometheus_file_sd_dir: "{{prometheus_config_dir}}/file_sd"
-prometheus_scrape_intervals: "10s"
-
+local_prometheus_conf_dir: "{{inventory_dir}}/../prometheus_conf"
 prometheus_volumes:
   - "{{prometheus_data_dir}}:/prometheus"
   - "{{prometheus_config_dir}}:/etc/prometheus"
-
 prometheus_memory: 5000M
 prometheus_kernel_memory: 5500M
+
+##############################################
+# thanos settings
+##############################################
+thanos_image_name: thanosio/thanos:v0.24.0
+thanos_user_id: "1000:1000"
+thanos_memory: 5000M
+thanos_kernel_memory: 5500M
+thanos_conf_dir: "{{home_dir}}/thanos_conf"
+thanos_data_dir: "{{home_dir}}/thanos_data"
+local_thanos_conf_dir: "{{inventory_dir}}/../thanos_conf"
+thanos_volumes:
+  - "{{thanos_conf_dir}}:/etc/thanos"
+  - "{{thanos_data_dir}}:/data"
+
+thanos_store_container_name: thanos-store
+thanos_store_start_args: >
+  store
+  --debug.name=thanos-store
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --data-dir=/data/store
+  --objstore.config-file=/etc/thanos/bucket.yml
+
+thanos_receive_container_name: thanos-receive
+thanos_receive_start_args: >
+  receive
+  --debug.name=thanos-receive
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --objstore.config-file=/etc/thanos/bucket.yml
+  --tsdb.path=/data/receive
+  --label='receive="true"'
+  --remote-write.address=0.0.0.0:10903
+
+thanos_sidecar_container_name: thanos-sidecar
+thanos_sidecar_start_args: >
+  sidecar
+  --debug.name=thanos-sidecar
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --objstore.config-file=/etc/thanos/bucket.yml
+  --tsdb.path=/data/sidecar
+  --prometheus.url=http://dockerhost:9090
+
+thanos_query_container_name: thanos-query
+thanos_query_start_args: >
+  query
+  --debug.name=thanos-query
+  --log.level=debug
+  --grpc-address=0.0.0.0:10091
+  --grpc-grace-period=1s
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --store=thanos-store:10091
+  --store=thanos-receive:10091
+  --store=thanos-sidecar:10091
+
+thanos_compact_container_name: thanos-compact
+thanos_compact_start_args: >
+  compact
+  --debug.name=thanos-compact
+  --log.level=debug
+  --http-address=0.0.0.0:10902
+  --http-grace-period=1s
+  --data-dir=/data/compactor
+  --objstore.config-file=/etc/thanos/bucket.yml
+  --wait
 
 ##############################################
 # grafana settings
@@ -120,12 +193,55 @@ grafana_container_name: grafana
 grafana_image_name: grafana/grafana-enterprise:8.2.1
 grafana_user_id: "1000:1000"
 grafana_start_args: ""
-local_grafana_data_dir: "{{inventory_dir}}/../grafana_data"
-local_grafana_data_archive: "{{inventory_dir}}/../grafana_data.tar.gz"
-grafana_dir: "{{home_dir}}/grafana_data"
-
+local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
+local_grafana_conf_archive: "{{inventory_dir}}/../grafana_conf.tar.gz"
+grafana_data_dir: "{{home_dir}}/grafana_data"
+grafana_conf_dir: "{{home_dir}}/grafana_conf"
 grafana_volumes:
-  - "{{grafana_dir}}:/var/lib/grafana"
-
+  - "{{grafana_data_dir}}:/var/lib/grafana"
+  - "{{grafana_conf_dir}}:/etc/grafana/provisioning/"
+grafana_env: >
+  {
+    "GF_SECURITY_ADMIN_USER" : "admin",
+    "GF_SECURITY_ADMIN_PASSWORD" : "foobar",
+    "GF_USERS_ALLOW_SIGN_UP" : "false"
+  }
 grafana_memory: 5000M
 grafana_kernel_memory: 5500M
+
+
+##############################################
+# promtail settings
+##############################################
+promtail_image_name: grafana/promtail:latest
+promtail_container_name: promtail
+promtail_user_id: "0:0"
+promtail_config_dir: "{{ home_dir }}/promtail_conf"
+local_promtail_conf_dir: "{{inventory_dir}}/../promtail_conf"
+promtail_start_args: >
+  -config.file=/mnt/config/config.yml
+promtail_volumes:
+  - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+  - "{{promtail_config_dir}}:/mnt/config"
+  - "/etc/machine-id:/etc/machine-id:ro"
+  - /var/log:/var/log:ro
+promtail_memory: 5000M
+promtail_kernel_memory: 5500M
+
+
+##############################################
+# loki settings
+##############################################
+loki_image_name: grafana/loki:latest
+loki_container_name: loki
+loki_user_id: "1000:1000"
+loki_config_dir: "{{ home_dir }}/loki_conf"
+loki_data_dir: "{{ home_dir }}/loki_data"
+local_loki_conf_dir: "{{inventory_dir}}/../loki_conf"
+loki_start_args: >
+  -config.file=/mnt/config/config.yml
+loki_volumes:
+  - "{{loki_config_dir}}:/mnt/config"
+  - "{{loki_data_dir}}:/loki"
+loki_memory: 5000M
+loki_kernel_memory: 5500M

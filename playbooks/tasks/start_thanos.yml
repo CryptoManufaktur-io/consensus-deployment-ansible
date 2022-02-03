@@ -1,0 +1,168 @@
+- name: Start thanos
+  hosts: "globalfederation"
+  gather_facts: false
+  tasks:
+    - name: Creates thanos data dir
+      file:
+        path: "{{thanos_data_dir}}"
+        state: directory
+
+    - name: Creates thanos conf dir
+      file:
+        path: "{{thanos_conf_dir}}"
+        state: directory
+
+    - name: Copy thanos conf to remote
+      copy:
+        src: "{{ local_thanos_conf_dir }}/"
+        dest: "{{ thanos_conf_dir }}"
+        
+    - name: Modify permissions to match user-group inside docker image
+      shell: chown -R "{{ ansible_user }}" "{{ thanos_data_dir }}" && chown -R "{{ ansible_user }}" "{{ thanos_conf_dir }}"
+      become: true
+
+    - name: Create thanos docker network
+      docker_network:
+        name: thanos
+
+    - name: Start thanos store container 10907
+      docker_container:
+        name: "{{ thanos_store_container_name }}"
+        state: started
+        image: "{{ thanos_image_name }}"
+        pull: true
+        ports:
+          - "10907:10902"
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{thanos_kernel_memory}}"
+        network_mode: thanos
+        restart: "{{ thanos_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{thanos_volumes}}"
+        memory: "{{thanos_memory}}"
+        memory_swap: "{{thanos_memory}}"
+        command: "{{ thanos_store_start_args }}"
+        env: "{{ thanos_env | default({}) }}"
+        user: "{{ thanos_user_id }}"
+
+    - name: Start thanos sidecar container 10906
+      docker_container:
+        name: "{{ thanos_sidecar_container_name }}"
+        state: started
+        image: "{{ thanos_image_name }}"
+        pull: true
+        ports:
+          - "10906:10902"
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{thanos_kernel_memory}}"
+        etc_hosts: "{{ docker_etc_hosts }}"
+        network_mode: thanos
+        restart: "{{ thanos_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{thanos_volumes}}"
+        memory: "{{thanos_memory}}"
+        memory_swap: "{{thanos_memory}}"
+        command: "{{ thanos_sidecar_start_args }}"
+        env: "{{ thanos_env | default({}) }}"
+        user: "{{ thanos_user_id }}"
+
+    - name: Start thanos compact container 10905
+      docker_container:
+        name: "{{ thanos_compact_container_name }}"
+        state: started
+        image: "{{ thanos_image_name }}"
+        pull: true
+        ports:
+          - "10905:10902"
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{thanos_kernel_memory}}"
+        network_mode: thanos
+        restart: "{{ thanos_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{thanos_volumes}}"
+        memory: "{{thanos_memory}}"
+        memory_swap: "{{thanos_memory}}"
+        command: "{{ thanos_compact_start_args }}"
+        env: "{{ thanos_env | default({}) }}"
+        user: "{{ thanos_user_id }}"
+
+    - name: Start thanos receive container 10904
+      docker_container:
+        name: "{{ thanos_receive_container_name }}"
+        state: started
+        image: "{{ thanos_image_name }}"
+        pull: true
+        ports:
+          - "10903:10903"
+          - "10904:10902"
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{thanos_kernel_memory}}"
+        network_mode: thanos
+        restart: "{{ thanos_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{thanos_volumes}}"
+        memory: "{{thanos_memory}}"
+        memory_swap: "{{thanos_memory}}"
+        command: "{{ thanos_receive_start_args }}"
+        env: "{{ thanos_env | default({}) }}"
+        user: "{{ thanos_user_id }}"
+
+    - name: Start thanos query container 10902
+      docker_container:
+        name: "{{ thanos_query_container_name }}"
+        state: started
+        image: "{{ thanos_image_name }}"
+        pull: true
+        ports:
+          - "10902:10902"
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{thanos_kernel_memory}}"
+        network_mode: thanos
+        restart: "{{ thanos_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{thanos_volumes}}"
+        memory: "{{thanos_memory}}"
+        memory_swap: "{{thanos_memory}}"
+        command: "{{ thanos_query_start_args }}"
+        env: "{{ thanos_env | default({}) }}"
+        user: "{{ thanos_user_id }}"
+
+    - name: Register thanos metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/thanos.yml"
+        content: |
+          - labels:
+              instance: thanos-query
+            targets:
+            - localhost:10902
+
+          - labels:
+              instance: thanos-receive
+            targets:
+            - localhost:10904
+
+          - labels:
+              instance: thanos-compact
+            targets:
+            - localhost:10905
+
+          - labels:
+              instance: thanos-sidecar
+            targets:
+            - localhost:10906
+
+          - labels:
+              instance: thanos-store
+            targets:
+            - localhost:10907
+

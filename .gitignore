@@ -3,7 +3,9 @@ validator_prep
 *.tar.gz
 selected_validator_keys
 .idea
-custom_config.data.tar.gz
+**.tar.gz
 #external_roles
 **/inventory.ini
-**/grafana_data**
+**/grafana_data/**
+**/thanos_conf/bucket.yml
+**/loki_conf/config.yml

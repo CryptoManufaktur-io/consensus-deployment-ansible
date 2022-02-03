@@ -4,7 +4,7 @@
   tasks:
     - name: Set hostname
       hostname:
-        name: "{{ inventory_hostname | replace('_', '') }}"
+        name: "{{ inventory_hostname }}"
 
     - name: add myself to /etc/hosts
       lineinfile:
@@ -40,22 +40,22 @@
       
     - name: Check reboot required if docker not installed
       stat: path=/usr/bin/docker
-      register: reboot
+      register: dockerexist
 
     - name: Add an apt signing key for Docker
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
     - name: Add apt repository for stable version
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
         state: present
 
     - name: Install Docker
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       apt:
         name: "{{ packages }}"
         state: present
@@ -68,7 +68,7 @@
         - python3-docker
 
     - name: Add user to docker group
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       user:
         name: "{{ansible_user}}"
         group: docker
@@ -93,5 +93,5 @@
       when: docker_compose.stat.exists
 
     - name: Unconditionally reboot the machine with all defaults when docker is installed
-      when: reboot.stat.exists == False
+      when: dockerexist.stat.exists == False
       reboot:

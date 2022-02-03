@@ -1,6 +1,6 @@
 - name: Start geth/eth1 node
-  hosts: eth1
-  gather_facts: true
+  hosts: geth
+  gather_facts: false
   tasks:
     - name: Get info on container if running
       docker_container_info:
@@ -25,11 +25,6 @@
         state: started
         image: "{{ eth1_image_name }}"
         pull: true
-        ports:
-          - "{{ eth1_rpc_port }}:{{ eth1_rpc_port }}"
-          - "{{ eth1_ws_rpc_port }}:{{ eth1_ws_rpc_port }}"
-          - "30303:30303"
-          - "30304:30304"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{eth1_kernel_memory}}"
