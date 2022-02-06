@@ -12,16 +12,19 @@ docker_etc_hosts: >
 # eth1 endpoints
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
-eth1endpoint_nimbus: wss://url
+eth1endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_ws_rpc_port }}"
+consensus_endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_ws_rpc_port }}"
 eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+execution_engine_endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
 #eth1endpoint: "https://goerli.infura.io/v3/e476a2f7eeec4c249b6aa4577e51d8cb"
 
 ##############################################
 # testnet specific information
 ##############################################
-testnet_type: prater
-eth2_network_name: prater
+testnet_type: custom
+eth2_network_name: pintos
 eth1_network: goerli
+terminal_total_difficulty: "60000000"
 
 ##############################################
 # ports to configure
@@ -84,7 +87,16 @@ beacon_log_level: info
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
-separate_validator_process_enabled: false
+
+
+##############################################
+# Keys generation
+##############################################
+separate_validator_process_enabled: true
+mnemonic: "motion frown brave tennis glimpse snake outside ticket anger what uniform favorite company decorate divert click once length sustain genuine arctic wealth urge despair"
+prysm_password: "prysm"
+number_validators: 2
+
 
 ##############################################
 # prometheus settings
