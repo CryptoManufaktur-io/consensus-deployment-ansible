@@ -2,13 +2,9 @@
 # image name and image location
 ##############################################
 eth2_client_name: teku
-beacon_image_name: parithoshj/teku:merge-30e5d16
-validator_image_name: parithoshj/teku:merge-30e5d16
+beacon_image_name: consensys/teku:develop
+validator_image_name: consensys/teku:develop
 beacon_endpoint: "http://127.0.0.1:{{beacon_api_port}}"
-
-eth2_github_external_user_pubkeys:
-  - tbenr
-  - ajsutton
 
 ##############################################
 # volume mappings on remote host
@@ -26,8 +22,7 @@ beacon_volumes:
 # arguments to run the containers with
 ##############################################
 beacon_start_args: >
-  --network "/custom_config_data/config.yaml"
-  --initial-state "/custom_config_data/genesis.ssz"
+  --network kintsugi
   --data-path "/beacondata"
   --data-storage-mode=PRUNE
   --p2p-enabled=true
@@ -35,10 +30,9 @@ beacon_start_args: >
   --p2p-port="{{beacon_p2p_port}}"
   --p2p-advertised-port={{beacon_p2p_port}}
   --logging={{beacon_log_level}}
-  --log-destination=CONSOLE
-  --log-file="/beacondata/log_outputs"
   --p2p-peer-upper-bound={{hi_peer_count}}
-  --eth1-endpoint="{{eth1endpoint}}"
+  --eth1-endpoints="{{eth1endpoint}}"
+  --Xee-endpoint="{{eth1endpoint}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --p2p-discovery-bootnodes="{{ bootnode_enrs | join(',') }}"
   {% endif %}
@@ -49,8 +43,8 @@ beacon_start_args: >
   --rest-api-port="{{beacon_api_port}}"
   --metrics-host-allowlist="*"
   --rest-api-host-allowlist="*"
-  --Xdata-storage-non-canonical-blocks-enabled=true
-  --Xnetwork-merge-total-terminal-difficulty={{terminal_total_difficulty}}
+  --data-storage-non-canonical-blocks-enabled=true
+  --Xvalidators-proposer-default-fee-recipient="0xA18Fd83a55A9BEdB96d66C24b768259eED183be3"
   --validators-graffiti="{{graffiti}}"
   --validator-keys="/validatordata/keys:/validatordata/secrets"
   --validators-keystore-locking-enabled=false

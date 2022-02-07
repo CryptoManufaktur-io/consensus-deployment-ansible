@@ -7,9 +7,15 @@
         paths: "{{ validator_node_dir }}"
       register: filesFound
 
+    - name: Remove temp_data if exists
+      when: filesFound.examined == 0
+      become: true
+      shell: |
+        rm -rf {{home_dir}}/temp_data
+
     - name: Generate keys
       when: filesFound.examined == 0
-      shell: "docker run --rm -v {{home_dir}}/temp_data:/data ethstaker/eth-val-tools keystores --prysm-pass='{{prysm_password}}' --source-min=1 --source-max={{number_validators + 1}} --source-mnemonic='{{mnemonic}}' --out-loc='/data/generated'"
+      shell: "docker run --rm -v {{home_dir}}/temp_data:/data ethstaker/eth-val-tools keystores --insecure --prysm-pass='{{prysm_password}}' --source-min=1 --source-max={{number_validators + 1}} --source-mnemonic='{{mnemonic}}' --out-loc='/data/generated'"
 
     - name: Prepare keys for lighthouse
       become: true

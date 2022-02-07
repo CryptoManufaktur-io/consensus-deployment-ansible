@@ -16,6 +16,7 @@
   gather_facts: true
   tasks:
     - name: Register validator metrics to prometheus
+      when: eth2_client_name == 'lighthouse' or eth2_client_name == 'prysm'
       copy:
         dest: "{{ prometheus_file_sd_dir }}/validator.yml"
         content: |

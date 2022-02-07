@@ -3,14 +3,9 @@
 ##############################################
 eth2_client_name: lighthouse
 
-# TODO: switch to merge f2f, but mainnet preset
-beacon_image_name: parithoshj/lighthouse:merge-mainnetconfig-09a5d62
-validator_image_name: parithoshj/lighthouse:merge-mainnetconfig-09a5d62
+beacon_image_name: sigp/lighthouse:latest-unstable
+validator_image_name: sigp/lighthouse:latest-unstable
 beacon_endpoint: "http://127.0.0.1:{{beacon_api_port}}"
-
-eth2_github_external_user_pubkeys:
-  - AgeManning
-  - paulhauner
 
 ##############################################
 # volume mappings on remote host
@@ -22,6 +17,7 @@ beacon_volumes:
 validator_volumes:
   - "{{validator_node_dir}}:/validatordata"
   - "{{testnet_dir}}:/custom_config_data"
+  - "/etc/machine-id:/etc/machine-id"
 
 ##############################################
 # arguments to run the containers with
@@ -33,31 +29,33 @@ beacon_start_args: >
   --testnet-dir="/custom_config_data"
   bn
   --disable-enr-auto-update
-  --enr-address={{public_ip_address}}
+  --enr-address={{ansible_host}}
   --enr-tcp-port={{beacon_p2p_port}} --enr-udp-port={{beacon_p2p_port}}
   --port={{beacon_p2p_port}} --discovery-port={{beacon_p2p_port}}
-  --eth1 --eth1-endpoints "{{eth1endpoint}}"
+  --eth1
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --boot-nodes="{{ bootnode_enrs | join(',') }}"
   {% endif %}  --http
-  --http-address 0.0.0.0
-  --http-port "{{beacon_api_port}}"
+  --http-address=0.0.0.0
+  --http-port="{{beacon_api_port}}"
   --metrics
-  --metrics-address 0.0.0.0
-  --metrics-port "{{beacon_metrics_port}}"
-  --listen-address 0.0.0.0
+  --metrics-address=0.0.0.0
+  --metrics-port="{{beacon_metrics_port}}"
+  --listen-address=0.0.0.0
   --graffiti="{{graffiti}}"
   --target-peers={{hi_peer_count}}
   --http-allow-sync-stalled
   --merge
   --disable-packet-filter 
-  --execution-endpoints {{execution_engine_endpoint}}
+  --execution-endpoints={{execution_engine_endpoint}}
+  --eth1-endpoints={{eth1endpoint}}
   --terminal-total-difficulty-override={{terminal_total_difficulty}}
 
 # in case of eth1 deposit endpoint problems: --dummy-eth1
 
 validator_start_args: >
   lighthouse
+  --debug-level="debug"
   --testnet-dir="/custom_config_data"
   vc
   --validators-dir="/validatordata/validators"
@@ -81,6 +79,6 @@ beacon_kernel_memory: 5500M
 ##############################################
 keystores_file_mode: "0700"
 beacon_user_id: "1000:1000"
-validator_user_id: "1000:1000"
+validator_user_id: "0:0"
 
 separate_validator_process_enabled: true

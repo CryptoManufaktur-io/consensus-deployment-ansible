@@ -3,13 +3,8 @@
 ##############################################
 eth2_client_name: nimbus
 
-# TODO: switch to merge f2f, but mainnet preset
-beacon_image_name: parithoshj/nimbus:merge-7ac8cb7
-validator_image_name: parithoshj/nimbus:merge-7ac8cb7
-
-eth2_github_external_user_pubkeys:
-  - zah
-  - tersec
+beacon_image_name: parithoshj/nimbus:merge-1a94c59
+validator_image_name: parithoshj/nimbus:merge-1a94c59
 
 ##############################################
 # volume mappings on remote host
@@ -46,6 +41,7 @@ beacon_start_args: >
   --doppelganger-detection=off
   --validators-dir="/validatordata/keys"
   --secrets-dir="/validatordata/secrets"
+  --terminal-total-difficulty-override={{terminal_total_difficulty}}
 
 ##############################################
 # memory limits

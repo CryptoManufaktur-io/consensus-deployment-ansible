@@ -1,7 +1,7 @@
 ##############################################
 # image name and image location
 ##############################################
-eth1_image_name: ethereum/client-go:stable
+eth1_image_name: parithoshj/geth:merge-f72c361
 eth1_container_name: eth1_geth
 
 ##############################################
@@ -14,14 +14,24 @@ eth1_volumes:
 # arguments to run the containers with
 ##############################################
 eth1_start_args: >
-   --{{ eth1_network }} 
-   --http --http.api "engine,net,eth,consensus" 
+   --datadir /.ethereum
+   --networkid={{chainID}} --catalyst
+   --metrics --metrics.expensive
+   --http --http.api "engine,net,eth" 
    --http.port {{ eth1_rpc_port }} 
    --http.addr 0.0.0.0 
    --http.corsdomain "*" 
-   --ws 
-   --ws.api "net,eth,consensus,engine" 
+   --ws --ws.api "engine,net,eth" 
    --ws.port {{ eth1_ws_rpc_port }} 
+   --ws.addr 0.0.0.0
+   --nat extip:{{ansible_host}}
+   --allow-insecure-unlock
+   --vmodule=rpc=5
+   --maxpeers=200
+   --ethstats={{inventory_hostname}}:KintsugiNetwork@ethstats.kintsugi.themerge.dev
+   {% if (eth1_bootnode_enode is defined) and eth1_bootnode_enode %}
+   --bootnodes "{{ eth1_bootnode_enode | join(',') }}"
+   {% endif %}
 
 ##############################################
 # memory limits

@@ -22,9 +22,9 @@ execution_engine_endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth
 # testnet specific information
 ##############################################
 testnet_type: custom
-eth2_network_name: pintos
-eth1_network: goerli
-terminal_total_difficulty: "60000000"
+eth2_network_name: kintsugi
+chainID: 1337702
+terminal_total_difficulty: "5000000000"
 
 ##############################################
 # ports to configure
@@ -43,7 +43,7 @@ node_exporter_web_listen_address: "0.0.0.0:9100"
 ##############################################
 # name of the validator to display
 ##############################################
-graffiti: "{{eth2_client_name}}"
+graffiti: "{{eth2_client_name}}-{{eth2_client_name}}"
 
 ##############################################
 # local data directories
