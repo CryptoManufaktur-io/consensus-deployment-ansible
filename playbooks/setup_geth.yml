@@ -24,6 +24,10 @@
 - import_playbook: tasks/start_besu.yml
   when: eth1_client == "besu"
 
+# Start nethermind
+- import_playbook: tasks/start_nethermind.yml
+  when: eth1_client == "nethermind"
+
 # # Start promtail
 # - import_playbook: tasks/start_promtail.yml
 #   vars:

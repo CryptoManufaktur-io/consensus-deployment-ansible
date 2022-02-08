@@ -1,0 +1,72 @@
+- name: Start nethermind/eth1 node
+  hosts: geth
+  gather_facts: false
+  tasks:
+    - name: Include nethermind variables
+      include_vars: "{{inventory_dir}}/group_vars/eth1client_nethermind.yml"
+
+    - name: Get info on container if running
+      docker_container_info:
+        name: "{{ eth1_container_name }}"
+      register: result
+
+    - name: Creates eth1 data dir
+      when: result.exists == False
+      file:
+        path: "{{eth1_node_dir}}"
+        state: directory
+
+    - name: Creates testnet_dir dir
+      when: result.exists == False
+      file:
+        path: "{{testnet_dir}}"
+        state: directory
+
+    - name: Check if {{ eth1_node_dir }} is empty before proceeding
+      when: result.exists == False
+      find:
+        paths: "{{ eth1_node_dir }}"
+      register: filesFound
+
+    - name: Copy genesis json file to home folder
+      when: result.exists == False and filesFound.examined == 0
+      copy:
+        src: "{{local_custom_config_data_host_dir}}/nethermind_genesis.json"
+        dest: "{{ testnet_dir }}"
+
+    - name: Modify permissions to match user-group inside docker image
+      when: result.exists == False
+      shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
+      become: true
+
+    - name: Start Eth1 container
+      when: result.exists == False
+      docker_container:
+        name: "{{ eth1_container_name }}"
+        state: started
+        image: "{{ eth1_image_name }}"
+        pull: true
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{eth1_kernel_memory}}"
+        network_mode: host
+        restart: "{{ eth1_require_restart | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{eth1_volumes}}"
+        memory: "{{eth1_memory}}"
+        memory_swap: "{{eth1_memory}}"
+        command: "{{ eth1_start_args }}"
+        env: "{{ eth1_env | default({}) }}"
+        user: "{{ eth1_user_id }}"
+
+    - name: Register nethermind metrics to prometheus
+      when: result.exists == False
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/nethermind.yml"
+        content: |
+          - labels:
+              instance: nethermind
+            targets:
+            - localhost:6000
+
