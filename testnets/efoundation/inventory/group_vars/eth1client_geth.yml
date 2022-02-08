@@ -1,22 +1,25 @@
 ##############################################
 # image name and image location
 ##############################################
+eth1_client_name: geth
 eth1_image_name: parithoshj/geth:merge-f72c361
 eth1_container_name: eth1_geth
 
 ##############################################
 # volume mappings on remote host
 ##############################################
+eth1_data_dir: "/var/lib/goethereum"
 eth1_volumes:
-  - "{{eth1_node_dir}}:/.ethereum"
+  - "{{eth1_node_dir}}:{{eth1_data_dir}}"
 
+#Logging verbosity: 0-6 (0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=debug detail)
 ##############################################
 # arguments to run the containers with
 ##############################################
 eth1_start_args: >
-   --datadir /.ethereum
+   --datadir {{eth1_data_dir}}
    --networkid={{chainID}} --catalyst
-   --metrics --metrics.expensive
+   --metrics
    --http --http.api "engine,net,eth" 
    --http.port {{ eth1_rpc_port }} 
    --http.addr 0.0.0.0 
@@ -26,7 +29,7 @@ eth1_start_args: >
    --ws.addr 0.0.0.0
    --nat extip:{{ansible_host}}
    --allow-insecure-unlock
-   --vmodule=rpc=5
+   --verbosity 2
    --maxpeers=200
    --ethstats={{inventory_hostname}}:KintsugiNetwork@ethstats.kintsugi.themerge.dev
    {% if (eth1_bootnode_enode is defined) and eth1_bootnode_enode %}
