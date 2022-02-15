@@ -12,7 +12,7 @@ scrape_configs:
           instance: 'prometheus'
 
       - targets: 
-        - 'localhost:9100'
+        - 'node-exporter:9100'
         labels:
           instance: 'node-exporter'
 

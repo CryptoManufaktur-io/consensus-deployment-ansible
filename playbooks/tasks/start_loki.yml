@@ -35,17 +35,22 @@
       shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}" && chown -R "{{ ansible_user }}" "{{ loki_data_dir }}"
       become: true
 
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"
+
     - name: Start loki container
       docker_container:
         name: "{{ loki_container_name }}"
         state: started
         image: "{{ loki_image_name }}"
         pull: true
+        ports:
+          - "3100:3100"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{loki_kernel_memory}}"
-        etc_hosts: "{{ docker_etc_hosts }}"
-        network_mode: host
+        network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ loki_require_restart | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"
@@ -61,6 +66,6 @@
         dest: "{{ prometheus_file_sd_dir }}/loki.yml"
         content: |
           - labels:
-              instance: loki
+              instance: {{ loki_container_name }}
             targets:
-            - localhost:3100
+            - {{ loki_container_name }}:3100

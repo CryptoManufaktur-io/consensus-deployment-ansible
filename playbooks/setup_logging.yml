@@ -37,7 +37,7 @@
 - import_playbook: tasks/start_promtail.yml
   vars:
     variable_host: "globalfederation"
-    promtail_loki_url: "http://localhost:3100/loki/api/v1/push"
+    promtail_loki_url: "http://{{ loki_container_name }}:3100/loki/api/v1/push"
 
 # Start loki global
 - import_playbook: tasks/start_loki.yml

@@ -12,12 +12,12 @@ datasources:
   type: prometheus
   access: proxy
   orgId: 1
-  url: http://localhost:10902
+  url: http://thanos-query:10902
   editable: true
 
 - name: Loki
   type: loki
   access: proxy
   orgId: 1
-  url: http://localhost:3100
+  url: http://loki:3100
   editable: true

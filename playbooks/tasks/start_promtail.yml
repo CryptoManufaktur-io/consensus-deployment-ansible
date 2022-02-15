@@ -41,6 +41,10 @@
       shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
       become: true
 
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"
+
     - name: Start promtail container
       docker_container:
         name: "{{ promtail_container_name }}"
@@ -50,7 +54,7 @@
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{promtail_kernel_memory}}"
-        network_mode: host
+        network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ promtail_require_restart | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"
@@ -66,6 +70,6 @@
         dest: "{{ prometheus_file_sd_dir }}/promtail.yml"
         content: |
           - labels:
-              instance: promtail
+              instance: {{ promtail_container_name }}
             targets:
-            - localhost:9080
+            - {{ promtail_container_name }}:9080

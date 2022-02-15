@@ -35,16 +35,22 @@
             - url: "{{ remote_write_url }}"
       when: remote_write_url | default('') != ''
 
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"
+
     - name: Start prometheus container
       docker_container:
         name: "{{ prometheus_container_name }}"
         state: started
         image: "{{ prometheus_image_name }}"
         pull: true
+        ports:
+          - "9090:9090"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{prometheus_kernel_memory}}"
-        network_mode: host
+        network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ prometheus_require_restart | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"
