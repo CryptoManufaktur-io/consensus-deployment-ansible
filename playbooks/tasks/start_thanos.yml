@@ -16,7 +16,21 @@
       copy:
         src: "{{ local_thanos_conf_dir }}/"
         dest: "{{ thanos_conf_dir }}"
-        
+
+    - name: Include secret variables for bucket details
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Replace variable in conf file
+      replace:
+        path: "{{ thanos_conf_dir }}/bucket.yml"
+        regexp: "{{item.0}}"
+        replace: "{{item.1}}"
+      loop:
+        - ["##BUCKET_NAME##", "{{loki_bucket}}"]
+        - ["##BUCKET_ENDPOINT##", "{{loki_bucket_endpoint}}"]
+        - ["##BUCKET_ACCESS_KEY##", "{{loki_bucket_access_key}}"]
+        - ["##BUCKET_ACCESS_SECRET##", "{{loki_bucket_secret_key}}"]
+
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ thanos_data_dir }}" && chown -R "{{ ansible_user }}" "{{ thanos_conf_dir }}"
       become: true

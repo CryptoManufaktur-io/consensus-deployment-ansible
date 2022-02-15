@@ -1,0 +1,9 @@
+type: S3
+config:
+  bucket: ##BUCKET_NAME##
+  endpoint: ##BUCKET_ENDPOINT##
+  insecure: false
+  signature_version2: false
+  access_key: ##BUCKET_ACCESS_KEY##
+  secret_key: ##BUCKET_ACCESS_SECRET##
+

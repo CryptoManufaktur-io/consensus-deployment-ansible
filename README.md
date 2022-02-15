@@ -7,33 +7,28 @@ This repository is a minimal set of playbooks and inventories required to set up
 - This setup expects that you already have deposits made and config data generated
 - This setup is ideally aimed at public testnets and helps quickly provision validators
 
-## Setup
+## Initial configuration
 
 - Ensure this repo is cloned locally and that the submodules have been pulled
-
 `git submodule update --init --recursive`
 
 - Ensure ansible has been installed
-
 `ansible --version`
 
-- Ensure SSH access to all servers. Check by command
+- Copy secrets config to `<testnet>/inventory/secrets.yml` A sample secrets file can be found at `<testnet>/inventory/secrets_sample.yml`
 
+- Copy inventory file to `<testnet>/inventory/inventory.ini` A sample inventory can be found at `<testnet>/inventory/inventory_sample.ini`
+
+- Ensure SSH access to all servers. Check by command
 `ansible -i testnets/efoundation/inventory/inventory.ini -m ping all`
 
-- Mac error fix
-
-`export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES && export PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH"`
-
-## Setting up
+## Playbooks setup for each action
 
 `1. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth.yml`
 
 `2. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
 
 `3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
-
-Tail docker loki plugin logs `sudo journalctl -f -u docker.service | grep loki`
 
 ## Usage
 

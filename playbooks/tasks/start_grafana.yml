@@ -2,6 +2,9 @@
   hosts: "{{ variable_host }}"
   gather_facts: false
   tasks:
+    - name: Include secret variables for grafana username and password
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
     - name: Creates grafana data dir
       file:
         path: "{{grafana_data_dir}}"

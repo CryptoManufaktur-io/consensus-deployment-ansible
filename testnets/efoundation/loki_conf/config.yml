@@ -37,11 +37,11 @@ storage_config:
    shared_store: s3
 
  aws:
-  bucketnames: bucket_name
-  endpoint: eu-central-1.linodeobjects.com #endpoint
+  bucketnames: ##BUCKET_NAME##
+  endpoint: ##BUCKET_ENDPOINT##
   region: ''
-  access_key_id: ACCESS_KEY
-  secret_access_key: ACCESS_SECRET
+  access_key_id: ##BUCKET_ACCESS_KEY##
+  secret_access_key: ##BUCKET_ACCESS_SECRET##
   insecure: false
   sse_encryption: false
   http_config:
