@@ -277,6 +277,7 @@ grafana_volumes:
   - "/etc/localtime:/etc/localtime:ro"
 grafana_env: >
   {
+    "GF_PATHS_CONFIG" : "/etc/grafana/provisioning/grafana.ini",
     "GF_SERVER_ROOT_URL" : "https://{{grafana_host}}.{{grafana_domain}}",
     "GF_SERVER_DOMAIN" : "{{grafana_host}}.{{grafana_domain}}",
     "GF_SERVER_HTTP_PORT" : "{{grafana_port}}",

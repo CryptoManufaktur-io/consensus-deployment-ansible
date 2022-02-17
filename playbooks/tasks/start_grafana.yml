@@ -32,6 +32,16 @@
         state: absent
       delegate_to: localhost
 
+    - name: Replace variable in ini file
+      replace:
+        path: "{{ grafana_conf_dir }}/grafana.ini"
+        regexp: "{{item.0}}"
+        replace: "{{item.1}}"
+      loop:
+        - ["##grafana_github_client_id##", "{{grafana_github_client_id}}"]
+        - ["##grafana_github_client_secret##", "{{grafana_github_client_secret}}"]
+        - ["##grafana_github_organizations##", "{{grafana_github_organizations}}"]
+
     - name: Modify permissions to match user-group inside docker image
       shell: chown -R "{{ ansible_user }}" "{{ grafana_data_dir }}" && chown -R "{{ ansible_user }}" "{{ grafana_conf_dir }}"
       become: true
