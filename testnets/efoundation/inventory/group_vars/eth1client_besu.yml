@@ -20,6 +20,5 @@ eth1_start_args: >
   --rpc-ws-port={{eth1_ws_rpc_port}}
   --host-allowlist="*"
   --p2p-enabled=true
-  --metrics-enabled=true --metrics-port=6000
 
 eth1_user_id: "1000:1000"

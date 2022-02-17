@@ -2,133 +2,141 @@
   hosts: "{{ variable_host }}"
   gather_facts: false
   tasks:
-    - name: Include secret variables for grafana username and password
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
-
-    - name: Creates grafana data dir
-      file:
-        path: "{{grafana_data_dir}}"
-        state: directory
-
-    - name: Creates grafana conf dir
-      file:
-        path: "{{grafana_conf_dir}}"
-        state: directory
-
-    - name: Archive local_grafana_conf_dir dir to prepare for upload
-      archive:
-        path: "{{local_grafana_conf_dir}}/*"
-        dest: "{{local_grafana_conf_archive}}"
-      delegate_to: localhost
-
-    - name: Upload grafana conf to remote
-      unarchive:
-        src: "{{ local_grafana_conf_archive }}"
-        dest: "{{ grafana_conf_dir }}"
-
-    - name: Remove {{local_grafana_conf_archive}} archive after upload
-      file:
-        path: "{{ local_grafana_conf_archive }}"
-        state: absent
-      delegate_to: localhost
-
-    - name: Replace variable in ini file
-      replace:
-        path: "{{ grafana_conf_dir }}/grafana.ini"
-        regexp: "{{item.0}}"
-        replace: "{{item.1}}"
-      loop:
-        - ["##grafana_github_client_id##", "{{grafana_github_client_id}}"]
-        - ["##grafana_github_client_secret##", "{{grafana_github_client_secret}}"]
-        - ["##grafana_github_organizations##", "{{grafana_github_organizations}}"]
-
-    - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ grafana_data_dir }}" && chown -R "{{ ansible_user }}" "{{ grafana_conf_dir }}"
-      become: true
-
-    - name: Create docker monitoring network
-      docker_network:
-        name: "{{ docker_monitoring_network }}"
-
-    - name: Start cloudflare container
-      docker_container:
-        name: "{{ cloudflare_container_name }}"
-        state: started
-        image: "{{ cloudflare_image_name }}"
-        pull: true
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{cloudflare_kernel_memory}}"
-        network_mode: "{{ docker_monitoring_network }}"
-        restart: "{{ cloudflare_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{cloudflare_volumes}}"
-        memory: "{{cloudflare_memory}}"
-        memory_swap: "{{cloudflare_memory}}"
-        command: "{{ cloudflare_start_args }}"
-        env: "{{ cloudflare_env | default({}) }}"
-        user: "{{ cloudflare_user_id }}"
-
-    - name: Start traefik container
-      docker_container:
-        name: "{{ traefik_container_name }}"
-        state: started
-        image: "{{ traefik_image_name }}"
-        pull: true
-        ports:
-          - "{{traefik_web_port}}:{{traefik_web_port}}"
-          - "{{traefik_web_http_port}}:{{traefik_web_http_port}}"
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{traefik_kernel_memory}}"
-        network_mode: "{{ docker_monitoring_network }}"
-        restart: "{{ traefik_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{traefik_volumes}}"
-        memory: "{{traefik_memory}}"
-        memory_swap: "{{traefik_memory}}"
-        command: "{{ traefik_start_args }}"
-        env: "{{ traefik_env | default({}) }}"
-        user: "{{ traefik_user_id }}"
-
-    - name: Start grafana container
-      docker_container:
+    - name: Get info on container if running
+      docker_container_info:
         name: "{{ grafana_container_name }}"
-        state: started
-        image: "{{ grafana_image_name }}"
-        pull: true
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{grafana_kernel_memory}}"
-        network_mode: "{{ docker_monitoring_network }}"
-        restart: "{{ grafana_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{grafana_volumes}}"
-        memory: "{{grafana_memory}}"
-        memory_swap: "{{grafana_memory}}"
-        command: "{{ grafana_start_args }}"
-        env: "{{ grafana_env | default({}) }}"
-        user: "{{ grafana_user_id }}"
-        labels: "{{ grafana_labels }}"
+      register: result
 
-    - name: Register grafana metrics to prometheus
-      copy:
-        dest: "{{ prometheus_file_sd_dir }}/grafana.yml"
-        content: |
-          - labels:
-              instance: {{ cloudflare_container_name }}
-            targets:
-            - {{ cloudflare_container_name }}:80
+    - name: Configure and start grafana components
+      when: result.exists == False
+      block:
+        - name: Include secret variables for grafana username and password
+          include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-          - labels:
-              instance: {{ traefik_container_name }}
-            targets:
-            - {{ traefik_container_name }}:8082
+        - name: Creates grafana data dir
+          file:
+            path: "{{grafana_data_dir}}"
+            state: directory
 
-          - labels:
-              instance: {{ grafana_container_name }}
-            targets:
-            - {{ grafana_container_name }}:{{ grafana_port }}
+        - name: Creates grafana conf dir
+          file:
+            path: "{{grafana_conf_dir}}"
+            state: directory
+
+        - name: Archive local_grafana_conf_dir dir to prepare for upload
+          archive:
+            path: "{{local_grafana_conf_dir}}/*"
+            dest: "{{local_grafana_conf_archive}}"
+          delegate_to: localhost
+
+        - name: Upload grafana conf to remote
+          unarchive:
+            src: "{{ local_grafana_conf_archive }}"
+            dest: "{{ grafana_conf_dir }}"
+
+        - name: Remove {{local_grafana_conf_archive}} archive after upload
+          file:
+            path: "{{ local_grafana_conf_archive }}"
+            state: absent
+          delegate_to: localhost
+
+        - name: Replace variable in ini file
+          replace:
+            path: "{{ grafana_conf_dir }}/grafana.ini"
+            regexp: "{{item.0}}"
+            replace: "{{item.1}}"
+          loop:
+            - ["##grafana_github_client_id##", "{{grafana_github_client_id}}"]
+            - ["##grafana_github_client_secret##", "{{grafana_github_client_secret}}"]
+            - ["##grafana_github_organizations##", "{{grafana_github_organizations}}"]
+
+        - name: Modify permissions to match user-group inside docker image
+          shell: chown -R "{{ ansible_user }}" "{{ grafana_data_dir }}" && chown -R "{{ ansible_user }}" "{{ grafana_conf_dir }}"
+          become: true
+
+        - name: Create docker monitoring network
+          docker_network:
+            name: "{{ docker_monitoring_network }}"
+
+        - name: Start cloudflare container
+          docker_container:
+            name: "{{ cloudflare_container_name }}"
+            state: started
+            image: "{{ cloudflare_image_name }}"
+            pull: true
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{cloudflare_kernel_memory}}"
+            network_mode: "{{ docker_monitoring_network }}"
+            restart: "{{ cloudflare_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{cloudflare_volumes}}"
+            memory: "{{cloudflare_memory}}"
+            memory_swap: "{{cloudflare_memory}}"
+            command: "{{ cloudflare_start_args }}"
+            env: "{{ cloudflare_env | default({}) }}"
+            user: "{{ cloudflare_user_id }}"
+
+        - name: Start traefik container
+          docker_container:
+            name: "{{ traefik_container_name }}"
+            state: started
+            image: "{{ traefik_image_name }}"
+            pull: true
+            ports:
+              - "{{traefik_web_port}}:{{traefik_web_port}}"
+              - "{{traefik_web_http_port}}:{{traefik_web_http_port}}"
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{traefik_kernel_memory}}"
+            network_mode: "{{ docker_monitoring_network }}"
+            restart: "{{ traefik_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{traefik_volumes}}"
+            memory: "{{traefik_memory}}"
+            memory_swap: "{{traefik_memory}}"
+            command: "{{ traefik_start_args }}"
+            env: "{{ traefik_env | default({}) }}"
+            user: "{{ traefik_user_id }}"
+
+        - name: Start grafana container
+          docker_container:
+            name: "{{ grafana_container_name }}"
+            state: started
+            image: "{{ grafana_image_name }}"
+            pull: true
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{grafana_kernel_memory}}"
+            network_mode: "{{ docker_monitoring_network }}"
+            restart: "{{ grafana_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{grafana_volumes}}"
+            memory: "{{grafana_memory}}"
+            memory_swap: "{{grafana_memory}}"
+            command: "{{ grafana_start_args }}"
+            env: "{{ grafana_env | default({}) }}"
+            user: "{{ grafana_user_id }}"
+            labels: "{{ grafana_labels }}"
+
+        - name: Register grafana metrics to prometheus
+          copy:
+            dest: "{{ prometheus_file_sd_dir }}/grafana.yml"
+            content: |
+              - labels:
+                  instance: {{ cloudflare_container_name }}
+                targets:
+                - {{ cloudflare_container_name }}:80
+
+              - labels:
+                  instance: {{ traefik_container_name }}
+                targets:
+                - {{ traefik_container_name }}:8082
+
+              - labels:
+                  instance: {{ grafana_container_name }}
+                targets:
+                - {{ grafana_container_name }}:{{ grafana_port }}

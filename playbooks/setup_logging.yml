@@ -21,7 +21,6 @@
 - import_playbook: tasks/start_prometheus.yml
   vars:
     variable_host: "globalfederation"
-    enable_remote_receiver: "true"
 
 # register thanos
 - import_playbook: tasks/start_thanos.yml

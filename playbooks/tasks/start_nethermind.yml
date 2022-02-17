@@ -10,45 +10,62 @@
         name: "{{ eth1_container_name }}"
       register: result
 
-    - name: Creates eth1 data dir
+    - name: Configure and start promtail components
       when: result.exists == False
-      file:
-        path: "{{eth1_node_dir}}"
-        state: directory
+      block:
+        - name: Creates eth1 data dir
+          file:
+            path: "{{eth1_node_dir}}"
+            state: directory
 
-    - name: Modify permissions to match user-group inside docker image
-      when: result.exists == False
-      shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
-      become: true
+        - name: Modify permissions to match user-group inside docker image
+          shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
+          become: true
 
-    - name: Start Eth1 container
-      when: result.exists == False
-      docker_container:
-        name: "{{ eth1_container_name }}"
-        state: started
-        image: "{{ eth1_image_name }}"
-        pull: true
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{eth1_kernel_memory}}"
-        network_mode: host
-        restart: "{{ eth1_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{eth1_volumes}}"
-        memory: "{{eth1_memory}}"
-        memory_swap: "{{eth1_memory}}"
-        command: "{{ eth1_start_args }}"
-        env: "{{ eth1_env | default({}) }}"
-        user: "{{ eth1_user_id }}"
+        - name: Start Eth1 container
+          docker_container:
+            name: "{{ eth1_container_name }}"
+            state: started
+            image: "{{ eth1_image_name }}"
+            pull: true
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{eth1_kernel_memory}}"
+            network_mode: host
+            restart: "{{ eth1_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{eth1_volumes}}"
+            memory: "{{eth1_memory}}"
+            memory_swap: "{{eth1_memory}}"
+            command: "{{ eth1_start_args }}"
+            env: "{{ eth1_env | default({}) }}"
+            user: "{{ eth1_user_id }}"
 
-    - name: Register nethermind metrics to prometheus
-      when: result.exists == False
-      copy:
-        dest: "{{ prometheus_file_sd_dir }}/nethermind.yml"
-        content: |
-          - labels:
-              instance: nethermind
-            targets:
-            - localhost:6000
+        - name: Start Eth1 metrics container
+          docker_container:
+            name: "{{ eth1_metrics_container_name }}"
+            state: started
+            image: "{{ eth1_metrics_image_name }}"
+            pull: true
+            restart_policy: unless-stopped
+            network_mode: host
+            command: "-url http://localhost:{{eth1_rpc_port}}"
+            restart: "{{ eth1_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+
+        - name: Register nethermind metrics to prometheus
+          copy:
+            dest: "{{ prometheus_file_sd_dir }}/nethermind.yml"
+            content: |
+              - labels:
+                  instance: {{ eth1_container_name }}
+                targets:
+                - dockerhost:9368
+
+              - labels:
+                  instance: {{ eth1_metrics_container_name }}
+                targets:
+                - dockerhost:9368
 

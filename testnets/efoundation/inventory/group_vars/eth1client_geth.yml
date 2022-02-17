@@ -19,7 +19,6 @@ eth1_volumes:
 eth1_start_args: >
    --{{ eth1_network }} 
    --datadir {{eth1_data_dir}}
-   --metrics
    --http --http.api "engine,net,eth,consensus" 
    --http.port {{ eth1_rpc_port }} 
    --http.addr 0.0.0.0 

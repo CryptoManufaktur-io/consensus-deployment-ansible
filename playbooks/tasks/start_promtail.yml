@@ -2,74 +2,103 @@
   hosts: "{{ variable_host }}"
   gather_facts: false
   tasks:
-    - name: Creates promtail config dir
-      file:
-        path: "{{ promtail_config_dir }}"
-        state: directory
-
-    - name: Copy promtail conf to remote
-      copy:
-        src: "{{ local_promtail_conf_dir }}/"
-        dest: "{{ promtail_config_dir }}"
-
-    - name: Replace promtail_loki_url variable in conf file
-      replace:
-        path: "{{ promtail_config_dir }}/config.yml"
-        regexp: '##promtail_loki_url##'
-        replace: '{{promtail_loki_url}}'
-
-    - name: Replace variable in conf file
-      replace:
-        path: "{{ promtail_config_dir }}/config.yml"
-        regexp: "##inventory_hostname##"
-        replace: "{{ inventory_hostname }}"
-
-    - name: Enable receiver when set to receive
-      blockinfile:
-        path: "{{ promtail_config_dir }}/config.yml"
-        block: |
-          - job_name: {{ inventory_hostname }}_push
-            loki_push_api:
-              server:
-                http_listen_port: 3500
-                grpc_listen_port: 3600
-              labels:
-                pushserver: {{ inventory_hostname }}_push
-      when: push_receiver | default('false') == 'true'
-
-    - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
-      become: true
-
-    - name: Create docker monitoring network
-      docker_network:
-        name: "{{ docker_monitoring_network }}"
-
-    - name: Start promtail container
-      docker_container:
+    - name: Get info on container if running
+      docker_container_info:
         name: "{{ promtail_container_name }}"
-        state: started
-        image: "{{ promtail_image_name }}"
-        pull: true
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{promtail_kernel_memory}}"
-        network_mode: "{{ docker_monitoring_network }}"
-        restart: "{{ promtail_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{promtail_volumes}}"
-        memory: "{{promtail_memory}}"
-        memory_swap: "{{promtail_memory}}"
-        command: "{{ promtail_start_args }}"
-        env: "{{ promtail_env | default({}) }}"
-        user: "{{ promtail_user_id }}"
+      register: result
 
-    - name: Register promtail metrics to prometheus
-      copy:
-        dest: "{{ prometheus_file_sd_dir }}/promtail.yml"
-        content: |
-          - labels:
-              instance: {{ promtail_container_name }}
-            targets:
-            - {{ promtail_container_name }}:9080
+    - name: Configure and start promtail components
+      when: result.exists == False
+      block:
+        - name: Creates promtail config dir
+          file:
+            path: "{{ promtail_config_dir }}"
+            state: directory
+
+        - name: Copy promtail conf to remote
+          copy:
+            src: "{{ local_promtail_conf_dir }}/"
+            dest: "{{ promtail_config_dir }}"
+
+        - name: Replace variable in conf file
+          replace:
+            path: "{{ promtail_config_dir }}/config.yml"
+            regexp: "{{item.0}}"
+            replace: "{{item.1}}"
+          loop:
+            - ["##inventory_hostname##", "{{inventory_hostname}}"]
+            - ["##promtail_loki_url##", "{{promtail_loki_url}}"]
+
+        - name: Enable receiver when set to receive
+          blockinfile:
+            path: "{{ promtail_config_dir }}/config.yml"
+            block: |
+              - job_name: {{ inventory_hostname }}_push
+                loki_push_api:
+                  server:
+                    http_listen_port: 3500
+                    grpc_listen_port: 3600
+                  labels:
+                    pushserver: {{ inventory_hostname }}_push
+          when: push_receiver | default('false') == 'true'
+
+        - name: Modify permissions to match user-group inside docker image
+          shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
+          become: true
+
+        - name: Create docker monitoring network
+          docker_network:
+            name: "{{ docker_monitoring_network }}"
+
+        - name: Start promtail container with receiver
+          docker_container:
+            name: "{{ promtail_container_name }}"
+            state: started
+            image: "{{ promtail_image_name }}"
+            pull: true
+            ports:
+              - "3500:3500"
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{promtail_kernel_memory}}"
+            network_mode: "{{ docker_monitoring_network }}"
+            restart: "{{ promtail_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{promtail_volumes}}"
+            memory: "{{promtail_memory}}"
+            memory_swap: "{{promtail_memory}}"
+            command: "{{ promtail_start_args }}"
+            env: "{{ promtail_env | default({}) }}"
+            user: "{{ promtail_user_id }}"
+          when: push_receiver | default('false') == 'true'
+
+        - name: Start promtail container without receiver
+          docker_container:
+            name: "{{ promtail_container_name }}"
+            state: started
+            image: "{{ promtail_image_name }}"
+            pull: true
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{promtail_kernel_memory}}"
+            network_mode: "{{ docker_monitoring_network }}"
+            restart: "{{ promtail_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{promtail_volumes}}"
+            memory: "{{promtail_memory}}"
+            memory_swap: "{{promtail_memory}}"
+            command: "{{ promtail_start_args }}"
+            env: "{{ promtail_env | default({}) }}"
+            user: "{{ promtail_user_id }}"
+          when: push_receiver | default('false') != 'true'
+
+        - name: Register promtail metrics to prometheus
+          copy:
+            dest: "{{ prometheus_file_sd_dir }}/promtail.yml"
+            content: |
+              - labels:
+                  instance: {{ promtail_container_name }}
+                targets:
+                - {{ promtail_container_name }}:9080

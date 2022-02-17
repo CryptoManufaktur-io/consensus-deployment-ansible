@@ -2,26 +2,34 @@
   hosts: "{{ variable_host }}"
   gather_facts: false
   tasks:
-    - name: Create docker monitoring network
-      docker_network:
-        name: "{{ docker_monitoring_network }}"
-
-    - name: Start node exporter container
-      docker_container:
+    - name: Get info on container if running
+      docker_container_info:
         name: "{{ node_exporter_container_name }}"
-        state: started
-        image: "{{ node_exporter_image_name }}"
-        pull: true
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{node_exporter_kernel_memory}}"
-        network_mode: "{{ docker_monitoring_network }}"
-        restart: "{{ node_exporter_require_restart | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{node_exporter_volumes}}"
-        memory: "{{node_exporter_memory}}"
-        memory_swap: "{{node_exporter_memory}}"
-        command: "{{ node_exporter_start_args }}"
-        env: "{{ node_exporter_env | default({}) }}"
-        user: "{{ node_exporter_user_id }}"
+      register: result
+
+    - name: Configure and start node exporter components
+      when: result.exists == False
+      block:
+        - name: Create docker monitoring network
+          docker_network:
+            name: "{{ docker_monitoring_network }}"
+
+        - name: Start node exporter container
+          docker_container:
+            name: "{{ node_exporter_container_name }}"
+            state: started
+            image: "{{ node_exporter_image_name }}"
+            pull: true
+            restart_policy: unless-stopped
+            memory_swappiness: 0
+            kernel_memory: "{{node_exporter_kernel_memory}}"
+            network_mode: "{{ docker_monitoring_network }}"
+            restart: "{{ node_exporter_require_restart | default(false) }}"
+            log_options: "{{ common_log_options }}"
+            log_driver: "{{ common_log_driver }}"
+            volumes: "{{node_exporter_volumes}}"
+            memory: "{{node_exporter_memory}}"
+            memory_swap: "{{node_exporter_memory}}"
+            command: "{{ node_exporter_start_args }}"
+            env: "{{ node_exporter_env | default({}) }}"
+            user: "{{ node_exporter_user_id }}"
