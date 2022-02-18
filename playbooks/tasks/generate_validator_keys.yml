@@ -10,6 +10,9 @@
     - name: Generate keys
       when: filesFound.examined == 0
       block:
+        - name: Include secret variables for mnemonics and prysm password
+          include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
         - name: Remove temp_data if exists
           become: true
           shell: |
