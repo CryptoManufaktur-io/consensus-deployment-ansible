@@ -87,15 +87,7 @@ beacon_log_level: info
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
-
-
-##############################################
-# Keys generation
-##############################################
 separate_validator_process_enabled: true
-mnemonic: "motion frown brave tennis glimpse snake outside ticket anger what uniform favorite company decorate divert click once length sustain genuine arctic wealth urge despair"
-prysm_password: "prysm"
-number_validators: 2
 
 
 ##############################################

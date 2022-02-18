@@ -19,6 +19,12 @@
   vars:
     docker_compose_version: "1.29.2"
   tasks:
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+
+    - name: Upgrade all apt packages
+      apt: upgrade=dist
+
     - name: Check if docker is installed
       stat: path=/usr/bin/docker
       register: dockerexist
@@ -26,12 +32,6 @@
     - name: Configure and install docker
       when: dockerexist.stat.exists == False
       block:
-        - name: Update apt cache
-          apt: update_cache=yes cache_valid_time=3600
-
-        - name: Upgrade all apt packages
-          apt: upgrade=dist
-
         - name: Install dependencies
           apt:
             name: "{{ packages }}"
