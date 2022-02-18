@@ -37,8 +37,6 @@ beacon_p2p_port: 9000
 validator_metrics_port: 8001
 validator_rpc_port: 4002
 node_exporter_web_listen_address: "0.0.0.0:9100"
-eth1_metrics_image_name: 31z4/ethereum-prometheus-exporter
-eth1_metrics_container_name: 31z4-ethereum-prometheus-exporter
 
 ##############################################
 # name of the validator to display

@@ -42,19 +42,6 @@
             env: "{{ eth1_env | default({}) }}"
             user: "{{ eth1_user_id }}"
 
-        - name: Start Eth1 metrics container
-          docker_container:
-            name: "{{ eth1_metrics_container_name }}"
-            state: started
-            image: "{{ eth1_metrics_image_name }}"
-            pull: true
-            restart_policy: unless-stopped
-            network_mode: host
-            command: "-url http://localhost:{{eth1_rpc_port}}"
-            restart: "{{ eth1_require_restart | default(false) }}"
-            log_options: "{{ common_log_options }}"
-            log_driver: "{{ common_log_driver }}"
-
         - name: Register besu metrics to prometheus
           copy:
             dest: "{{ prometheus_file_sd_dir }}/besu.yml"
@@ -62,10 +49,8 @@
               - labels:
                   instance: {{ eth1_container_name }}
                 targets:
-                - dockerhost:9368
-
-              - labels:
-                  instance: {{ eth1_metrics_container_name }}
                 targets:
-                - dockerhost:9368
+                - dockerhost:{{eth1_metrics_port}}
+          when: eth1_metrics_port | default('') != ''
+
 
