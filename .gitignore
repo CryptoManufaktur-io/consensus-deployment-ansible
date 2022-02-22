@@ -7,4 +7,4 @@ selected_validator_keys
 #external_roles
 **/inventory.ini
 **/secrets.yml
-**/custom_conf_data/
+**/custom_config_data/

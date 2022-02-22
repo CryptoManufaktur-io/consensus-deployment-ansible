@@ -24,11 +24,13 @@ This repository is a minimal set of playbooks and inventories required to set up
 
 ## Playbooks setup for each action
 
-`1. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth.yml`
+`1. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/prepare_custom_conf_data.yml`
 
-`2. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
+`2. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth_bootnode.yml`
 
-`3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
+`3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
+
+`4. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
 
 ## Usage
 

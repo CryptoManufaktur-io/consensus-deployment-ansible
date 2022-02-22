@@ -3,7 +3,7 @@
   connection: local
   gather_facts: false
   vars:
-    - data_dir: "{{inventory_dir}}/../custom_conf_data"
+    - data_dir: "{{inventory_dir}}/../custom_config_data"
     - running_dir: "{{inventory_dir}}/../gen_custom_conf_data"
 
   tasks:
