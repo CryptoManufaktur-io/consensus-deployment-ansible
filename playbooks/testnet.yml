@@ -2,67 +2,21 @@
 - hosts: localhost
   gather_facts: false
   vars:
-    - VALIDATORS: ["lighthouse0", "lighthouse1", "teku0", "nimbus0", "prysm0"]
-    - VALIDATORS_PER_INSTANCE: 100
-
     - CONFIG_NAME: george-testnet
     - GENESIS_DELAY: 86400
     - MIN_GENESIS_TIME: 1645192800
     - NETWORK: goerli
     - DEPOSIT_CHAIN_ID: 5
     - DEPOSIT_NETWORK_ID: 5
-    - data_dir: "{{playbook_dir}}/testnet"
+    - data_dir: "{{inventory_dir}}/../custom_conf_data"
+    - running_dir: "{{inventory_dir}}/../gen_custom_conf_data"
 
-    - ETH1_FROM_ADDR: "0xA9CE3c09515F397752fca4F72cf4197E4572BB29"
-    - ETH1_FROM_PRIV: "79e831ea572115d72c85700e32ff27b2d2ea5240158f3060232f18ab55aeb630"
-    - TX_HASH: "0xd3ca6ad5d4da89658823128f93155f27a2897475c319f8cb32464643fa9396a8"
-    
   tasks:
-    - name: Ask Wallet address
-      pause:
-        prompt: "Use private/public key on file (yes/no)?"
-      register: prompt_wallet_address
-
-    - name: Prompt for wallet details
-      when: prompt_wallet_address.user_input | bool == false
-      block:
-        - name: Public key
-          pause:
-            prompt: What is your public key?
-          register: publickey_temp
-
-        - name: Private key
-          pause:
-            prompt: What is your private key?
-          register: privatekey_temp
-
-        - name: Set public and private keys
-          set_fact:
-            ETH1_FROM_ADDR: "{{publickey_temp.user_input}}"
-            ETH1_FROM_PRIV: "{{privatekey_temp.user_input}}"
-
-    - name: Ask Transaction hash
-      pause:
-        prompt: "Use transaction hash on file (yes/no/new)?"
-      register: prompt_transaction_hash
-
-    - name: Prompt for transaction hash
-      when: prompt_transaction_hash.user_input == 'no'
-      block:
-        - name: Transaction hash
-          pause:
-            prompt: What the contract transaction hash?
-          register: thash_temp
-      
-        - name: Set transaction hash variable
-          set_fact:
-            TX_HASH: "{{thash_temp.user_input}}"
-
     - name: Create contract and get transaction hash
-      when: prompt_transaction_hash.user_input == 'new'
+      when: TX_HASH == 'new'
       block:
         - name: Create contract
-          shell: "docker run --network host --rm -v {{playbook_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
+          shell: "docker run --network host --rm -v {{running_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
           register: contract_output
 
         - name: Set transaction hash variable
@@ -78,7 +32,7 @@
               - "URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}"
 
     - name: Get details from transaction hash
-      command: "python3 {{playbook_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
+      command: "python3 {{running_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
       register: transaction_hash_details
       until: transaction_hash_details is succeeded
       retries: 10
@@ -113,7 +67,7 @@
 
     - name: Copy config file
       copy:
-        src: "{{ playbook_dir }}/config.yaml"
+        src: "{{ running_dir }}/config.yaml"
         dest: "{{ data_dir }}"
 
     - name: Replace variable in conf file
