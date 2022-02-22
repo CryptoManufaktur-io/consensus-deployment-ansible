@@ -36,7 +36,7 @@
             prompt: What is your private key?
           register: privatekey_temp
 
-        - name: Set transaction hash variable
+        - name: Set public and private keys
           set_fact:
             ETH1_FROM_ADDR: "{{publickey_temp.user_input}}"
             ETH1_FROM_PRIV: "{{privatekey_temp.user_input}}"
@@ -71,6 +71,12 @@
           when: contract_output.rc == 0
           failed_when: contract_output.rc >= 1
 
+        - name: Created transaction hash
+          debug:
+            msg:
+              - "TRANSACTION HASH: {{TX_HASH}}"
+              - "URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}"
+
     - name: Get details from transaction hash
       command: "python3 {{playbook_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
       register: transaction_hash_details
@@ -82,9 +88,23 @@
       set_fact:
         transaction_hash_details: "{{ transaction_hash_details.stdout | from_json }}"
 
+    - name: Print transaction hash details
+      debug:
+        msg:
+          - "TRANSACTION HASH: {{transaction_hash_details.transaction_hash}}"
+          - "CONTRACT ADDRESS: {{transaction_hash_details.contract_address}}"
+          - "BLOCK NUMBER: {{transaction_hash_details.block_number}}"
+          - "BLOCK HASH: {{transaction_hash_details.block_hash}}"
+          - "URL: https://{{NETWORK}}.etherscan.io/tx/{{transaction_hash_details.transaction_hash}}"
+
     - name: Convert epoch to date full
       shell: "date -d @{{MIN_GENESIS_TIME}}"
       register: DATE_FULL
+
+    - name: Remove testnet data dir first
+      file:
+        path: "{{data_dir}}"
+        state: absent
 
     - name: Creates testnet data dir
       file:
@@ -134,4 +154,4 @@
       loop: "{{VALIDATORS}}"
 
     - name: Generate genesis state
-      shell: "docker run --network host --rm -v {{data_dir}}:/data gathecageorge/eth2-test-genesis:latest phase0 --config /data/config.yaml --eth1-block {{transaction_hash_details.block_hash}} --mnemonics /data/mnemonics.yaml --timestamp {{MIN_GENESIS_TIME - GENESIS_DELAY}} --tranches-dir /data/tranches --state-output /data/genesis.ssz"
+      shell: "docker run --user $(id -u):$(id -u) --network host --rm -v {{data_dir}}:/data gathecageorge/eth2-test-genesis:latest phase0 --config /data/config.yaml --eth1-block {{transaction_hash_details.block_hash}} --mnemonics /data/mnemonics.yaml --timestamp {{MIN_GENESIS_TIME - GENESIS_DELAY}} --tranches-dir /data/tranches --state-output /data/genesis.ssz"
