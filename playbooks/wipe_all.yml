@@ -1,0 +1,30 @@
+---
+- name: Stop and clear all containers, also remove all data if allowed!!
+  hosts: all
+  gather_facts: false
+  
+  vars_prompt:
+    - name: confirm_containers
+      prompt: Do you want to stop and remove all containers (yes/no)?
+      private: no
+
+    - name: confirm_data
+      prompt: Do you want to remove all data in home directory (yes/no)?
+      private: no
+
+  tasks:
+    - name: Stop all containers
+      shell: "docker stop $(docker ps -a -q)"
+      register: stop_result
+      failed_when: "(stop_result.rc >= 1) and not ('requires at least 1 argument' in stop_result.stderr)"
+      when: confirm_containers == 'yes'
+
+    - name: Remove all containers
+      shell: "docker rm $(docker ps -a -q)"
+      register: stop_result
+      failed_when: "(stop_result.rc >= 1) and not ('requires at least 1 argument' in stop_result.stderr)"
+      when: confirm_containers == 'yes'
+
+    - name: Remove data in home directory
+      shell: "sudo rm -rf /home/{{ansible_user}}/*"
+      when: confirm_data == 'yes'

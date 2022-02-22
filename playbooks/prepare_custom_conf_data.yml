@@ -1,17 +1,15 @@
 ---
-- hosts: localhost
+- hosts: all[0]
+  connection: local
   gather_facts: false
   vars:
-    - CONFIG_NAME: george-testnet
-    - GENESIS_DELAY: 86400
-    - MIN_GENESIS_TIME: 1645192800
-    - NETWORK: goerli
-    - DEPOSIT_CHAIN_ID: 5
-    - DEPOSIT_NETWORK_ID: 5
     - data_dir: "{{inventory_dir}}/../custom_conf_data"
     - running_dir: "{{inventory_dir}}/../gen_custom_conf_data"
 
   tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
     - name: Create contract and get transaction hash
       when: TX_HASH == 'new'
       block:
@@ -27,9 +25,9 @@
 
         - name: Created transaction hash
           debug:
-            msg:
-              - "TRANSACTION HASH: {{TX_HASH}}"
-              - "URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}"
+            msg: |
+              TRANSACTION HASH: {{TX_HASH}}
+              URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}
 
     - name: Get details from transaction hash
       command: "python3 {{running_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
@@ -44,12 +42,16 @@
 
     - name: Print transaction hash details
       debug:
-        msg:
-          - "TRANSACTION HASH: {{transaction_hash_details.transaction_hash}}"
-          - "CONTRACT ADDRESS: {{transaction_hash_details.contract_address}}"
-          - "BLOCK NUMBER: {{transaction_hash_details.block_number}}"
-          - "BLOCK HASH: {{transaction_hash_details.block_hash}}"
-          - "URL: https://{{NETWORK}}.etherscan.io/tx/{{transaction_hash_details.transaction_hash}}"
+        msg: |
+          TRANSACTION HASH: {{transaction_hash_details.transaction_hash}}
+          CONTRACT ADDRESS: {{transaction_hash_details.contract_address}}
+          BLOCK NUMBER: {{transaction_hash_details.block_number}}
+          BLOCK HASH: {{transaction_hash_details.block_hash}}
+          URL: https://{{NETWORK}}.etherscan.io/tx/{{transaction_hash_details.transaction_hash}}
+
+    - name: Identified hosts
+      debug:
+        var: groups['validator']
 
     - name: Convert epoch to date full
       shell: "date -d @{{MIN_GENESIS_TIME}}"
@@ -77,7 +79,7 @@
         replace: "{{item.1}}"
       loop:
         - ["##CONFIG_NAME##", "{{CONFIG_NAME}}"]
-        - ["##MIN_GENESIS_ACTIVE_VALIDATOR_COUNT##", "{{VALIDATORS|length * VALIDATORS_PER_INSTANCE}}"]
+        - ["##MIN_GENESIS_ACTIVE_VALIDATOR_COUNT##", "{{groups['validator']|length * VALIDATORS_PER_INSTANCE}}"]
         - ["##DATE_FULL##", "{{DATE_FULL.stdout}}"]
         - ["##MIN_GENESIS_TIME##", "{{MIN_GENESIS_TIME}}"]
         - ["##GENESIS_DELAY##", "{{GENESIS_DELAY}}"]
@@ -103,9 +105,14 @@
         dest: "{{ data_dir }}/mnemonics.yaml"
         content: ""
 
+    - name: Create empty secret_mnemonics.yaml
+      copy:
+        dest: "{{ data_dir }}/secret_mnemonics.yaml"
+        content: ""
+
     - name: Generate mnenomic and add to file
-      include_tasks: generate_mnemonics.yml
-      loop: "{{VALIDATORS}}"
+      include_tasks: tasks/generate_mnemonics.yml
+      loop: "{{groups['validator']}}"
 
     - name: Generate genesis state
       shell: "docker run --user $(id -u):$(id -u) --network host --rm -v {{data_dir}}:/data gathecageorge/eth2-test-genesis:latest phase0 --config /data/config.yaml --eth1-block {{transaction_hash_details.block_hash}} --mnemonics /data/mnemonics.yaml --timestamp {{MIN_GENESIS_TIME - GENESIS_DELAY}} --tranches-dir /data/tranches --state-output /data/genesis.ssz"
