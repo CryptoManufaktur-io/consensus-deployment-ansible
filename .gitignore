@@ -7,3 +7,4 @@ selected_validator_keys
 #external_roles
 **/inventory.ini
 **/secrets.yml
+**/playbooks/contract/testnet/

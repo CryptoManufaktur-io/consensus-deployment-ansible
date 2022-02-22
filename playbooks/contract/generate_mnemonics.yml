@@ -1,0 +1,13 @@
+---
+- name: Create mnemonic
+  shell: "docker run --rm ethstaker/eth-val-tools mnemonic"
+  register: mnemonic_output
+
+- name: Generate mnenomic
+  blockinfile:
+    path: "{{ data_dir }}/mnemonics.yaml"
+    block: |
+      # {{item}}
+      - mnemonic: "{{mnemonic_output.stdout}}"
+        count: {{VALIDATORS_PER_INSTANCE}}
+    marker: ""
