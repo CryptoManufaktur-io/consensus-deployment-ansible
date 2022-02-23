@@ -54,7 +54,7 @@
         var: groups['validator']
 
     - name: Convert epoch to date full
-      shell: "date -d @{{MIN_GENESIS_TIME}}"
+      shell: "echo {{MIN_GENESIS_TIME}} | perl -pe 's/(\\d+)/localtime($1)/e'"
       register: DATE_FULL
 
     - name: Remove testnet data dir first

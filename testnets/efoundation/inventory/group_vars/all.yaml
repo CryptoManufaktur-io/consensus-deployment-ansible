@@ -39,7 +39,7 @@ validator_rpc_port: 4002
 node_exporter_web_listen_address: "0.0.0.0:9100"
 
 bootnode_enrs:
-  - "enr:-Iq4QNLJQIbMoWqibKkUZ9lvdUVIKXpsrF0-UW-5bwGoUpLXGewOXvmyv3ZnK66y5-ymNifTWv87lUFGpuY6_GO4lHWGAX8g8QXJgmlkgnY0gmlwhK3mlSCJc2VjcDI1NmsxoQOr9v8f3ErCa8GPv-zUH4g4C-kOahC70S7CfXZpGgzgNYN1ZHCCIyk"
+  - "enr:-Iq4QHUKxNoyO5kKRif-em1u-eiGzk2SFqiDQ5Yq1un7GrJPeN0sLMkvW7x4INnZx3O1Ek3sZ5NeCLWbd0ylin5h5ECGAX8mF0VvgmlkgnY0gmlwhK3mlSCJc2VjcDI1NmsxoQOr9v8f3ErCa8GPv-zUH4g4C-kOahC70S7CfXZpGgzgNYN1ZHCCIyk"
 
 ##############################################
 # name of the validator to display

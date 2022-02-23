@@ -7,9 +7,6 @@
 # stop any running beacon/validator docker image, remove existing validator keys and beacon node data
 - import_playbook: tasks/stop_and_wipe_beacon_and_validator.yml
 
-# creates requisite directories for data and sets permissions
-- import_playbook: tasks/mkdatadirs.yml
-
 # Generate validator keys
 - import_playbook: tasks/generate_validator_keys.yml
 
