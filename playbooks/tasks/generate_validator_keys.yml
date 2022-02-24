@@ -53,7 +53,7 @@
           when: eth2_client_name == 'prysm'
           shell: |
             mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts
-            echo "{{prysm_password}}" > "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet_pass.txt"
+            echo "{{PRYSM_PASSWORD}}" > "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet_pass.txt"
             cp -r "{{home_dir}}/temp_data/generated/prysm/direct/accounts/all-accounts.keystore.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts/all-accounts.keystore.json"
             cp -r "{{home_dir}}/temp_data/generated/prysm/keymanageropts.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/keymanageropts.json"
             

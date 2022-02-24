@@ -19,9 +19,6 @@ eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['publi
 ##############################################
 # testnet specific information
 ##############################################
-testnet_type: prater
-eth2_network_name: prater
-eth1_network: goerli
 eth1_client: geth
 
 ##############################################
@@ -36,10 +33,9 @@ beacon_metrics_port: 8000
 beacon_p2p_port: 9000
 validator_metrics_port: 8001
 validator_rpc_port: 4002
-node_exporter_web_listen_address: "0.0.0.0:9100"
 
 bootnode_enrs:
-  - "enr:-Iq4QHUKxNoyO5kKRif-em1u-eiGzk2SFqiDQ5Yq1un7GrJPeN0sLMkvW7x4INnZx3O1Ek3sZ5NeCLWbd0ylin5h5ECGAX8mF0VvgmlkgnY0gmlwhK3mlSCJc2VjcDI1NmsxoQOr9v8f3ErCa8GPv-zUH4g4C-kOahC70S7CfXZpGgzgNYN1ZHCCIyk"
+  - "enr:-Iq4QM_jK3IcwR8XC0PHhE9WYWJta7FOkMGopNczTMHK_ds6BQWjHGRJabJ11I5Ln5929bsQBaTdFaVyGQ1p2wuDbcCGAX8nwjMhgmlkgnY0gmlwhK3mlSCJc2VjcDI1NmsxoQOr9v8f3ErCa8GPv-zUH4g4C-kOahC70S7CfXZpGgzgNYN1ZHCCIyk"
 
 ##############################################
 # name of the validator to display
@@ -49,16 +45,8 @@ graffiti: "{{eth2_client_name}}-{{eth1_client}}"
 ##############################################
 # local data directories
 ##############################################
-local_explorerdata_host_dir: "{{inventory_dir}}/../explorerdata"
-local_explorerdata_host_archive: "{{inventory_dir}}/../explorerdata.tar.gz"
-local_forkmondata_host_dir: "{{inventory_dir}}/../forkmondata"
-local_forkmondata_host_archive: "{{inventory_dir}}/../forkmondata.tar.gz"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
 local_custom_config_data_host_archive: "{{inventory_dir}}/../custom_config_data.tar.gz"
-# private dirs
-# Validator assignments
-local_validator_host_dir: "{{inventory_dir}}/../selected_validator_keys/host_{{eth2_node_index}}"
-local_validator_host_archive: "{{inventory_dir}}/../selected_validator_keys/host_{{eth2_node_index}}.tar.gz"
 
 ##############################################
 # remote host data directories
@@ -89,7 +77,6 @@ beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
 separate_validator_process_enabled: true
-
 
 ##############################################
 # node_exporter settings

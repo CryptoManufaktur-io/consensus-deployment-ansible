@@ -3,8 +3,8 @@
 ##############################################
 eth2_client_name: nimbus
 
-beacon_image_name: parithoshj/nimbus:merge-1a94c59
-validator_image_name: parithoshj/nimbus:merge-1a94c59
+beacon_image_name: statusim/nimbus-eth2:amd64-latest
+validator_image_name: statusim/nimbus-eth2:amd64-latest
 
 ##############################################
 # volume mappings on remote host
@@ -19,12 +19,11 @@ beacon_log_level: debug
 # arguments to run the containers with
 ##############################################
 beacon_start_args: >
-  beacon_node
   --non-interactive=true
   --network="/custom_config_data"
   --max-peers="{{hi_peer_count}}"
   --data-dir="/beacondata"
-  --web3-url="{{consensus_endpoint_nimbus}}"
+  --web3-url="{{eth1endpoint_nimbus}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --bootstrap-node="{{ bootnode_enrs | join(',') }}"
   {% endif %}
@@ -41,7 +40,6 @@ beacon_start_args: >
   --doppelganger-detection=off
   --validators-dir="/validatordata/keys"
   --secrets-dir="/validatordata/secrets"
-  --terminal-total-difficulty-override={{terminal_total_difficulty}}
 
 ##############################################
 # memory limits

@@ -12,6 +12,10 @@
       prompt: Do you want to remove all data in home directory (yes/no)?
       private: no
 
+    - name: confirm_images
+      prompt: Do you want to remove all docker images (yes/no)?
+      private: no
+
   tasks:
     - name: Stop all containers
       shell: "docker stop $(docker ps -a -q)"
@@ -24,6 +28,12 @@
       register: stop_result
       failed_when: "(stop_result.rc >= 1) and not ('requires at least 1 argument' in stop_result.stderr)"
       when: confirm_containers == 'yes'
+
+    - name: Remove all docker images
+      shell: "docker rmi $(docker image ls -a -q)"
+      register: stop_result
+      failed_when: "(stop_result.rc >= 1) and not ('requires at least 1 argument' in stop_result.stderr)"
+      when: confirm_images == 'yes'
 
     - name: Remove data in home directory
       shell: "sudo rm -rf /home/{{ansible_user}}/*"

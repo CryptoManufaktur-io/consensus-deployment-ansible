@@ -9,7 +9,7 @@
           - labels:
               instance: beacon
             targets:
-            - localhost:{{ beacon_metrics_port }}
+            - dockerhost:{{ beacon_metrics_port }}
 
 - name: Start Register validator metrics
   hosts: [validator]
@@ -23,4 +23,4 @@
           - labels:
               instance: validator
             targets:
-            - localhost:{{ validator_metrics_port }}
+            - dockerhost:{{ validator_metrics_port }}

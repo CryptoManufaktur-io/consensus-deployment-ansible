@@ -49,7 +49,6 @@ beacon_start_args: >
 
 validator_start_args: >
   lighthouse
-  --debug-level="debug"
   --testnet-dir="/custom_config_data"
   vc
   --validators-dir="/validatordata/validators"

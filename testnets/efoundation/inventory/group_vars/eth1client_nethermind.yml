@@ -9,7 +9,7 @@ eth1_volumes:
   - "{{eth1_node_dir}}:/eth1data"
 
 eth1_start_args: >
-  --config {{eth1_network}}
+  --config {{NETWORK}}
   --datadir="/eth1data"
   --Init.WebSocketsEnabled=true
   --JsonRpc.Enabled=true

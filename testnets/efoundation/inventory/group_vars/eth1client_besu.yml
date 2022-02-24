@@ -10,7 +10,7 @@ eth1_volumes:
 
 eth1_start_args: >
   --data-path="/eth1data"
-  --network={{eth1_network}}
+  --network={{NETWORK}}
   --rpc-http-enabled=true
   --rpc-http-host=0.0.0.0
   --rpc-http-port={{eth1_rpc_port}}

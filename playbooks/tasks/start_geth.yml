@@ -5,6 +5,9 @@
     - name: Include geth variables
       include_vars: "{{inventory_dir}}/group_vars/eth1client_geth.yml"
 
+    - name: Include secrets
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
     - name: Get info on container if running
       docker_container_info:
         name: "{{ eth1_container_name }}"

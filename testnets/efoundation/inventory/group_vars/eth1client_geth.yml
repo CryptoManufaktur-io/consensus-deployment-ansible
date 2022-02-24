@@ -17,7 +17,7 @@ eth1_volumes:
 # arguments to run the containers with
 ##############################################
 eth1_start_args: >
-   --{{ eth1_network }} 
+   --{{ NETWORK }} 
    --datadir {{eth1_data_dir}}
    --http --http.api "engine,net,eth,consensus" 
    --http.port {{ eth1_rpc_port }} 
