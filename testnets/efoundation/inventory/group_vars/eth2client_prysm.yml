@@ -34,7 +34,7 @@ beacon_start_args: >
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
     --bootstrap-node="{{ bootnode_enrs | join(',') }}"
   {% endif %}
-  --verbosity="{{ beacon_log_level | lower }}"
+  --verbosity="{{ beacon_log_level | default('warn') }}"
   --p2p-host-ip={{public_ip_address}}
   --p2p-max-peers={{hi_peer_count}}
   --p2p-udp-port={{beacon_p2p_port}} --p2p-tcp-port={{beacon_p2p_port}}
@@ -42,7 +42,6 @@ beacon_start_args: >
   --rpc-host=0.0.0.0 --rpc-port={{beacon_grpc_port}}
   --grpc-gateway-host=0.0.0.0
   --grpc-gateway-port={{beacon_api_port}}
-  --verbosity="trace"
   --enable-debug-rpc-endpoints
   --min-sync-peers 1
 
@@ -53,6 +52,7 @@ validator_start_args: >
   --beacon-rpc-provider={{beacon_endpoint}}
   --monitoring-host=0.0.0.0 --monitoring-port={{validator_metrics_port}}
   --graffiti="{{graffiti}}"
+  --verbosity="{{ validator_log_level | default('info') }}"
   --wallet-dir=/validatordata/wallet
   --wallet-password-file="/validatordata/wallet_pass.txt"
 ##############################################
