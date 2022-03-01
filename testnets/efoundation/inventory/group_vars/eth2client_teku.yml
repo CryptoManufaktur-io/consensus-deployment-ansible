@@ -65,7 +65,7 @@ beacon_kernel_memory: 14500M
 validator_memory: 2000M
 validator_kernel_memory: 2500M
 beacon_env:
-  JAVA_OPTS: "-Xmx14000m -Xms14000m"
+  JAVA_OPTS: "-XX:SoftMaxHeapSize=2g -Xmx4g"
 
 # TODO: maybe configure logging style via env var later
 #  LOG4J_CONFIGURATION_FILE: "/beacondata/log_config.xml"

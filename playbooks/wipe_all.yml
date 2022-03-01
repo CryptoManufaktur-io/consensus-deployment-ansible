@@ -35,6 +35,6 @@
       failed_when: "(stop_result.rc >= 1) and not ('requires at least 1 argument' in stop_result.stderr)"
       when: confirm_images == 'yes'
 
-    - name: Remove data in home directory
-      shell: "sudo rm -rf /home/{{ansible_user}}/*"
+    - name: Remove data in home directory NB eth1 data wont be removed since default its in hidden folder
+      shell: "sudo rm -rf {{home_dir}}/*"
       when: confirm_data == 'yes'

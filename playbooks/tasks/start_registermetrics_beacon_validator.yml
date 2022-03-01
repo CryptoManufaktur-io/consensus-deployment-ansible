@@ -7,7 +7,7 @@
         dest: "{{ prometheus_file_sd_dir }}/beacon.yml"
         content: |
           - labels:
-              instance: beacon
+              appname: beacon
             targets:
             - dockerhost:{{ beacon_metrics_port }}
 
@@ -21,6 +21,6 @@
         dest: "{{ prometheus_file_sd_dir }}/validator.yml"
         content: |
           - labels:
-              instance: validator
+              appname: validator
             targets:
             - dockerhost:{{ validator_metrics_port }}

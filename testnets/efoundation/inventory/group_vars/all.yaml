@@ -8,6 +8,7 @@ docker_etc_hosts: >
     "dockerhost" : "{{ ansible_host_private }}" 
   }
 docker_monitoring_network: "monitoring_network"
+restart_container_if_exists: true
 
 ##############################################
 # eth1 endpoints
@@ -34,9 +35,6 @@ beacon_p2p_port: 9000
 validator_metrics_port: 8001
 validator_rpc_port: 4002
 
-bootnode_enrs:
-  - "enr:-Iq4QM_jK3IcwR8XC0PHhE9WYWJta7FOkMGopNczTMHK_ds6BQWjHGRJabJ11I5Ln5929bsQBaTdFaVyGQ1p2wuDbcCGAX8nwjMhgmlkgnY0gmlwhK3mlSCJc2VjcDI1NmsxoQOr9v8f3ErCa8GPv-zUH4g4C-kOahC70S7CfXZpGgzgNYN1ZHCCIyk"
-
 ##############################################
 # name of the validator to display
 ##############################################
@@ -53,7 +51,7 @@ local_custom_config_data_host_archive: "{{inventory_dir}}/../custom_config_data.
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/eth1data"
+eth1_node_dir: "{{home_dir}}/.eth1data"   # Hidden folder so its not deleted on restart
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -251,8 +249,8 @@ grafana_user_id: "1000:1000"
 grafana_start_args: ""
 local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
 local_grafana_conf_archive: "{{inventory_dir}}/../grafana_conf.tar.gz"
-grafana_data_dir: "{{home_dir}}/grafana_data"
-grafana_conf_dir: "{{home_dir}}/grafana_conf"
+grafana_data_dir: "{{home_dir}}/.grafana_data" # Hidden folder so its not deleted on restart
+grafana_conf_dir: "{{home_dir}}/.grafana_conf" # Hidden folder so its not deleted on restart
 grafana_volumes:
   - "{{grafana_data_dir}}:/var/lib/grafana"
   - "{{grafana_conf_dir}}:/etc/grafana/provisioning/"
