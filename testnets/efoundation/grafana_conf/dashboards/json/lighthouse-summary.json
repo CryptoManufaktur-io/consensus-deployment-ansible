@@ -21,7 +21,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 3,
+  "iteration": 1646176538808,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -82,7 +83,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
+        "w": 4,
         "x": 8,
         "y": 0
       },
@@ -106,9 +107,16 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "avg(beacon_head_state_total_validators_total)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(beacon_head_state_total_validators_total{testnet=\"$testnet\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -156,11 +164,11 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 11,
+        "w": 4,
+        "x": 12,
         "y": 0
       },
-      "id": 48,
+      "id": 3,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -180,13 +188,20 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "avg(beacon_head_state_withdrawn_validators_total)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(beacon_head_state_active_validators_total{testnet=\"$testnet\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Avg. Withdrawable Validators",
+      "title": "Avg. Active Validators",
       "transparent": true,
       "type": "stat"
     },
@@ -230,11 +245,11 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 14,
+        "w": 4,
+        "x": 17,
         "y": 0
       },
-      "id": 13,
+      "id": 25,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -254,13 +269,20 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "max(slotclock_present_slot)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "max(slotclock_present_epoch{testnet=\"$testnet\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Avg. Current Slot",
+      "title": "Avg. Current Epoch",
       "transparent": true,
       "type": "stat"
     },
@@ -290,7 +312,7 @@
       "gridPos": {
         "h": 2,
         "w": 3,
-        "x": 19,
+        "x": 21,
         "y": 0
       },
       "id": 122,
@@ -312,7 +334,12 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "lighthouse_info",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "lighthouse_info{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "",
           "queryType": "randomWalk",
@@ -375,7 +402,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
+        "w": 4,
         "x": 8,
         "y": 3
       },
@@ -399,9 +426,16 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "avg(beacon_head_state_slashed_validators_total)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(beacon_head_state_slashed_validators_total{testnet=\"$testnet\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -449,11 +483,11 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 11,
+        "w": 5,
+        "x": 12,
         "y": 3
       },
-      "id": 3,
+      "id": 48,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -473,13 +507,20 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "avg(beacon_head_state_active_validators_total)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(beacon_head_state_withdrawn_validators_total{testnet=\"$testnet\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Avg. Active Validators",
+      "title": "Avg. Withdrawable Validators",
       "transparent": true,
       "type": "stat"
     },
@@ -524,10 +565,10 @@
       "gridPos": {
         "h": 3,
         "w": 3,
-        "x": 14,
+        "x": 17,
         "y": 3
       },
-      "id": 25,
+      "id": 13,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -547,13 +588,20 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "max(slotclock_present_epoch)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "max(slotclock_present_slot{testnet=\"$testnet\"})",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Avg. Current Epoch",
+      "title": "Avg. Current Slot",
       "transparent": true,
       "type": "stat"
     },
@@ -608,7 +656,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "system_loadavg_1",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "system_loadavg_1{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -695,7 +748,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "system_virt_mem_free_bytes",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "system_virt_mem_free_bytes{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -782,7 +840,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "process_resident_memory_bytes",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "process_resident_memory_bytes{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -887,9 +950,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "slotclock_present_slot - beacon_head_state_slot",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "slotclock_present_slot{testnet=\"$testnet\"} - beacon_head_state_slot{testnet=\"$testnet\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -977,7 +1047,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "slotclock_present_epoch - beacon_head_state_current_justified_epoch",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "slotclock_present_epoch{testnet=\"$testnet\"} - beacon_head_state_current_justified_epoch{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1069,9 +1144,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "slotclock_present_epoch - beacon_head_state_finalized_epoch",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "slotclock_present_epoch{testnet=\"$testnet\"} - beacon_head_state_finalized_epoch{testnet=\"$testnet\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -1159,7 +1241,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_participation_prev_epoch_attester",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_participation_prev_epoch_attester{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1251,7 +1338,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_participation_prev_epoch_target_attester",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_participation_prev_epoch_target_attester{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1343,7 +1435,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_participation_prev_epoch_head_attester",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_participation_prev_epoch_head_attester{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1436,7 +1533,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_attn_observation_epoch_attesters",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_attn_observation_epoch_attesters{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1529,7 +1631,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_attn_observation_epoch_aggregators",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_attn_observation_epoch_aggregators{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1621,9 +1728,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_head_state_validator_balances_total / 1000000000",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_head_state_validator_balances_total{testnet=\"$testnet\"} / 1000000000",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -1710,9 +1824,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_head_state_active_validators_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_head_state_active_validators_total{testnet=\"$testnet\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -1799,9 +1920,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_head_state_total_validators_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_head_state_total_validators_total{testnet=\"$testnet\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -1888,9 +2016,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_head_state_finalized_root",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_head_state_finalized_root{testnet=\"$testnet\"}",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -1977,7 +2112,12 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "beacon_fork_choice_reorg_total",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "beacon_fork_choice_reorg_total{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -2086,7 +2226,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "libp2p_peers",
+          "expr": "libp2p_peers{testnet=\"$testnet\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -2177,7 +2317,7 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "libp2p_peers_per_client",
+          "expr": "libp2p_peers_per_client{testnet=\"$testnet\"}",
           "instant": true,
           "interval": "",
           "legendFormat": "{{Client}}",
@@ -2225,6 +2365,9 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -2236,7 +2379,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "discovery_requests",
+          "expr": "discovery_requests{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "Discovery Requests Per Second",
           "refId": "A"
@@ -2296,6 +2439,7 @@
         "x": 10,
         "y": 43
       },
+      "hiddenSeries": false,
       "id": 91,
       "legend": {
         "avg": false,
@@ -2309,6 +2453,9 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -2320,7 +2467,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "discovery_sessions",
+          "expr": "discovery_sessions{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -2408,7 +2555,7 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "discovery_queue_size",
+          "expr": "discovery_queue_size{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "Queued Discoveries",
           "refId": "A"
@@ -2440,6 +2587,7 @@
         "x": 0,
         "y": 50
       },
+      "hiddenSeries": false,
       "id": 116,
       "interval": "",
       "legend": {
@@ -2454,6 +2602,9 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -2465,7 +2616,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(libp2p_total_bandwidth[1m])",
+          "expr": "rate(libp2p_total_bandwidth{testnet=\"$testnet\"}[1m])",
           "legendFormat": "bytes/s",
           "refId": "A"
         }
@@ -2523,6 +2674,7 @@
         "x": 8,
         "y": 50
       },
+      "hiddenSeries": false,
       "id": 118,
       "interval": "",
       "legend": {
@@ -2537,6 +2689,9 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -2548,7 +2703,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(libp2p_inbound_bytes[1m])",
+          "expr": "rate(libp2p_inbound_bytes{testnet=\"$testnet\"}[1m])",
           "legendFormat": "bytes/s",
           "refId": "A"
         }
@@ -2606,6 +2761,7 @@
         "x": 16,
         "y": 50
       },
+      "hiddenSeries": false,
       "id": 120,
       "interval": "",
       "legend": {
@@ -2620,6 +2776,9 @@
       "lines": true,
       "linewidth": 1,
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -2631,7 +2790,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(libp2p_outbound_bytes[1m])",
+          "expr": "rate(libp2p_outbound_bytes{testnet=\"$testnet\"}[1m])",
           "legendFormat": "bytes/s",
           "refId": "A"
         }
@@ -2734,7 +2893,7 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "gossipsub_mesh_peers_per_main_topic",
+          "expr": "gossipsub_mesh_peers_per_main_topic{testnet=\"$testnet\"}",
           "instant": true,
           "interval": "",
           "legendFormat": "{{topic_hash}}",
@@ -2796,7 +2955,7 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "gossipsub_avg_peer_score_per_topic",
+          "expr": "gossipsub_avg_peer_score_per_topic{testnet=\"$testnet\"}",
           "interval": "",
           "legendFormat": "{{topic_hash}}",
           "refId": "A"
@@ -2858,7 +3017,7 @@
       "pluginVersion": "8.4.2",
       "targets": [
         {
-          "expr": "gossipsub_mesh_peers_per_subnet_topic",
+          "expr": "gossipsub_mesh_peers_per_subnet_topic{testnet=\"$testnet\"}",
           "instant": true,
           "interval": "",
           "legendFormat": "{{subnet}}",
@@ -2924,6 +3083,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -2935,7 +3097,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "crit_total",
+          "expr": "crit_total{testnet=\"$testnet\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -3014,6 +3176,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3025,7 +3190,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(error_total[1m])",
+          "expr": "rate(error_total{testnet=\"$testnet\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3100,6 +3265,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3111,7 +3279,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(warn_total[1m])",
+          "expr": "rate(warn_total{testnet=\"$testnet\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3186,6 +3354,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3197,7 +3368,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(info_total[1m])",
+          "expr": "rate(info_total{testnet=\"$testnet\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3288,6 +3459,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3299,7 +3473,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(beacon_block_processing_seconds_sum[30s])\n/\nrate(beacon_block_processing_seconds_count[30s])",
+          "expr": "rate(beacon_block_processing_seconds_sum{testnet=\"$testnet\"}[30s])\n/\nrate(beacon_block_processing_seconds_count{testnet=\"$testnet\"}[30s])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -3376,6 +3550,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3387,7 +3564,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(beacon_fork_choice_seconds_sum[1m])\n/\nrate(beacon_fork_choice_seconds_count[1m])",
+          "expr": "rate(beacon_fork_choice_seconds_sum{testnet=\"$testnet\"}[1m])\n/\nrate(beacon_fork_choice_seconds_count{testnet=\"$testnet\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3461,6 +3638,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3472,7 +3652,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sync_slots_per_second",
+          "expr": "sync_slots_per_second{testnet=\"$testnet\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3548,6 +3728,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3559,7 +3742,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(beacon_block_processing_block_root_seconds_sum[5m])\n/\nrate(beacon_block_processing_block_root_seconds_count[5m])",
+          "expr": "rate(beacon_block_processing_block_root_seconds_sum{testnet=\"$testnet\"}[5m])\n/\nrate(beacon_block_processing_block_root_seconds_count{testnet=\"$testnet\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3634,6 +3817,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3645,7 +3831,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(beacon_block_processing_state_root_seconds_sum[5m])\n/\nrate(beacon_block_processing_state_root_seconds_count[5m])",
+          "expr": "rate(beacon_block_processing_state_root_seconds_sum{testnet=\"$testnet\"}[5m])\n/\nrate(beacon_block_processing_state_root_seconds_count{testnet=\"$testnet\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3736,6 +3922,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3747,7 +3936,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "store_disk_db_size",
+          "expr": "store_disk_db_size{testnet=\"$testnet\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3822,6 +4011,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3833,7 +4025,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(store_disk_db_read_bytes_total [1m])",
+          "expr": "increase(store_disk_db_read_bytes_total{testnet=\"$testnet\"} [1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3908,6 +4100,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -3919,7 +4114,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(store_disk_db_write_bytes_total [1m])",
+          "expr": "increase(store_disk_db_write_bytes_total{testnet=\"$testnet\"} [1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3995,6 +4190,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pluginVersion": "8.4.2",
       "pointradius": 2,
@@ -4006,9 +4204,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(beacon_persist_chain_sum[1m])\n/\nrate(beacon_persist_chain_count[1m])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "rate(beacon_persist_chain_sum{testnet=\"$testnet\"}[1m])\n/\nrate(beacon_persist_chain_count{testnet=\"$testnet\"}[1m])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
+          "legendFormat": "",
           "refId": "A"
         }
       ],
@@ -4043,15 +4248,43 @@
       }
     }
   ],
-  "refresh": "10s",
+  "refresh": "",
   "schemaVersion": 35,
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "george-testnet-1",
+          "value": "george-testnet-1"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values(testnet)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Testnet",
+        "multi": false,
+        "name": "testnet",
+        "options": [],
+        "query": {
+          "query": "label_values(testnet)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -4079,8 +4312,8 @@
     ]
   },
   "timezone": "",
-  "title": "Summary",
-  "uid": "yY7PIGdZd",
-  "version": 1,
+  "title": "Lighthouse Summary",
+  "uid": "D25IbVYnz",
+  "version": 6,
   "weekStart": ""
 }

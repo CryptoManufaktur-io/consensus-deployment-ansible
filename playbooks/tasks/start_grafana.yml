@@ -14,25 +14,30 @@
       file:
         path: "{{grafana_conf_dir}}"
         state: directory
+      register: confDirCreated
 
     - name: Archive local_grafana_conf_dir dir to prepare for upload
       archive:
         path: "{{local_grafana_conf_dir}}/*"
         dest: "{{local_grafana_conf_archive}}"
       delegate_to: localhost
+      when: confDirCreated.changed
 
     - name: Upload grafana conf to remote
       unarchive:
         src: "{{ local_grafana_conf_archive }}"
         dest: "{{ grafana_conf_dir }}"
+      when: confDirCreated.changed
 
     - name: Remove {{local_grafana_conf_archive}} archive after upload
       file:
         path: "{{ local_grafana_conf_archive }}"
         state: absent
       delegate_to: localhost
+      when: confDirCreated.changed
 
     - name: Replace variable in ini file
+      when: confDirCreated.changed
       replace:
         path: "{{ grafana_conf_dir }}/grafana.ini"
         regexp: "{{item.0}}"
@@ -43,6 +48,7 @@
         - ["##grafana_github_organizations##", "{{grafana_github_organizations}}"]
 
     - name: Modify permissions to match user-group inside docker image
+      when: confDirCreated.changed
       shell: chown -R "{{ ansible_user }}" "{{ grafana_data_dir }}" && chown -R "{{ ansible_user }}" "{{ grafana_conf_dir }}"
       become: true
 
