@@ -17,6 +17,8 @@
     archive:
       path: "{{local_custom_config_data_host_dir}}/*"
       dest: "{{local_custom_config_data_host_archive}}"
+    throttle: 1
+    run_once: true
     delegate_to: localhost
 
   - name: Upload config data to remote
@@ -28,5 +30,7 @@
     file:
       path: "{{ local_custom_config_data_host_archive }}"
       state: absent
+    throttle: 1
+    run_once: true
     delegate_to: localhost
     

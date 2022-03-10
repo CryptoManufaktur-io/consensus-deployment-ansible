@@ -1,6 +1,6 @@
 ---
 - name: Stop and clear all containers, also remove all data if allowed!!
-  hosts: all
+  hosts: [validator, beacon]
   gather_facts: false
   
   vars_prompt:

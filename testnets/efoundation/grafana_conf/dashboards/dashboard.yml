@@ -11,6 +11,16 @@ providers:
   options:
     path: "/etc/grafana/provisioning/dashboards/json/lighthouse-summary.json"
 
+- name: 'Testnet Overview'
+  orgId: 1
+  folder: ''
+  type: file
+  disableDeletion: false
+  allowUiUpdates: true
+  updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+  options:
+    path: "/etc/grafana/provisioning/dashboards/json/testnet-overview.json"
+
 - name: 'Node Exporter Full Import'
   orgId: 1
   folder: ''

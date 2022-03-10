@@ -14,7 +14,6 @@ beacon_volumes:
   - "{{testnet_dir}}:/custom_config_data"
   - "{{validator_node_dir}}:/validatordata"
 
-beacon_log_level: debug
 ##############################################
 # arguments to run the containers with
 ##############################################

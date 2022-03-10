@@ -83,6 +83,7 @@
         - ["##DATE_FULL##", "{{DATE_FULL.stdout}}"]
         - ["##MIN_GENESIS_TIME##", "{{MIN_GENESIS_TIME}}"]
         - ["##GENESIS_DELAY##", "{{GENESIS_DELAY}}"]
+        - ["##SECONDS_PER_SLOT##", "{{SECONDS_PER_SLOT}}"]
         - ["##NETWORK##", "{{NETWORK}}"]
         - ["##DEPOSIT_CHAIN_ID##", "{{DEPOSIT_CHAIN_ID}}"]
         - ["##DEPOSIT_NETWORK_ID##", "{{DEPOSIT_NETWORK_ID}}"]

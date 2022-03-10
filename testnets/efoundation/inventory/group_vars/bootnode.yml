@@ -9,7 +9,8 @@ bootnode_port: 9001
 bootnode_ip: "{{ansible_host}}"
 
 # 32 bytes, hex encoded, no 0x.
-bootnode_p2p_priv_key: "ecd4b18cba83590dbad11538446342c134f8a37759c23c34402c297f0db17668"
+# To generate one run `head -c 32 /dev/urandom|xxd -ps -c 32`
+bootnode_p2p_priv_key: "5ed46ec5ec2730239a6f93c4173e1b3fa875104de39cef7fc744611ec7ca45ac"
 
 bootnode_start_args: >
   {% if (other_bootnodes is defined) and other_bootnodes %}
@@ -18,7 +19,7 @@ bootnode_start_args: >
   --color=false
   --enr-ip="{{bootnode_ip}}"
   --enr-udp="{{bootnode_port}}"
-  --level=trace
+  --level=error
   --listen-ip=0.0.0.0
   --listen-udp="{{bootnode_port}}"
   --api-addr="0.0.0.0:8002"
