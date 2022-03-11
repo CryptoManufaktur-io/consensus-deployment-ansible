@@ -1,20 +1,32 @@
 apiVersion: 1
 
 providers:
-- name: 'Prometheus 2.0 Overview Import'
+- name: 'Lighthouse Summary'
   orgId: 1
   folder: ''
   type: file
   disableDeletion: false
+  allowUiUpdates: true
   updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
   options:
-    path: "/etc/grafana/provisioning/dashboards/json/prometheus-2-0-overview.json"
+    path: "/etc/grafana/provisioning/dashboards/json/lighthouse-summary.json"
+
+- name: 'Testnet Overview'
+  orgId: 1
+  folder: ''
+  type: file
+  disableDeletion: false
+  allowUiUpdates: true
+  updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+  options:
+    path: "/etc/grafana/provisioning/dashboards/json/testnet-overview.json"
 
 - name: 'Node Exporter Full Import'
   orgId: 1
   folder: ''
   type: file
   disableDeletion: false
+  allowUiUpdates: true
   updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
   options:
     path: "/etc/grafana/provisioning/dashboards/json/node-exporter.json"

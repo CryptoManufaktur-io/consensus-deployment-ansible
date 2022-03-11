@@ -10,21 +10,13 @@ clients:
   - url: ##promtail_loki_url##
 
 scrape_configs:
-- job_name: system
-  static_configs:
-  - targets:
-      - localhost
-    labels:
-      job: varlogs
-      __path__: /var/log/*log
-
 - job_name: containers
   static_configs:
   - targets:
       - localhost
     labels:
-      job: containerlogs
-      host: ##inventory_hostname##
+      host_node: ##inventory_hostname##
+      testnet: ##testnet##
       __path__: /var/lib/docker/containers/*/*log
 
   pipeline_stages:

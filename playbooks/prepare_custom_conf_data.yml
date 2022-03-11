@@ -1,0 +1,119 @@
+---
+- hosts: all[0]
+  connection: local
+  gather_facts: false
+  vars:
+    - data_dir: "{{inventory_dir}}/../custom_config_data"
+    - running_dir: "{{inventory_dir}}/../gen_custom_conf_data"
+
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Create contract and get transaction hash
+      when: TX_HASH == 'new'
+      block:
+        - name: Create contract
+          shell: "docker run --network host --rm -v {{running_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
+          register: contract_output
+
+        - name: Set transaction hash variable
+          set_fact:
+            TX_HASH: "{{contract_output.stdout}}"
+          when: contract_output.rc == 0
+          failed_when: contract_output.rc >= 1
+
+        - name: Created transaction hash
+          debug:
+            msg: |
+              TRANSACTION HASH: {{TX_HASH}}
+              URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}
+
+    - name: Get details from transaction hash
+      command: "python3 {{running_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
+      register: transaction_hash_details
+      until: transaction_hash_details is succeeded
+      retries: 10
+      delay: 30
+
+    - name: Parse json
+      set_fact:
+        transaction_hash_details: "{{ transaction_hash_details.stdout | from_json }}"
+
+    - name: Print transaction hash details
+      debug:
+        msg: |
+          TRANSACTION HASH: {{transaction_hash_details.transaction_hash}}
+          CONTRACT ADDRESS: {{transaction_hash_details.contract_address}}
+          BLOCK NUMBER: {{transaction_hash_details.block_number}}
+          BLOCK HASH: {{transaction_hash_details.block_hash}}
+          URL: https://{{NETWORK}}.etherscan.io/tx/{{transaction_hash_details.transaction_hash}}
+
+    - name: Identified hosts
+      debug:
+        var: groups['validator']
+
+    - name: Convert epoch to date full
+      shell: "echo {{MIN_GENESIS_TIME}} | perl -pe 's/(\\d+)/localtime($1)/e'"
+      register: DATE_FULL
+
+    - name: Remove testnet data dir first
+      file:
+        path: "{{data_dir}}"
+        state: absent
+
+    - name: Creates testnet data dir
+      file:
+        path: "{{data_dir}}"
+        state: directory
+
+    - name: Copy config file
+      copy:
+        src: "{{ running_dir }}/config.yaml"
+        dest: "{{ data_dir }}"
+
+    - name: Replace variable in conf file
+      replace:
+        path: "{{ data_dir }}/config.yaml"
+        regexp: "{{item.0}}"
+        replace: "{{item.1}}"
+      loop:
+        - ["##CONFIG_NAME##", "{{CONFIG_NAME}}"]
+        - ["##MIN_GENESIS_ACTIVE_VALIDATOR_COUNT##", "{{groups['validator']|length * VALIDATORS_PER_INSTANCE}}"]
+        - ["##DATE_FULL##", "{{DATE_FULL.stdout}}"]
+        - ["##MIN_GENESIS_TIME##", "{{MIN_GENESIS_TIME}}"]
+        - ["##GENESIS_DELAY##", "{{GENESIS_DELAY}}"]
+        - ["##SECONDS_PER_SLOT##", "{{SECONDS_PER_SLOT}}"]
+        - ["##NETWORK##", "{{NETWORK}}"]
+        - ["##DEPOSIT_CHAIN_ID##", "{{DEPOSIT_CHAIN_ID}}"]
+        - ["##DEPOSIT_NETWORK_ID##", "{{DEPOSIT_NETWORK_ID}}"]
+        - ["##DEPOSIT_CONTRACT_ADDRESS##", "{{transaction_hash_details.contract_address}}"]
+
+    - name: Create deploy_block.txt
+      copy:
+        dest: "{{ data_dir }}/deploy_block.txt"
+        content: |
+          {{transaction_hash_details.block_number}}
+
+    - name: Create deposit_contract.txt
+      copy:
+        dest: "{{ data_dir }}/deposit_contract.txt"
+        content: |
+          {{transaction_hash_details.contract_address}}
+
+    - name: Create empty mnemonics.yaml
+      copy:
+        dest: "{{ data_dir }}/mnemonics.yaml"
+        content: ""
+
+    - name: Create empty secret_mnemonics.yaml
+      copy:
+        dest: "{{ data_dir }}/secret_mnemonics.yaml"
+        content: ""
+
+    - name: Generate mnenomic and add to file
+      include_tasks: tasks/generate_mnemonics.yml
+      loop: "{{groups['validator']}}"
+
+    - name: Generate genesis state
+      shell: "docker run --user $(id -u):$(id -u) --network host --rm -v {{data_dir}}:/data gathecageorge/eth2-test-genesis:latest phase0 --config /data/config.yaml --eth1-block {{transaction_hash_details.block_hash}} --mnemonics /data/mnemonics.yaml --timestamp {{MIN_GENESIS_TIME - GENESIS_DELAY}} --tranches-dir /data/tranches --state-output /data/genesis.ssz"

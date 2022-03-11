@@ -1,12 +1,24 @@
 - name: Upload network data
   hosts: beacon
-  gather_facts: true
-  serial: 20
+  gather_facts: false
   tasks:
+  - name: Remove testnet directory
+    become: true
+    file:
+      path: "{{testnet_dir}}"
+      state: absent
+
+  - name: Recreate testnet dir
+    file:
+      path: "{{testnet_dir}}"
+      state: directory
+
   - name: Archive custom_config_data dir to prepare for upload
     archive:
       path: "{{local_custom_config_data_host_dir}}/*"
       dest: "{{local_custom_config_data_host_archive}}"
+    throttle: 1
+    run_once: true
     delegate_to: localhost
 
   - name: Upload config data to remote
@@ -18,4 +30,7 @@
     file:
       path: "{{ local_custom_config_data_host_archive }}"
       state: absent
+    throttle: 1
+    run_once: true
     delegate_to: localhost
+    

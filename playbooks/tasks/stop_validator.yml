@@ -1,6 +1,6 @@
 - name: Stop validator client
   hosts: validator
-  gather_facts: true
+  gather_facts: false
   serial: 20
   tasks:
     - name: Stop Eth2 validator client container

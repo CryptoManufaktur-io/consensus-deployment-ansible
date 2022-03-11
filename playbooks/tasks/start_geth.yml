@@ -2,24 +2,22 @@
   hosts: geth
   gather_facts: false
   tasks:
-    - name: Get info on container if running
-      docker_container_info:
-        name: "{{ eth1_container_name }}"
-      register: result
+    - name: Include geth variables
+      include_vars: "{{inventory_dir}}/group_vars/eth1client_geth.yml"
 
-    - name: Creates eth1 dir
-      when: result.exists == False
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Creates eth1 data dir
       file:
         path: "{{eth1_node_dir}}"
         state: directory
 
     - name: Modify permissions to match user-group inside docker image
-      when: result.exists == False
       shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
       become: true
 
     - name: Start Eth1 container
-      when: result.exists == False
       docker_container:
         name: "{{ eth1_container_name }}"
         state: started
@@ -29,7 +27,7 @@
         memory_swappiness: 0
         kernel_memory: "{{eth1_kernel_memory}}"
         network_mode: host
-        restart: "{{ eth1_require_restart | default(false) }}"
+        restart: "{{ restart_container_if_exists | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"
         volumes: "{{eth1_volumes}}"
@@ -38,3 +36,15 @@
         command: "{{ eth1_start_args }}"
         env: "{{ eth1_env | default({}) }}"
         user: "{{ eth1_user_id }}"
+
+    - name: Register geth metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/geth.yml"
+        content: |
+          - labels:
+              appname: {{ eth1_container_name }}
+            targets:
+            - dockerhost:{{eth1_metrics_port}}
+      when: eth1_metrics_port | default('') != ''
+
+

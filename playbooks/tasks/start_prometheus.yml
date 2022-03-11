@@ -2,6 +2,9 @@
   hosts: "{{ variable_host }}"
   gather_facts: false
   tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
     - name: Creates prometheus data dir
       file:
         path: "{{ prometheus_data_dir }}"
@@ -24,8 +27,11 @@
     - name: Replace variable in conf file
       replace:
         path: "{{ prometheus_config_dir }}/config.yml"
-        regexp: '##inventory_hostname##'
-        replace: '{{ inventory_hostname }}'
+        regexp: "{{item.0}}"
+        replace: "{{item.1}}"
+      loop:
+        - ["##inventory_hostname##", "{{inventory_hostname}}"]
+        - ["##testnet##", "{{CONFIG_NAME}}"]
 
     - name: Add remote write if remote_write_url is present
       blockinfile:
@@ -35,17 +41,24 @@
             - url: "{{ remote_write_url }}"
       when: remote_write_url | default('') != ''
 
-    - name: Start prometheus container
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"
+
+    - name: Start prometheus container with receiver
       docker_container:
         name: "{{ prometheus_container_name }}"
         state: started
         image: "{{ prometheus_image_name }}"
         pull: true
+        ports:
+          - "9090:9090"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{prometheus_kernel_memory}}"
-        network_mode: host
-        restart: "{{ prometheus_require_restart | default(false) }}"
+        etc_hosts: "{{ docker_etc_hosts }}"
+        network_mode: "{{ docker_monitoring_network }}"
+        restart: "{{ restart_container_if_exists | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"
         volumes: "{{prometheus_volumes}}"
@@ -54,3 +67,26 @@
         command: "{{ prometheus_rw_start_args if (enable_remote_receiver | default('false')) == 'true' else prometheus_start_args }}"
         env: "{{ prometheus_env | default({}) }}"
         user: "{{ prometheus_user_id }}"
+      when: enable_remote_receiver | default('false') == 'true'
+
+    - name: Start prometheus container without receiver
+      docker_container:
+        name: "{{ prometheus_container_name }}"
+        state: started
+        image: "{{ prometheus_image_name }}"
+        pull: true
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        kernel_memory: "{{prometheus_kernel_memory}}"
+        etc_hosts: "{{ docker_etc_hosts }}"
+        network_mode: "{{ docker_monitoring_network }}"
+        restart: "{{ restart_container_if_exists | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{prometheus_volumes}}"
+        memory: "{{prometheus_memory}}"
+        memory_swap: "{{prometheus_memory}}"
+        command: "{{ prometheus_rw_start_args if (enable_remote_receiver | default('false')) == 'true' else prometheus_start_args }}"
+        env: "{{ prometheus_env | default({}) }}"
+        user: "{{ prometheus_user_id }}"
+      when: enable_remote_receiver | default('false') != 'true'

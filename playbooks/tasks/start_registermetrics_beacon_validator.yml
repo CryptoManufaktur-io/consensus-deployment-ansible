@@ -7,19 +7,20 @@
         dest: "{{ prometheus_file_sd_dir }}/beacon.yml"
         content: |
           - labels:
-              instance: beacon
+              appname: beacon
             targets:
-            - localhost:{{ beacon_metrics_port }}
+            - dockerhost:{{ beacon_metrics_port }}
 
 - name: Start Register validator metrics
   hosts: [validator]
   gather_facts: true
   tasks:
     - name: Register validator metrics to prometheus
+      when: eth2_client_name == 'lighthouse' or eth2_client_name == 'prysm'
       copy:
         dest: "{{ prometheus_file_sd_dir }}/validator.yml"
         content: |
           - labels:
-              instance: validator
+              appname: validator
             targets:
-            - localhost:{{ validator_metrics_port }}
+            - dockerhost:{{ validator_metrics_port }}

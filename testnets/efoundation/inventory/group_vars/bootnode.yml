@@ -1,0 +1,27 @@
+bootnode_container_name: bootnode
+bootnode_memory: 2000m
+bootnode_image_name: protolambda/eth2-bootnode:cleanup
+
+bootnode_host_dir: "{{home_dir}}/bootnode_data"
+
+bootnode_port: 9001
+
+bootnode_ip: "{{ansible_host}}"
+
+# 32 bytes, hex encoded, no 0x.
+# To generate one run `head -c 32 /dev/urandom|xxd -ps -c 32`
+bootnode_p2p_priv_key: "5ed46ec5ec2730239a6f93c4173e1b3fa875104de39cef7fc744611ec7ca45ac"
+
+bootnode_start_args: >
+  {% if (other_bootnodes is defined) and other_bootnodes %}
+  --bootnodes="{{ other_bootnodes | join(',') }}"
+  {% endif %}
+  --color=false
+  --enr-ip="{{bootnode_ip}}"
+  --enr-udp="{{bootnode_port}}"
+  --level=error
+  --listen-ip=0.0.0.0
+  --listen-udp="{{bootnode_port}}"
+  --api-addr="0.0.0.0:8002"
+  --node-db="/data/localnode.db"
+  --priv="{{bootnode_p2p_priv_key}}"

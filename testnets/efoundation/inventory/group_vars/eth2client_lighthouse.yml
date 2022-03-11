@@ -2,6 +2,7 @@
 # image name and image location
 ##############################################
 eth2_client_name: lighthouse
+
 beacon_image_name: sigp/lighthouse:v1.5.1
 validator_image_name: sigp/lighthouse:v1.5.1
 beacon_endpoint: "http://127.0.0.1:{{beacon_api_port}}"
@@ -12,12 +13,11 @@ beacon_endpoint: "http://127.0.0.1:{{beacon_api_port}}"
 beacon_volumes:
   - "{{beacon_node_dir}}:/beacondata"
   - "{{testnet_dir}}:/custom_config_data"
-  - "{{testnet_dir}}/config.yaml:/custom_config_data/config.yaml"
 
 validator_volumes:
   - "{{validator_node_dir}}:/validatordata"
   - "{{testnet_dir}}:/custom_config_data"
-  - "{{testnet_dir}}/config.yaml:/custom_config_data/config.yaml"
+  - "/etc/machine-id:/etc/machine-id"
 
 ##############################################
 # arguments to run the containers with
@@ -45,6 +45,8 @@ beacon_start_args: >
   --graffiti="{{graffiti}}"
   --target-peers={{hi_peer_count}}
 
+# in case of eth1 deposit endpoint problems: --dummy-eth1
+
 validator_start_args: >
   lighthouse
   --testnet-dir="/custom_config_data"
@@ -55,7 +57,8 @@ validator_start_args: >
   --server={{beacon_endpoint}}
   --graffiti="{{graffiti}}"
   --http --http-port={{validator_rpc_port}}
-  
+  --metrics --metrics-address 0.0.0.0 --metrics-port "{{validator_metrics_port}}"
+
 ##############################################
 # memory limits
 ##############################################
@@ -70,3 +73,5 @@ beacon_kernel_memory: 5500M
 keystores_file_mode: "0700"
 beacon_user_id: "1000:1000"
 validator_user_id: "1000:1000"
+
+separate_validator_process_enabled: true

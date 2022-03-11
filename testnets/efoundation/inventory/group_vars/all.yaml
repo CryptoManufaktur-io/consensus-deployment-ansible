@@ -7,21 +7,20 @@ docker_etc_hosts: >
   { 
     "dockerhost" : "{{ ansible_host_private }}" 
   }
+docker_monitoring_network: "monitoring_network"
+restart_container_if_exists: true
 
 ##############################################
 # eth1 endpoints
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
-eth1endpoint_nimbus: wss://url
+eth1endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_ws_rpc_port }}"
 eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
-#eth1endpoint: "https://goerli.infura.io/v3/e476a2f7eeec4c249b6aa4577e51d8cb"
 
 ##############################################
 # testnet specific information
 ##############################################
-testnet_type: prater
-eth2_network_name: prater
-eth1_network: goerli
+eth1_client: geth
 
 ##############################################
 # ports to configure
@@ -35,33 +34,24 @@ beacon_metrics_port: 8000
 beacon_p2p_port: 9000
 validator_metrics_port: 8001
 validator_rpc_port: 4002
-node_exporter_web_listen_address: "0.0.0.0:9100"
 
 ##############################################
 # name of the validator to display
 ##############################################
-graffiti: "{{eth2_client_name}}"
+graffiti: "{{eth2_client_name}}-{{eth1_client}}"
 
 ##############################################
 # local data directories
 ##############################################
-local_explorerdata_host_dir: "{{inventory_dir}}/../explorerdata"
-local_explorerdata_host_archive: "{{inventory_dir}}/../explorerdata.tar.gz"
-local_forkmondata_host_dir: "{{inventory_dir}}/../forkmondata"
-local_forkmondata_host_archive: "{{inventory_dir}}/../forkmondata.tar.gz"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
 local_custom_config_data_host_archive: "{{inventory_dir}}/../custom_config_data.tar.gz"
-# private dirs
-# Validator assignments
-local_validator_host_dir: "{{inventory_dir}}/../selected_validator_keys/host_{{eth2_node_index}}"
-local_validator_host_archive: "{{inventory_dir}}/../selected_validator_keys/host_{{eth2_node_index}}.tar.gz"
 
 ##############################################
 # remote host data directories
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/geth"
+eth1_node_dir: "{{home_dir}}/.eth1data"   # Hidden folder so its not deleted on restart
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -69,10 +59,10 @@ testnet_dir: "{{home_dir}}/custom_config_data"
 # common log config
 ##############################################
 common_log_options:
-  max-file: 3
-  max-size: 30m
-  mode: non-blocking
-  max-buffer-size: 4m
+  max-file: "3"
+  max-size: "30m"
+  mode: "non-blocking"
+  max-buffer-size: "4m"
   tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}"
 common_log_driver: json-file
 beacon_log_level: info
@@ -84,7 +74,26 @@ beacon_log_level: info
 beacon_container_name: beacon
 validator_container_name: validator
 hi_peer_count: 25
-separate_validator_process_enabled: false
+separate_validator_process_enabled: true
+
+##############################################
+# node_exporter settings
+##############################################
+node_exporter_container_name: node-exporter
+node_exporter_image_name: prom/node-exporter:latest
+node_exporter_user_id: "0:0"
+node_exporter_start_args: >
+  --path.procfs=/host/proc
+  --path.rootfs=/rootfs
+  --path.sysfs=/host/sys
+  --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
+node_exporter_volumes:
+  - "/etc/machine-id:/etc/machine-id:ro"
+  - "/proc:/host/proc:ro"
+  - "/sys:/host/sys:ro"
+  - "/:/rootfs:ro"
+node_exporter_memory: 5000M
+node_exporter_kernel_memory: 5500M
 
 ##############################################
 # prometheus settings
@@ -160,7 +169,7 @@ thanos_sidecar_start_args: >
   --http-grace-period=1s
   --objstore.config-file=/etc/thanos/bucket.yml
   --tsdb.path=/data/sidecar
-  --prometheus.url=http://dockerhost:9090
+  --prometheus.url=http://{{prometheus_container_name}}:9090
 
 thanos_query_container_name: thanos-query
 thanos_query_start_args: >
@@ -189,22 +198,83 @@ thanos_compact_start_args: >
 ##############################################
 # grafana settings
 ##############################################
+cloudflare_container_name: cloudflare
+cloudflare_image_name: oznu/cloudflare-ddns:latest
+cloudflare_start_args: ""
+cloudflare_env: >
+  {
+    "API_KEY" : "{{cloudflare_dns_api_token}}",
+    "ZONE" : "{{grafana_domain}}",
+    "SUBDOMAIN" : "{{grafana_host}}",
+    "PROXIED" : "true"
+  }
+cloudflare_volumes:
+  - "/etc/localtime:/etc/localtime:ro"
+cloudflare_memory: 5000M
+cloudflare_kernel_memory: 5500M
+cloudflare_user_id: "0:0"
+
+traefik_container_name: traefik
+traefik_image_name: traefik:latest
+traefik_start_args: >
+  --log.level=WARN
+  --metrics.prometheus=true
+  --providers.docker=true
+  --providers.docker.network={{docker_monitoring_network}}
+  --providers.docker.exposedbydefault=false
+  --certificatesresolvers.letsencrypt.acme.dnschallenge=true
+  --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
+  --certificatesresolvers.letsencrypt.acme.email={{acme_email}}
+  --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+  --entrypoints.web.address=:{{traefik_web_http_port}}
+  --entrypoints.web.http.redirections.entrypoint.to=websecure
+  --entrypoints.web.http.redirections.entrypoint.scheme=https
+  --entrypoints.websecure.address=:{{traefik_web_port}}
+traefik_env: >
+  {
+    "CLOUDFLARE_EMAIL" : "{{cloudflare_email}}",
+    "CLOUDFLARE_DNS_API_TOKEN" : "{{cloudflare_dns_api_token}}"
+  }
+traefik_volumes:
+  - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  - "{{home_dir}}/certs:/letsencrypt"
+  - "/etc/localtime:/etc/localtime:ro"
+traefik_memory: 5000M
+traefik_kernel_memory: 5500M
+traefik_user_id: "0:0"
+
 grafana_container_name: grafana
-grafana_image_name: grafana/grafana-enterprise:8.2.1
+grafana_image_name: grafana/grafana-enterprise:latest
 grafana_user_id: "1000:1000"
 grafana_start_args: ""
 local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
 local_grafana_conf_archive: "{{inventory_dir}}/../grafana_conf.tar.gz"
-grafana_data_dir: "{{home_dir}}/grafana_data"
-grafana_conf_dir: "{{home_dir}}/grafana_conf"
+grafana_data_dir: "{{home_dir}}/.grafana_data" # Hidden folder so its not deleted on restart
+grafana_conf_dir: "{{home_dir}}/.grafana_conf" # Hidden folder so its not deleted on restart
 grafana_volumes:
   - "{{grafana_data_dir}}:/var/lib/grafana"
   - "{{grafana_conf_dir}}:/etc/grafana/provisioning/"
+  - "/etc/localtime:/etc/localtime:ro"
 grafana_env: >
   {
-    "GF_SECURITY_ADMIN_USER" : "admin",
-    "GF_SECURITY_ADMIN_PASSWORD" : "foobar",
-    "GF_USERS_ALLOW_SIGN_UP" : "false"
+    "GF_PATHS_CONFIG" : "/etc/grafana/provisioning/grafana.ini",
+    "GF_SERVER_ROOT_URL" : "https://{{grafana_host}}.{{grafana_domain}}",
+    "GF_SERVER_DOMAIN" : "{{grafana_host}}.{{grafana_domain}}",
+    "GF_SERVER_HTTP_PORT" : "{{grafana_port}}",
+    "CLIENT" : "{{grafana_client}}",
+    "GF_SECURITY_ADMIN_USER" : "{{grafana_admin_username}}",
+    "GF_SECURITY_ADMIN_PASSWORD" : "{{grafana_admin_password}}",
+    "GF_USERS_ALLOW_SIGN_UP" : "false",
+    "GF_INSTALL_PLUGINS" : "grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel"
+  }
+grafana_labels: >
+  {
+    "traefik.enable" : "true",
+    "traefik.docker.network" : "{{docker_monitoring_network}}",
+    "traefik.http.routers.grafana.entrypoints" : "web,websecure",
+    "traefik.http.routers.grafana.rule" : "Host(`{{ grafana_host }}.{{ grafana_domain }}`)",
+    "traefik.http.routers.grafana.tls.certresolver" : "letsencrypt",
+    "traefik.http.services.grafana.loadbalancer.server.port" : "{{grafana_port}}"
   }
 grafana_memory: 5000M
 grafana_kernel_memory: 5500M
