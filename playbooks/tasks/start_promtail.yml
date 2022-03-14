@@ -23,7 +23,6 @@
       loop:
         - ["##inventory_hostname##", "{{inventory_hostname}}"]
         - ["##promtail_loki_url##", "{{promtail_loki_url}}"]
-        - ["##testnet##", "{{CONFIG_NAME}}"]
 
     - name: Enable receiver when set to receive
       blockinfile:

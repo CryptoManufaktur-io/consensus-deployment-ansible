@@ -16,7 +16,6 @@ scrape_configs:
       - localhost
     labels:
       host_node: ##inventory_hostname##
-      testnet: ##testnet##
       __path__: /var/lib/docker/containers/*/*log
 
   pipeline_stages:
@@ -32,7 +31,7 @@ scrape_configs:
       source: attrs
 
   - regex:
-      expression: (?P<image_name>(?:[^|]*[^|])).(?P<container_name>(?:[^|]*[^|])).(?P<image_id>(?:[^|]*[^|])).(?P<container_id>(?:[^|]*[^|]))
+      expression: (?P<image_name>(?:[^|]*[^|])).(?P<container_name>(?:[^|]*[^|])).(?P<image_id>(?:[^|]*[^|])).(?P<container_id>(?:[^|]*[^|])).(?P<testnet>(?:[^|]*[^|]))
       source: tag
 
   - timestamp:
@@ -42,6 +41,7 @@ scrape_configs:
   - labels:
       stream:
       container_name:
+      testnet:
 
   - labeldrop:
     - filename

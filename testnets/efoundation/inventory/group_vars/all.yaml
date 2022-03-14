@@ -63,10 +63,13 @@ common_log_options:
   max-size: "30m"
   mode: "non-blocking"
   max-buffer-size: "4m"
-  tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}"
+  tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}|{{'{{'}}if (index .ContainerLabels \"testnet\"){{'}}'}}{{'{{'}}index .ContainerLabels \"testnet\"{{'}}'}}{{'{{'}}else{{'}}'}}default{{'{{'}}end{{'}}'}}"
 common_log_driver: json-file
 beacon_log_level: info
-
+testnet_labels: >
+  {
+    "testnet" : "{{CONFIG_NAME}}"
+  }
 
 ##############################################
 # container names

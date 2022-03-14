@@ -1,6 +1,6 @@
 - name: Start Register beacon metrics
   hosts: [beacon]
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Register beacon metrics to prometheus
       copy:
@@ -8,12 +8,13 @@
         content: |
           - labels:
               appname: beacon
+              testnet: {{CONFIG_NAME}}
             targets:
             - dockerhost:{{ beacon_metrics_port }}
 
 - name: Start Register validator metrics
   hosts: [validator]
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Register validator metrics to prometheus
       when: eth2_client_name == 'lighthouse' or eth2_client_name == 'prysm'
@@ -22,5 +23,6 @@
         content: |
           - labels:
               appname: validator
+              testnet: {{CONFIG_NAME}}
             targets:
             - dockerhost:{{ validator_metrics_port }}

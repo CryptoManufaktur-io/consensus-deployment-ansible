@@ -31,7 +31,6 @@
         replace: "{{item.1}}"
       loop:
         - ["##inventory_hostname##", "{{inventory_hostname}}"]
-        - ["##testnet##", "{{CONFIG_NAME}}"]
 
     - name: Add remote write if remote_write_url is present
       blockinfile:

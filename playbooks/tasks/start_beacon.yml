@@ -36,3 +36,4 @@
         command: "{{ beacon_start_args }}"
         env: "{{ beacon_env | default({}) }}"
         user: "{{ beacon_user_id }}"
+        labels: "{{ testnet_labels }}"

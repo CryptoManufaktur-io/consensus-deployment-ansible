@@ -5,6 +5,9 @@
     - name: Include bootnode variables
       include_vars: "{{inventory_dir}}/group_vars/bootnode.yml"
 
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
     - name: Start Eth2 bootnode
       docker_container:
         name: "{{ bootnode_container_name }}"
@@ -20,6 +23,7 @@
         log_driver: "{{ common_log_driver }}"
         volumes:
           - "{{bootnode_host_dir}}:/data"
+        labels: "{{ testnet_labels }}"
 
     - name: Get ENR
       shell: "curl http://localhost:8002/enr"
