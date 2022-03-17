@@ -5,7 +5,7 @@ eth2_client_name: lighthouse
 
 beacon_image_name: sigp/lighthouse:v1.5.1
 validator_image_name: sigp/lighthouse:v1.5.1
-beacon_endpoint: "http://127.0.0.1:{{beacon_api_port}}"
+beacon_endpoint: "http://{{beacon_container_name}}:{{beacon_api_port}}"
 
 ##############################################
 # volume mappings on remote host

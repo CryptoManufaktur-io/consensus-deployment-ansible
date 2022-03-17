@@ -5,9 +5,13 @@
     - name: Include secret variables
       include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-    - name: Include ENR
-      include_vars: "{{inventory_dir}}/group_vars/enr.yml"
+    - name: Include ENR groups
+      include_vars: "{{inventory_dir}}/group_vars/enr_groups.yml"
 
+    - name: Set bootnodes_enr to the group enr
+      set_fact:
+        bootnode_enrs: ["{{ lookup('vars', hostvars[inventory_hostname].geth_host + '_enr') }}"]
+    
     - name: Creates beacon dir
       file:
         path: "{{beacon_node_dir}}"
@@ -17,16 +21,23 @@
       shell: chown -R "{{ beacon_user_id }}" "{{ beacon_node_dir }}"
       become: true
       
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"
+
     - name: Start Eth2 beacon node container
       docker_container:
         name: "{{ beacon_container_name }}"
         state: started
         image: "{{ beacon_image_name }}"
         pull: true
+        ports:
+          - "{{public_ip_address}}:{{beacon_p2p_port}}:{{beacon_p2p_port}}"
+          - "{{public_ip_address}}:{{beacon_p2p_port}}:{{beacon_p2p_port}}/udp"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{beacon_kernel_memory}}"
-        network_mode: host
+        network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ restart_container_if_exists | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"

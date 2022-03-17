@@ -47,3 +47,7 @@
 - import_playbook: tasks/start_grafana.yml
   vars:
     variable_host: "globalfederation"
+
+# Setup firewalls
+#- import_playbook: tasks/firewall/firewall_globallogging.yml
+#- import_playbook: tasks/firewall/firewall_dclocal.yml

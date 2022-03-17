@@ -46,7 +46,7 @@
         image: "{{ loki_image_name }}"
         pull: true
         ports:
-          - "3100:3100"
+          - "{{public_ip_address}}:3100:3100"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{loki_kernel_memory}}"

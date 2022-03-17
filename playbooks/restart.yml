@@ -1,7 +1,0 @@
----
-- name: Restart all containers
-  hosts: [validator, beacon]
-  gather_facts: false
-  tasks:
-    - name: Restart all containers
-      shell: "docker restart $(docker ps -a -q)"

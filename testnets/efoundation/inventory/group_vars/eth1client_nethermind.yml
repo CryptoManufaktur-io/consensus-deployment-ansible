@@ -16,7 +16,7 @@ eth1_start_args: >
   --JsonRpc.EnabledModules="net,eth,consensus,engine,subscribe,web3"
   --JsonRpc.Port={{eth1_rpc_port}}
   --JsonRpc.WebSocketsPort={{eth1_ws_rpc_port}}
-  --JsonRpc.Host=0.0.0.0
+  --JsonRpc.Host={{public_ip_address}}
   --Network.DiscoveryPort=30303
   --Network.P2PPort=30303
   --Init.DiagnosticMode="None"

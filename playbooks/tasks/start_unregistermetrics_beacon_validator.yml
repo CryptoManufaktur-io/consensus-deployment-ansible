@@ -7,7 +7,7 @@
         path: "{{ prometheus_file_sd_dir }}/beacon.yml"
         state: absent
 
-- name: Start Register validator metrics
+- name: Start Un Register validator metrics
   hosts: [validator]
   gather_facts: false
   tasks:

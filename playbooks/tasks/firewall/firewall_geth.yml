@@ -1,0 +1,90 @@
+- name: Geth firewall management
+  hosts: [geth]
+  gather_facts: false
+  become: true
+  vars:
+    specific_ips: []
+
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      
+    - name: Reset UFW
+      ufw:
+        state: reset
+
+    - name: Gets Specific IPs
+      set_fact: 
+        specific_ips: "{{ specific_ips }} + [ '{{ hostvars[item]['ansible_host'] }}/32' ]"
+      when: hostvars[item]['geth_host'] is defined and hostvars[item]['geth_host'] == inventory_hostname
+      with_items:  "{{ groups['beacon'] }}"
+
+    # - name: Display Specific IPs
+    #   debug: 
+    #     var: specific_ips
+
+    - name: Allow peering through firewall network not split
+      when: GROUPS_PEERING == 'true'
+      block:
+        - name: Allow ports through firewall
+          ufw:
+            rule: allow
+            port: "{{ item.0 }}"
+            proto: "{{ item.1 }}"
+            comment: "{{ item.2 }}"
+          loop:
+            - ["22", "tcp", "Allow SSH"]
+            - ["30303", "tcp", "Allow Go Ethereum TCP"]
+            - ["30303", "udp", "Allow Go Ethereum UDP"]
+            - ["9001", "tcp", "Allow Bootnode Peering TC"]
+            - ["9001", "udp", "Allow Bootnode Peering UDP"]
+
+        - name: Allow ports through firewall from specific hosts
+          ufw:
+            rule: allow
+            src: "{{ item[0] }}"
+            port: "{{ item[1] }}"
+            proto: "{{ item[2] }}"
+            comment: "{{ item[3] }}"
+          with_nested:
+            - "{{ specific_ips }}"
+            - [
+                ["8545", "tcp", "Alow GETH API 8545"],
+                ["8546", "tcp", "Allow GETH WS API 8546"]
+              ]
+
+    - name: Allow peering through firewall NETWORK SPLIT
+      when: GROUPS_PEERING == 'false'
+      block:
+        - name: Allow ports through firewall
+          ufw:
+            rule: allow
+            port: "{{ item.0 }}"
+            proto: "{{ item.1 }}"
+            comment: "{{ item.2 }}"
+          loop:
+            - ["22", "tcp", "Allow SSH"]
+            - ["30303", "tcp", "Allow Go Ethereum TCP"]
+            - ["30303", "udp", "Allow Go Ethereum UDP"]
+
+        - name: Allow ports through firewall from specific hosts
+          ufw:
+            rule: allow
+            src: "{{ item[0] }}"
+            port: "{{ item[1] }}"
+            proto: "{{ item[2] }}"
+            comment: "{{ item[3] }}"
+          with_nested:
+            - "{{ specific_ips }}"
+            - [
+                ["8545", "tcp", "Alow GETH API 8545"],
+                ["8546", "tcp", "Allow GETH WS API 8546"],
+                ["9001", "tcp", "Allow Bootnode Peering Split TC"],
+                ["9001", "udp", "Allow Bootnode Peering Split UDP"]
+              ]
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        logging: 'on'

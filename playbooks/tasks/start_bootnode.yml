@@ -1,12 +1,24 @@
 - name: Start bootnodes
   hosts: geth
   gather_facts: false
+  serial: 1
   tasks:
     - name: Include bootnode variables
       include_vars: "{{inventory_dir}}/group_vars/bootnode.yml"
 
     - name: Include secret variables
       include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Include ENR all bootnodes variables
+      include_vars: "{{inventory_dir}}/group_vars/enr_all.yml"
+
+    - name: Generate bootnode bootnode_p2p_priv_key
+      shell: "head -c 32 /dev/urandom|xxd -ps -c 32"
+      register: priv_key
+
+    - name: Set bootnode_p2p_priv_key variable
+      set_fact:
+        bootnode_p2p_priv_key: "{{priv_key.stdout}}"
 
     - name: Start Eth2 bootnode
       docker_container:
@@ -29,9 +41,14 @@
       shell: "curl http://localhost:8002/enr"
       register: enr_output
 
-    - name: Add ENR to file
+    - name: Add ENR to enr_all file
       delegate_to: localhost
-      throttle: 1
       lineinfile:
-        path: "{{ inventory_dir }}/group_vars/enr.yml"
+        path: "{{ inventory_dir }}/group_vars/enr_all.yml"
         line: "  - \"{{enr_output.stdout}}\""
+
+    - name: Add ENR to enr_groups file
+      delegate_to: localhost
+      lineinfile:
+        path: "{{ inventory_dir }}/group_vars/enr_groups.yml"
+        line: "{{inventory_hostname}}_enr: \"{{enr_output.stdout}}\""

@@ -57,7 +57,7 @@
             cp -r "{{home_dir}}/temp_data/generated/prysm/direct/accounts/all-accounts.keystore.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts/all-accounts.keystore.json"
             cp -r "{{home_dir}}/temp_data/generated/prysm/keymanageropts.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/keymanageropts.json"
             
-        - name: Copy keys for {{eth2_client_name}} validator
+        - name: Copy keys for validators
           become: true
           copy:
             src: "{{home_dir}}/temp_data/{{eth2_client_name}}/"

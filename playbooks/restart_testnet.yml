@@ -1,0 +1,22 @@
+---
+- name: Restart bootnode containers
+  hosts: [geth]
+  gather_facts: false
+  tasks:
+    - name: Restart bootnode containers
+      shell: "docker restart bootnode"
+
+- name: Restart beacon containers
+  hosts: [beacon]
+  gather_facts: false
+  tasks:
+    - name: Restart beacon containers
+      shell: "docker restart beacon"
+
+- name: Restart validator containers
+  hosts: [validator]
+  gather_facts: false
+  tasks:
+    - name: Restart validator containers
+      shell: "docker restart validator"
+      when: eth2_client_name == 'lighthouse' or eth2_client_name == 'prysm'

@@ -10,7 +10,7 @@
               appname: beacon
               testnet: {{CONFIG_NAME}}
             targets:
-            - dockerhost:{{ beacon_metrics_port }}
+            - {{ beacon_container_name }}:{{ beacon_metrics_port }}
 
 - name: Start Register validator metrics
   hosts: [validator]
@@ -25,4 +25,4 @@
               appname: validator
               testnet: {{CONFIG_NAME}}
             targets:
-            - dockerhost:{{ validator_metrics_port }}
+            - {{ validator_container_name }}:{{ validator_metrics_port }}

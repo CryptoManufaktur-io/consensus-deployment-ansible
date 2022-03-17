@@ -3,10 +3,10 @@
 ##############################################
 ansible_user: "ubuntu"
 public_ip_address: "{{ansible_host}}"
-docker_etc_hosts: >
-  { 
-    "dockerhost" : "{{ ansible_host_private }}" 
-  }
+# docker_etc_hosts: >
+#   { 
+#     "dockerhost" : "{{ ansible_host_private }}" 
+#   }
 docker_monitoring_network: "monitoring_network"
 restart_container_if_exists: true
 

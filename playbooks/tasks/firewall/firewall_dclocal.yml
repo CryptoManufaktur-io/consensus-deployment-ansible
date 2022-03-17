@@ -1,0 +1,50 @@
+- name: DC Local firewall management
+  hosts: [dclocal]
+  gather_facts: false
+  become: true
+  vars:
+    specific_ips: []
+
+  tasks:
+    - name: Reset UFW
+      ufw:
+        state: reset
+
+    - name: Gets Specific IPs
+      set_fact: 
+        specific_ips: "{{ specific_ips }} + [ '{{ hostvars[item]['ansible_host'] }}/32' ]"
+      when: hostvars[item]['rw_host'] is defined and hostvars[item]['rw_host'] == inventory_hostname
+      with_items:  "{{ groups['all'] }}"
+
+    # - name: Display Specific IPs
+    #   debug: 
+    #     var: specific_ips
+
+    - name: Allow ports through firewall
+      ufw:
+        rule: allow
+        port: "{{ item.0 }}"
+        proto: "{{ item.1 }}"
+        comment: "{{ item.2 }}"
+      loop:
+        - ["22", "tcp", "Allow SSH"]
+
+    - name: Allow ports through firewall from specific hosts
+      ufw:
+        rule: allow
+        src: "{{ item[0] }}"
+        port: "{{ item[1] }}"
+        proto: "{{ item[2] }}"
+        comment: "{{ item[3] }}"
+      with_nested:
+        - "{{ specific_ips }}"
+        - [
+            ["9090", "tcp", "Alow prometheus remote write"],
+            ["3500", "tcp", "Allow promtail receive"]
+          ]
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        logging: 'on'

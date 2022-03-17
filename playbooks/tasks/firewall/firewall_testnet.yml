@@ -1,0 +1,67 @@
+- name: Beacon/Validator firewall management
+  hosts: [beacon, validator]
+  gather_facts: false
+  become: true
+  vars:
+    specific_ips: []
+
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Reset UFW
+      ufw:
+        state: reset
+
+    - name: Allow TCP ports through firewall
+      ufw:
+        rule: allow
+        port: "{{ item.0 }}"
+        proto: "{{ item.1 }}"
+        comment: "{{ item.2 }}"
+      loop:
+        - ["22", "tcp", "Allow SSH"]
+
+    - name: Allow peering through firewall network not split
+      when: GROUPS_PEERING == 'true'
+      ufw:
+        rule: allow
+        port: "{{ item.0 }}"
+        proto: "{{ item.1 }}"
+        comment: "{{ item.2 }}"
+      loop:
+        - ["9000", "tcp", "Allow peering from all TCP"]
+        - ["9000", "udp", "Allow peering from all UDP"]
+
+    - name: Allow peering through firewall NETWORK SPLIT
+      when: GROUPS_PEERING == 'false'
+      block:
+        - name: Gets Specific IPs
+          set_fact: 
+            specific_ips: "{{ specific_ips }} + [ '{{ hostvars[item]['ansible_host'] }}/32' ]"
+          when: hostvars[item]['grp'] is defined and hostvars[item]['grp'] == grp
+          with_items:  "{{ groups['beacon'] }}"
+
+        # - name: Display Specific IPs
+        #   debug: 
+        #     var: specific_ips
+
+        - name: Allow ports through firewall from group hosts
+          ufw:
+            rule: allow
+            src: "{{ item[0] }}"
+            port: "{{ item[1] }}"
+            proto: "{{ item[2] }}"
+            comment: "{{ item[3] }}"
+          with_nested:
+            - "{{ specific_ips }}"
+            - [
+                ["9000", "tcp", "Allow peering from group TCP"],
+                ["9000", "udp", "Allow peering from group UDP"]
+              ]
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        logging: 'on'

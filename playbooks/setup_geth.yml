@@ -33,3 +33,6 @@
   vars:
     variable_host: "geth"
     promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"
+
+# Setup firewalls
+#- import_playbook: tasks/firewall/firewall_geth.yml

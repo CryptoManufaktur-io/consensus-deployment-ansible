@@ -1,6 +1,6 @@
 - name: Stop beacon node and validator node, wipe validator keys and beacon database
   hosts: [beacon, validator]
-  gather_facts: true
+  gather_facts: false
   become: true
   tasks:
     - name: Stop Eth2 beacon node container

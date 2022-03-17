@@ -51,11 +51,10 @@
         image: "{{ prometheus_image_name }}"
         pull: true
         ports:
-          - "9090:9090"
+          - "{{public_ip_address}}:9090:9090"
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{prometheus_kernel_memory}}"
-        etc_hosts: "{{ docker_etc_hosts }}"
         network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ restart_container_if_exists | default(false) }}"
         log_options: "{{ common_log_options }}"
@@ -77,7 +76,6 @@
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{prometheus_kernel_memory}}"
-        etc_hosts: "{{ docker_etc_hosts }}"
         network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ restart_container_if_exists | default(false) }}"
         log_options: "{{ common_log_options }}"

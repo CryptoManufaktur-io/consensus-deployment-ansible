@@ -14,6 +14,10 @@
       shell: chown -R "{{ validator_user_id }}" "{{ validator_node_dir }}"
       become: true
 
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"
+        
     - name: Start Eth2 validator client container
       docker_container:
         name: "{{ validator_container_name }}"
@@ -23,7 +27,7 @@
         restart_policy: unless-stopped
         memory_swappiness: 0
         kernel_memory: "{{validator_kernel_memory}}"
-        network_mode: host
+        network_mode: "{{ docker_monitoring_network }}"
         restart: "{{ restart_container_if_exists | default(false) }}"
         log_options: "{{ common_log_options }}"
         log_driver: "{{ common_log_driver }}"

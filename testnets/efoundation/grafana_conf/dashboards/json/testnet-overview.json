@@ -22,7 +22,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1647260520701,
+  "iteration": 1647508471652,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -242,9 +242,45 @@
           "legendFormat": "",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(p2p_peer_count{testnet=\"$testnet\", state=\"Connected\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(libp2p_peers{testnet=\"$testnet\",host_node=~\"nimbus.*\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "avg(libp2p_peers{testnet=\"$testnet\",host_node=~\"teku.*\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "D"
         }
       ],
-      "title": "Avg. Peer Count",
+      "title": "Avg. Peer Count Lighthouse/Prysm/Nimbus/Teku",
       "type": "stat"
     },
     {
@@ -1118,6 +1154,7 @@
         "y": 11
       },
       "id": 2,
+      "links": [],
       "options": {
         "legend": {
           "calcs": [],
@@ -1129,6 +1166,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "8.4.3",
       "targets": [
         {
           "datasource": {
@@ -1143,6 +1181,30 @@
           "legendFormat": "{{host_node}}",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "p2p_peer_count{state=\"Connected\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "sync_peers_per_status{sync_status=\"Synced\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "refId": "C"
         }
       ],
       "title": "Peers",
@@ -1231,7 +1293,7 @@
           "exemplar": true,
           "expr": "slotclock_present_slot{testnet=\"$testnet\"} - beacon_head_state_slot{testnet=\"$testnet\"}",
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{host_node}}",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -2615,8 +2677,8 @@
       {
         "current": {
           "selected": false,
-          "text": "ef-test1-12s-slottime",
-          "value": "ef-test1-12s-slottime"
+          "text": "ef-test3-12s-slottime-fix2",
+          "value": "ef-test3-12s-slottime-fix2"
         },
         "datasource": {
           "type": "prometheus",
@@ -2643,13 +2705,13 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Testnet Overview",
   "uid": "KAiBRn5nk",
-  "version": 20,
+  "version": 25,
   "weekStart": ""
 }
