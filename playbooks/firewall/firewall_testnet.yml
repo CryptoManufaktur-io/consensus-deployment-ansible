@@ -1,0 +1,68 @@
+# - name: Beacon/Validator firewall management
+#   hosts: [beacon]
+#   # hosts: prysm0
+#   gather_facts: false
+#   become: true
+#   vars:
+#     specific_ips: []
+
+#   tasks:
+#     - name: Include secret variables
+#       include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+#     - name: Reset UFW
+#       ufw:
+#         state: reset
+
+#     - name: Configure ufw docker
+#       import_tasks: configure_ufw_docker.yml
+
+#     - name: Allow SSH port through firewall
+#       ufw:
+#         rule: allow
+#         port: "22"
+#         proto: "tcp"
+#         comment: "Allow SSH"
+
+#     - name: Allow peering through firewall network not split
+#       when: GROUPS_PEERING == 'true'
+#       ufw:
+#         rule: allow
+#         port: "9000"
+#         comment: "Allow peering through firewall network not split"
+
+#     - name: Allow peering through firewall NETWORK SPLIT
+#       when: GROUPS_PEERING == 'false'
+#       block:
+#         - name: Gets Group IPs to deny
+#           set_fact: 
+#             specific_ips: "{{ specific_ips }} + [ '{{ hostvars[item]['ansible_host'] }}/32' ]"
+#           when: hostvars[item]['grp'] != grp
+#           with_items:  "{{ groups['beacon'] }}"
+
+#         - name: Deny ports through firewall from other group hosts
+#           ufw:
+#             rule: deny
+#             src: "{{ item }}"
+#             port: "9000"
+#             comment: "Dont allow peering from other group"
+#           with_items: "{{ specific_ips }}"
+
+#     - name: Enable UFW
+#       ufw:
+#         state: enabled
+#         policy: deny
+#         logging: 'on'
+
+#     - name: Install conntrack
+#       register: conntrack
+#       apt:
+#         name: conntrack
+#         state: present
+    
+#     - name: Setup conntrack
+#       when: conntrack.changed == true
+#       shell: "sysctl -w net.netfilter.nf_conntrack_tcp_loose=0"
+    
+#     - name: Flush conntrack
+#       shell: "conntrack -F"

@@ -23,6 +23,3 @@
 # register beacon and validator for metrics
 - import_playbook: tasks/start_registermetrics_beacon_validator.yml
 
-# Setup firewalls
-#- import_playbook: tasks/firewall/firewall_geth.yml
-#- import_playbook: tasks/firewall/firewall_testnet.yml

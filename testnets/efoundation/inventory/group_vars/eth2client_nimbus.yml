@@ -3,8 +3,8 @@
 ##############################################
 eth2_client_name: nimbus
 
-beacon_image_name: statusim/nimbus-eth2:amd64-latest
-validator_image_name: statusim/nimbus-eth2:amd64-latest
+beacon_image_name: statusim/nimbus-eth2:multiarch-latest
+validator_image_name: statusim/nimbus-eth2:multiarch-latest
 
 ##############################################
 # volume mappings on remote host
