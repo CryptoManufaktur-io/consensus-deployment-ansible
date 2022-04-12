@@ -3,8 +3,8 @@
 ##############################################
 eth2_client_name: nimbus
 
-beacon_image_name: statusim/nimbus-eth2:multiarch-latest
-validator_image_name: statusim/nimbus-eth2:multiarch-latest
+beacon_image_name: "{{ 'statusim/nimbus-eth2:multiarch-latest' if SECONDS_PER_SLOT == 12 else '%s%d'|format('gathecageorge/nimbus-eth2:slot', SECONDS_PER_SLOT) }}"
+validator_image_name: "{{ beacon_image_name }}"
 
 ##############################################
 # volume mappings on remote host
