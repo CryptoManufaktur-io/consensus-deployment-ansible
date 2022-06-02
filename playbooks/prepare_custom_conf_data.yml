@@ -40,19 +40,6 @@
       set_fact:
         transaction_hash_details: "{{ transaction_hash_details.stdout | from_json }}"
 
-    - name: Print transaction hash details
-      debug:
-        msg: |
-          TRANSACTION HASH: {{transaction_hash_details.transaction_hash}}
-          CONTRACT ADDRESS: {{transaction_hash_details.contract_address}}
-          BLOCK NUMBER: {{transaction_hash_details.block_number}}
-          BLOCK HASH: {{transaction_hash_details.block_hash}}
-          URL: https://{{NETWORK}}.etherscan.io/tx/{{transaction_hash_details.transaction_hash}}
-
-    - name: Identified hosts
-      debug:
-        var: groups['validator']
-
     - name: Convert epoch to date full
       shell: "echo {{MIN_GENESIS_TIME}} | perl -pe 's/(\\d+)/localtime($1)/e'"
       register: DATE_FULL

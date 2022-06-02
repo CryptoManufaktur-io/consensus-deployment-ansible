@@ -4,7 +4,10 @@
       {
         "$$hashKey": "object:1058",
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -23,8 +26,8 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 1860,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1647362272204,
+  "id": 3,
+  "iteration": 1653114345723,
   "links": [
     {
       "icon": "external link",
@@ -126,7 +129,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "(((count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=\"$node\",job=\"$job\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))",
@@ -206,7 +209,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "avg(node_load5{instance=\"$node\",job=\"$job\"}) /  count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu)) * 100",
@@ -286,7 +289,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "avg(node_load15{instance=\"$node\",job=\"$job\"}) /  count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu)) * 100",
@@ -357,7 +360,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "((node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"} - node_memory_MemFree_bytes{instance=\"$node\",job=\"$job\"}) / (node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
@@ -445,7 +448,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "((node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"} - node_memory_SwapFree_bytes{instance=\"$node\",job=\"$job\"}) / (node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
@@ -523,7 +526,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "100 - ((node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"})",
@@ -599,7 +602,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))",
@@ -678,7 +681,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "node_time_seconds{instance=\"$node\",job=\"$job\"} - node_boot_time_seconds{instance=\"$node\",job=\"$job\"}",
@@ -758,7 +761,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"}",
@@ -836,7 +839,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"}",
@@ -912,7 +915,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "targets": [
         {
           "expr": "node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"}",
@@ -1004,7 +1007,7 @@
         "alertThreshold": true
       },
       "percentage": true,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1188,7 +1191,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1366,7 +1369,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1478,7 +1481,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "v1.0",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1566,7 +1569,6 @@
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1577,7 +1579,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 3
+            "y": 21
           },
           "hiddenSeries": false,
           "id": 3,
@@ -1602,7 +1604,7 @@
             "alertThreshold": true
           },
           "percentage": true,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1751,7 +1753,6 @@
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1762,7 +1763,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 3
+            "y": 21
           },
           "hiddenSeries": false,
           "id": 24,
@@ -1787,7 +1788,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -1930,7 +1931,6 @@
           },
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -1941,7 +1941,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 15
+            "y": 33
           },
           "hiddenSeries": false,
           "id": 84,
@@ -1964,7 +1964,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2042,7 +2042,6 @@
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2053,7 +2052,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 15
+            "y": 33
           },
           "height": "",
           "hiddenSeries": false,
@@ -2080,7 +2079,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2142,7 +2141,6 @@
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2153,7 +2151,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 27
+            "y": 45
           },
           "hiddenSeries": false,
           "id": 229,
@@ -2178,7 +2176,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2337,7 +2335,6 @@
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2348,7 +2345,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 27
+            "y": 45
           },
           "hiddenSeries": false,
           "id": 42,
@@ -2372,7 +2369,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -2474,7 +2471,6 @@
           "description": "",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
               "links": []
             },
             "overrides": []
@@ -2485,7 +2481,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 39
+            "y": 57
           },
           "hiddenSeries": false,
           "id": 127,
@@ -2509,7 +2505,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.3.7",
+          "pluginVersion": "v1.0",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -13264,15 +13260,15 @@
       "type": "row"
     }
   ],
-  "refresh": "1m",
-  "schemaVersion": 35,
+  "refresh": false,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "node-exporter",
           "value": "node-exporter"
         },
@@ -13302,7 +13298,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "geth0",
           "value": "geth0"
         },
@@ -13321,7 +13317,7 @@
           "query": "label_values(node_uname_info{job=\"$job\"}, instance)",
           "refId": "Prometheus-node-Variable-Query"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
@@ -13385,6 +13381,6 @@
   "timezone": "browser",
   "title": "Node Exporter Full Import Testnet",
   "uid": "Xp1kL4Y7z",
-  "version": 3,
+  "version": 2,
   "weekStart": ""
 }

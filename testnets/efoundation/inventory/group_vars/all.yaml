@@ -65,7 +65,7 @@ common_log_options:
   max-buffer-size: "4m"
   tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}|{{'{{'}}if (index .ContainerLabels \"testnet\"){{'}}'}}{{'{{'}}index .ContainerLabels \"testnet\"{{'}}'}}{{'{{'}}else{{'}}'}}default{{'{{'}}end{{'}}'}}"
 common_log_driver: json-file
-beacon_log_level: info
+beacon_log_level: debug
 testnet_labels: >
   {
     "testnet" : "{{CONFIG_NAME}}"
