@@ -1,18 +1,11 @@
-- name: Start Un Register beacon metrics
-  hosts: [beacon]
-  gather_facts: false
-  tasks:
-    - name: Un Register beacon metrics to prometheus
-      file:
-        path: "{{ prometheus_file_sd_dir }}/beacon.yml"
-        state: absent
+---
+- name: Un Register beacon metrics to prometheus
+  file:
+    path: "{{ prometheus_file_sd_dir }}/beacon.yml"
+    state: absent
 
-- name: Start Un Register validator metrics
-  hosts: [validator]
-  gather_facts: false
-  tasks:
-    - name: Un Register validator metrics to prometheus
-      when: eth2_client_name == 'lighthouse' or eth2_client_name == 'prysm'
-      file:
-        path: "{{ prometheus_file_sd_dir }}/validator.yml"
-        state: absent
+- name: Un Register validator metrics to prometheus
+  when: eth2_client_name == 'lighthouse' or eth2_client_name == 'prysm'
+  file:
+    path: "{{ prometheus_file_sd_dir }}/validator.yml"
+    state: absent

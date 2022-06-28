@@ -1,77 +1,71 @@
-- name: Generate validator keys
-  hosts: "validator"
-  gather_facts: false
-  tasks:
-    - name: Check if {{ validator_node_dir }} is empty before proceeding
-      find:
-        paths: "{{ validator_node_dir }}"
-      register: filesFound
+---
+- name: Check if {{ validator_node_dir }} is empty before proceeding
+  find:
+    paths: "{{ validator_node_dir }}"
+  register: filesFound
+
+- name: Generate keys
+  when: filesFound.examined == 0
+  block:
+    - name: Include mnemonic variables
+      include_vars: "{{inventory_dir}}/../custom_config_data/{{runningTest}}/secret_mnemonics.yaml"
+
+    - name: Remove temp_data if exists
+      become: true
+      shell: |
+        rm -rf {{home_dir}}/temp_data
 
     - name: Generate keys
-      when: filesFound.examined == 0
-      block:
-        - name: Include secret variables
-          include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      shell: "docker run --rm -v {{home_dir}}/temp_data:/data ethstaker/eth-val-tools keystores --insecure --prysm-pass='{{PRYSM_PASSWORD}}' --source-min=1 --source-max={{VALIDATORS_PER_INSTANCE + 1}} --source-mnemonic='{{ vars[inventory_hostname] }}' --out-loc='/data/generated'"
 
-        - name: Include mnemonic variables
-          include_vars: "{{inventory_dir}}/../custom_config_data/secret_mnemonics.yaml"
+    - name: Prepare keys for lighthouse
+      become: true
+      when: eth2_client_name == 'lighthouse'
+      shell: |
+        mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}
+        cp -r "{{home_dir}}/temp_data/generated/keys" "{{home_dir}}/temp_data/{{eth2_client_name}}/validators"
+        cp -r "{{home_dir}}/temp_data/generated/secrets" "{{home_dir}}/temp_data/{{eth2_client_name}}/secrets"
 
-        - name: Remove temp_data if exists
-          become: true
-          shell: |
-            rm -rf {{home_dir}}/temp_data
+    - name: Prepare keys for teku
+      become: true
+      when: eth2_client_name == 'teku'
+      shell: |
+        mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}
+        cp -r "{{home_dir}}/temp_data/generated/teku-keys" "{{home_dir}}/temp_data/{{eth2_client_name}}/keys"
+        cp -r "{{home_dir}}/temp_data/generated/teku-secrets" "{{home_dir}}/temp_data/{{eth2_client_name}}/secrets"
 
-        - name: Generate keys
-          shell: "docker run --rm -v {{home_dir}}/temp_data:/data ethstaker/eth-val-tools keystores --insecure --prysm-pass='{{PRYSM_PASSWORD}}' --source-min=1 --source-max={{VALIDATORS_PER_INSTANCE + 1}} --source-mnemonic='{{ vars[inventory_hostname] }}' --out-loc='/data/generated'"
+    - name: Prepare keys for nimbus
+      become: true
+      when: eth2_client_name == 'nimbus'
+      shell: |
+        mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}
+        cp -r "{{home_dir}}/temp_data/generated/nimbus-keys" "{{home_dir}}/temp_data/{{eth2_client_name}}/keys"
+        cp -r "{{home_dir}}/temp_data/generated/secrets" "{{home_dir}}/temp_data/{{eth2_client_name}}/secrets"
 
-        - name: Prepare keys for lighthouse
-          become: true
-          when: eth2_client_name == 'lighthouse'
-          shell: |
-            mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}
-            cp -r "{{home_dir}}/temp_data/generated/keys" "{{home_dir}}/temp_data/{{eth2_client_name}}/validators"
-            cp -r "{{home_dir}}/temp_data/generated/secrets" "{{home_dir}}/temp_data/{{eth2_client_name}}/secrets"
+    - name: Prepare keys for prysm
+      become: true
+      when: eth2_client_name == 'prysm'
+      shell: |
+        mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts
+        echo "{{PRYSM_PASSWORD}}" > "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet_pass.txt"
+        cp -r "{{home_dir}}/temp_data/generated/prysm/direct/accounts/all-accounts.keystore.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts/all-accounts.keystore.json"
+        cp -r "{{home_dir}}/temp_data/generated/prysm/keymanageropts.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/keymanageropts.json"
+        
+    - name: Copy keys for validators
+      become: true
+      copy:
+        src: "{{home_dir}}/temp_data/{{eth2_client_name}}/"
+        dest: "{{ validator_node_dir }}"
+        remote_src: yes
+        mode: "{{keystores_file_mode}}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
-        - name: Prepare keys for teku
-          become: true
-          when: eth2_client_name == 'teku'
-          shell: |
-            mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}
-            cp -r "{{home_dir}}/temp_data/generated/teku-keys" "{{home_dir}}/temp_data/{{eth2_client_name}}/keys"
-            cp -r "{{home_dir}}/temp_data/generated/teku-secrets" "{{home_dir}}/temp_data/{{eth2_client_name}}/secrets"
+    - name: Modify permissions to match user-group inside docker image
+      shell: chown -R "{{ validator_user_id }}" "{{ validator_node_dir }}"
+      become: true
 
-        - name: Prepare keys for nimbus
-          become: true
-          when: eth2_client_name == 'nimbus'
-          shell: |
-            mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}
-            cp -r "{{home_dir}}/temp_data/generated/nimbus-keys" "{{home_dir}}/temp_data/{{eth2_client_name}}/keys"
-            cp -r "{{home_dir}}/temp_data/generated/secrets" "{{home_dir}}/temp_data/{{eth2_client_name}}/secrets"
-
-        - name: Prepare keys for prysm
-          become: true
-          when: eth2_client_name == 'prysm'
-          shell: |
-            mkdir -p {{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts
-            echo "{{PRYSM_PASSWORD}}" > "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet_pass.txt"
-            cp -r "{{home_dir}}/temp_data/generated/prysm/direct/accounts/all-accounts.keystore.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/accounts/all-accounts.keystore.json"
-            cp -r "{{home_dir}}/temp_data/generated/prysm/keymanageropts.json" "{{home_dir}}/temp_data/{{eth2_client_name}}/wallet/direct/keymanageropts.json"
-            
-        - name: Copy keys for validators
-          become: true
-          copy:
-            src: "{{home_dir}}/temp_data/{{eth2_client_name}}/"
-            dest: "{{ validator_node_dir }}"
-            remote_src: yes
-            mode: "{{keystores_file_mode}}"
-            owner: "{{ ansible_user }}"
-            group: "{{ ansible_user }}"
-
-        - name: Modify permissions to match user-group inside docker image
-          shell: chown -R "{{ validator_user_id }}" "{{ validator_node_dir }}"
-          become: true
-
-        - name: Remove generated keys temp_data
-          become: true
-          shell: |
-            rm -rf {{home_dir}}/temp_data
+    - name: Remove generated keys temp_data
+      become: true
+      shell: |
+        rm -rf {{home_dir}}/temp_data

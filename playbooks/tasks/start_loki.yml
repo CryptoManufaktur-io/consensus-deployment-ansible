@@ -1,71 +1,64 @@
-- name: Start loki
-  hosts: "{{ variable_host }}"
-  gather_facts: false
-  tasks:
-    - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+---
+- name: Creates loki config dir
+  file:
+    path: "{{ loki_config_dir }}"
+    state: directory
 
-    - name: Creates loki config dir
-      file:
-        path: "{{ loki_config_dir }}"
-        state: directory
-    
-    - name: Creates loki data dir
-      file:
-        path: "{{ loki_data_dir }}"
-        state: directory
+- name: Creates loki data dir
+  file:
+    path: "{{ loki_data_dir }}"
+    state: directory
 
-    - name: Copy loki conf to remote
-      copy:
-        src: "{{ local_loki_conf_dir }}/"
-        dest: "{{ loki_config_dir }}"
+- name: Copy loki conf to remote
+  copy:
+    src: "{{ local_loki_conf_dir }}/"
+    dest: "{{ loki_config_dir }}"
 
-    - name: Replace variable in conf file
-      replace:
-        path: "{{ loki_config_dir }}/config.yml"
-        regexp: "{{item.0}}"
-        replace: "{{item.1}}"
-      loop:
-        - ["##BUCKET_NAME##", "{{loki_bucket}}"]
-        - ["##BUCKET_ENDPOINT##", "{{loki_bucket_endpoint}}"]
-        - ["##BUCKET_ACCESS_KEY##", "{{loki_bucket_access_key}}"]
-        - ["##BUCKET_ACCESS_SECRET##", "{{loki_bucket_secret_key}}"]
+- name: Replace variable in conf file
+  replace:
+    path: "{{ loki_config_dir }}/config.yml"
+    regexp: "{{item.0}}"
+    replace: "{{item.1}}"
+  loop:
+    - ["##BUCKET_NAME##", "{{loki_bucket}}"]
+    - ["##BUCKET_ENDPOINT##", "{{loki_bucket_endpoint}}"]
+    - ["##BUCKET_ACCESS_KEY##", "{{loki_bucket_access_key}}"]
+    - ["##BUCKET_ACCESS_SECRET##", "{{loki_bucket_secret_key}}"]
 
-    - name: Modify permissions to match user-group inside docker image
-      shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}" && chown -R "{{ ansible_user }}" "{{ loki_data_dir }}"
-      become: true
+- name: Modify permissions to match user-group inside docker image
+  shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}" && chown -R "{{ ansible_user }}" "{{ loki_data_dir }}"
+  become: true
 
-    - name: Create docker monitoring network
-      docker_network:
-        name: "{{ docker_monitoring_network }}"
+- name: Create docker monitoring network
+  docker_network:
+    name: "{{ docker_monitoring_network }}"
 
-    - name: Start loki container
-      docker_container:
-        name: "{{ loki_container_name }}"
-        state: started
-        image: "{{ loki_image_name }}"
-        pull: true
-        ports:
-          - "{{public_ip_address}}:3100:3100"
-        restart_policy: unless-stopped
-        memory_swappiness: 0
-        kernel_memory: "{{loki_kernel_memory}}"
-        network_mode: "{{ docker_monitoring_network }}"
-        restart: "{{ restart_container_if_exists | default(false) }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes: "{{loki_volumes}}"
-        command: "{{ loki_start_args }}"
-        memory: "{{loki_memory}}"
-        memory_swap: "{{loki_memory}}"
-        env: "{{ loki_env | default({}) }}"
-        user: "{{ loki_user_id }}"
+- name: Start loki container
+  docker_container:
+    name: "{{ loki_container_name }}"
+    state: started
+    image: "{{ loki_image_name }}"
+    pull: true
+    ports:
+      - "{{public_ip_address}}:3100:3100"
+    restart_policy: unless-stopped
+    memory_swappiness: 0
+    network_mode: "{{ docker_monitoring_network }}"
+    restart: "{{ restart_container_if_exists | default(false) }}"
+    log_options: "{{ common_log_options }}"
+    log_driver: "{{ common_log_driver }}"
+    volumes: "{{loki_volumes}}"
+    command: "{{ loki_start_args }}"
+    memory: "{{loki_memory}}"
+    memory_swap: "{{loki_memory}}"
+    env: "{{ loki_env | default({}) }}"
+    user: "{{ loki_user_id }}"
 
-    - name: Register loki metrics to prometheus
-      copy:
-        dest: "{{ prometheus_file_sd_dir }}/loki.yml"
-        content: |
-          - labels:
-              appname: {{ loki_container_name }}
-            targets:
-            - {{ loki_container_name }}:3100
+- name: Register loki metrics to prometheus
+  copy:
+    dest: "{{ prometheus_file_sd_dir }}/loki.yml"
+    content: |
+      - labels:
+          appname: {{ loki_container_name }}
+        targets:
+        - {{ loki_container_name }}:3100

@@ -1,20 +1,20 @@
 ---
 - name: Restart bootnode containers
-  hosts: [geth]
+  hosts: ["{{ runningTest + '_dclocal' }}"]
   gather_facts: false
   tasks:
     - name: Restart bootnode containers
       shell: "docker restart bootnode"
 
 - name: Restart beacon containers
-  hosts: [beacon]
+  hosts: ["{{ runningTest + '_beacon' }}"]
   gather_facts: false
   tasks:
     - name: Restart beacon containers
       shell: "docker restart beacon"
 
 - name: Restart validator containers
-  hosts: [validator]
+  hosts: ["{{ runningTest + '_validator' }}"]
   gather_facts: false
   tasks:
     - name: Restart validator containers

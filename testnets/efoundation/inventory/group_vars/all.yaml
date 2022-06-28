@@ -3,6 +3,7 @@
 ##############################################
 ansible_user: "ubuntu"
 public_ip_address: "{{ansible_host}}"
+ansible_python_interpreter: /usr/bin/python3
 # docker_etc_hosts: >
 #   { 
 #     "dockerhost" : "{{ ansible_host_private }}" 
@@ -44,7 +45,7 @@ graffiti: "{{eth2_client_name}}-{{eth1_client}}"
 # local data directories
 ##############################################
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
-local_custom_config_data_host_archive: "{{inventory_dir}}/../custom_config_data.tar.gz"
+local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_custom_config_data.tar.gz"
 
 ##############################################
 # remote host data directories
@@ -68,7 +69,7 @@ common_log_driver: json-file
 beacon_log_level: debug
 testnet_labels: >
   {
-    "testnet" : "{{CONFIG_NAME}}"
+    "testnet" : "{{ TESTS[runningTest][0] }}"
   }
 
 ##############################################
@@ -96,7 +97,6 @@ node_exporter_volumes:
   - "/sys:/host/sys:ro"
   - "/:/rootfs:ro"
 node_exporter_memory: 5000M
-node_exporter_kernel_memory: 5500M
 
 ##############################################
 # prometheus settings
@@ -119,7 +119,6 @@ prometheus_volumes:
   - "{{prometheus_data_dir}}:/prometheus"
   - "{{prometheus_config_dir}}:/etc/prometheus"
 prometheus_memory: 5000M
-prometheus_kernel_memory: 5500M
 
 ##############################################
 # thanos settings
@@ -127,7 +126,6 @@ prometheus_kernel_memory: 5500M
 thanos_image_name: thanosio/thanos:v0.24.0
 thanos_user_id: "1000:1000"
 thanos_memory: 5000M
-thanos_kernel_memory: 5500M
 thanos_conf_dir: "{{home_dir}}/thanos_conf"
 thanos_data_dir: "{{home_dir}}/thanos_data"
 local_thanos_conf_dir: "{{inventory_dir}}/../thanos_conf"
@@ -214,7 +212,6 @@ cloudflare_env: >
 cloudflare_volumes:
   - "/etc/localtime:/etc/localtime:ro"
 cloudflare_memory: 5000M
-cloudflare_kernel_memory: 5500M
 cloudflare_user_id: "0:0"
 
 traefik_container_name: traefik
@@ -243,7 +240,6 @@ traefik_volumes:
   - "{{home_dir}}/certs:/letsencrypt"
   - "/etc/localtime:/etc/localtime:ro"
 traefik_memory: 5000M
-traefik_kernel_memory: 5500M
 traefik_user_id: "0:0"
 
 grafana_container_name: grafana
@@ -280,7 +276,6 @@ grafana_labels: >
     "traefik.http.services.grafana.loadbalancer.server.port" : "{{grafana_port}}"
   }
 grafana_memory: 5000M
-grafana_kernel_memory: 5500M
 
 
 ##############################################
@@ -299,7 +294,6 @@ promtail_volumes:
   - "/etc/machine-id:/etc/machine-id:ro"
   - /var/log:/var/log:ro
 promtail_memory: 5000M
-promtail_kernel_memory: 5500M
 
 
 ##############################################
@@ -317,4 +311,3 @@ loki_volumes:
   - "{{loki_config_dir}}:/mnt/config"
   - "{{loki_data_dir}}:/loki"
 loki_memory: 5000M
-loki_kernel_memory: 5500M

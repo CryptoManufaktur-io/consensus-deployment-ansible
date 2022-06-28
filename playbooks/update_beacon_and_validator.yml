@@ -1,24 +1,59 @@
 ---
-# Initialize bootnode enr file
-- import_playbook: tasks/init_bootnode_enr.yml
+- name: Initialize bootnode enr file
+  hosts: "{{ runningTest + '_beacon' }}[0]"
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Init bootnode
+      import_tasks: tasks/init_bootnode_enr.yml
 
-# Start bootnode
-- import_playbook: tasks/start_bootnode.yml
+- name: Start bootnode
+  hosts: "{{ runningTest + '_dclocal' }}"
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-# unregister beacon and validator for metrics
-- import_playbook: tasks/start_unregistermetrics_beacon_validator.yml
+    - name: Start bootnode
+      import_tasks: tasks/start_bootnode.yml
 
-# stop any running beacon/validator docker image
-- import_playbook: tasks/stop_beacon.yml
-- import_playbook: tasks/stop_validator.yml
+- name: Unregister beacon and validator metrics
+  hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
+  gather_facts: false
+  tasks:
+    - name: unregister beacon and validator for metrics
+      import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
 
-# stars beacon node docker container
-- import_playbook: tasks/start_beacon.yml
+- name: Beacon setup
+  hosts: ["{{ runningTest + '_beacon' }}"]
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-# stars validator docker container
-- import_playbook: tasks/start_validator.yml
-  when: separate_validator_process_enabled
+    - name: Stop beacon
+      import_tasks: tasks/stop_beacon.yml
 
-# register beacon and validator for metrics
-- import_playbook: tasks/start_registermetrics_beacon_validator.yml
+    - name: Start beacon
+      import_tasks: tasks/start_beacon.yml
+
+    - name: register beacon for metrics
+      import_tasks: tasks/start_registermetrics_beacon.yml
+
+- name: Validator setup
+  hosts: ["{{ runningTest + '_validator' }}"]
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+        
+    - name: Stop validator
+      import_tasks: tasks/stop_validator.yml
+
+    - name: Start validator
+      import_tasks: tasks/start_validator.yml
+      when: separate_validator_process_enabled  
+
+    - name: register validator for metrics
+      import_tasks: tasks/start_registermetrics_validator.yml
 

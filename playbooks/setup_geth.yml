@@ -1,36 +1,31 @@
-# ---
-# setups up the machine with docker, updates apt cache
-- import_playbook: tasks/setup_machine.yml
-  vars:
-    variable_host: "geth"
+---
+- hosts: geth
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-# install node_exporter
-- import_playbook: tasks/deploy_node_exporter.yml
-  vars:
-    variable_host: "geth"
+    - name: setup hostname
+      become: yes
+      import_tasks: tasks/setup_hostname.yml
 
-# Start prometheus
-- import_playbook: tasks/start_prometheus.yml
-  vars:
-    variable_host: "geth"
-    # write to prometheus dc local
-    remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write"
+    - name: setups up the machine with docker, updates apt cache
+      become: yes
+      import_tasks: tasks/setup_tools.yml
 
-# Start geth
-- import_playbook: tasks/start_geth.yml
-  when: eth1_client == "geth"
+    - name: install node_exporter
+      import_tasks: tasks/deploy_node_exporter.yml
 
-# Start besu
-- import_playbook: tasks/start_besu.yml
-  when: eth1_client == "besu"
+    - name: start prometheus
+      import_tasks: tasks/start_prometheus.yml
+      vars:
+        remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:10903/api/v1/receive" # write to thanos global
 
-# Start nethermind
-- import_playbook: tasks/start_nethermind.yml
-  when: eth1_client == "nethermind"
+    - name: start geth
+      import_tasks: tasks/start_geth.yml
+      when: eth1_client == "geth"
 
-# Start promtail
-- import_playbook: tasks/start_promtail.yml
-  vars:
-    variable_host: "geth"
-    promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"
-
+    - name: start promtail
+      import_tasks: tasks/start_promtail.yml
+      vars:
+        promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push" # write to global

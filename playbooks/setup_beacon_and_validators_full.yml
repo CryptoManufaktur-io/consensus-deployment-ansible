@@ -1,52 +1,83 @@
 ---
-# setups up the machine with docker, updates apt cache
-- import_playbook: tasks/setup_machine.yml
-  vars:
-    variable_host: "beacon, validator"
+- name: Setup Machine
+  hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
+  gather_facts: false
+  tasks:
+    - name: setup hostname
+      become: yes
+      import_tasks: tasks/setup_hostname.yml
 
-# Initialize bootnode enr file
-- import_playbook: tasks/init_bootnode_enr.yml
+    - name: setups up the machine with docker, updates apt cache
+      become: yes
+      import_tasks: tasks/setup_tools.yml
 
-# Start bootnode
-- import_playbook: tasks/start_bootnode.yml
+    - name: install node_exporter
+      import_tasks: tasks/deploy_node_exporter.yml
+    
+    - name: start prometheus
+      import_tasks: tasks/start_prometheus.yml
+      vars:
+        remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write" # write to prometheus dc local
 
-# unregister beacon and validator for metrics
-- import_playbook: tasks/start_unregistermetrics_beacon_validator.yml
+    - name: start promtail
+      import_tasks: tasks/start_promtail.yml
+      vars:
+        promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"  # write to dc local
 
-# stop any running beacon/validator docker image, remove existing validator keys and beacon node data
-- import_playbook: tasks/stop_and_wipe_beacon_and_validator.yml
+    - name: unregister beacon and validator for metrics
+      import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
 
-# Generate validator keys
-- import_playbook: tasks/generate_validator_keys.yml
+    - name: stop any running beacon/validator docker image, remove existing validator keys and beacon node data
+      import_tasks: tasks/stop_and_wipe_beacon_and_validator.yml
 
-# uploads custom chain config and genesis data if needed
-- import_playbook: tasks/upload_custom_config_data.yml
+- name: Initialize bootnode enr file
+  hosts: "{{ runningTest + '_beacon' }}[0]"
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Init bootnode
+      import_tasks: tasks/init_bootnode_enr.yml
 
-# stars beacon node docker container
-- import_playbook: tasks/start_beacon.yml
+- name: Start bootnode
+  hosts: "{{ runningTest + '_dclocal' }}"
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-# stars validator docker container
-- import_playbook: tasks/start_validator.yml
-  when: separate_validator_process_enabled
+    - name: Start bootnode
+      import_tasks: tasks/start_bootnode.yml
 
-# install node_exporter
-- import_playbook: tasks/deploy_node_exporter.yml
-  vars:
-    variable_host: "beacon, validator"
+- name: Beacon setup
+  hosts: "{{ runningTest + '_beacon' }}"
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-# Start prometheus
-- import_playbook: tasks/start_prometheus.yml
-  vars:
-    variable_host: "beacon, validator"
-    # write to prometheus dc local
-    remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write"
+    - name: uploads custom chain config and genesis data if needed
+      import_tasks: tasks/upload_custom_config_data.yml
 
-# register beacon and validator for metrics
-- import_playbook: tasks/start_registermetrics_beacon_validator.yml
+    - name: starts beacon node docker container
+      import_tasks: tasks/start_beacon.yml
 
-# Start promtail
-- import_playbook: tasks/start_promtail.yml
-  vars:
-    variable_host: "beacon, validator"
-    promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"
+    - name: register beacon for metrics
+      import_tasks: tasks/start_registermetrics_beacon.yml
+
+- name: Validator setup
+  hosts: "{{ runningTest + '_validator' }}"
+  gather_facts: false
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Generate validator keys
+      import_tasks: tasks/generate_validator_keys.yml
+
+    - name: starts validator docker container
+      when: separate_validator_process_enabled
+      import_tasks: tasks/start_validator.yml
+
+    - name: register validator for metrics
+      import_tasks: tasks/start_registermetrics_validator.yml
 
