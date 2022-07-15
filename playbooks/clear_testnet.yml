@@ -1,0 +1,10 @@
+---
+- name: Wipe data & Unregister beacon and validator metrics
+  hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
+  gather_facts: false
+  tasks:
+    - name: unregister beacon and validator for metrics
+      import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
+
+    - name: stop any running beacon/validator docker image, remove existing validator keys and beacon node data
+      import_tasks: tasks/stop_and_wipe_beacon_and_validator.yml

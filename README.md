@@ -1,62 +1,100 @@
 # Custom testnet
 
-This repository is a minimal set of playbooks and inventories required to set up an eth2 node or an eth2 testnet.
+This repository is a minimal set of playbooks and inventories required to set up an eth2 testnet.
 
 ## Assumption
 
-- This setup expects that you already have deposits made and config data generated
+- This setup assumes you already have provisioned virtual machines that will act as nodes and have an ansible.ini inventory with their details
+- [Checkout this repo for terraform project that can create virtual machines using linode provider and create inventory.ini automatically.](https://github.com/gathecageorge/eth-testnet)
 - This setup is ideally aimed at public testnets and helps quickly provision validators
 
 ## Initial configuration
 
-- Ensure this repo is cloned locally and that the submodules have been pulled
-`git submodule update --init --recursive`
+- Ensure this repo is cloned locally
 
-- Ensure ansible has been installed
-`ansible --version`
+- Ensure ansible has been installed `ansible --version`
 
-- Copy secrets config to `<testnet>/inventory/secrets.yml` A sample secrets file can be found at `<testnet>/inventory/secrets_sample.yml`
+- Copy secrets config to `testnets/<testnet>/inventory/group_vars/secrets.yml`
 
-- Copy inventory file to `<testnet>/inventory/inventory.ini` A sample inventory can be found at `<testnet>/inventory/inventory_sample.ini`
+    ```text
+    A sample secrets file can be found at
+    testnets/<testnet>/inventory/secrets_sample.yml 
+    ```
+
+- Copy inventory file to `testnets/<testnet>/inventory/inventory.ini`
+
+    ```text
+    A sample inventory can be found at
+    testnets/<testnet>/inventory/inventory_sample.ini
+    ```
 
 - Ensure SSH access to all servers. Check by command
-`ansible -i testnets/efoundation/inventory/inventory.ini -m ping all`
+`ansible -i testnets/<testnet>/inventory/inventory.ini -m ping all`
 
 ## Playbooks setup for each action
 
-`1. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/prepare_custom_conf_data.yml`
+1. Prepare data for testnet. You need to setup some values in `testnets/<testnet>/inventory/group_vars/secrets.yml` to configure how testnet will look like, eg Number of validators per node, Genesis time etc
 
-`2. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth_bootnode.yml`
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/prepare_custom_conf_data.yml
+    ```
 
-`3. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
+2. Setup eth1 execution client/geth
 
-`4. ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml`
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/setup_geth.yml
+    ```
 
-## Usage
+3. Setup logging nodes
 
-- Replace the `testnets/efoundation/inventory/inventory.ini`
-- Generate the keys from the mnemonic by running the `generate_keys.sh` file (after exporting the mnemonic)
-- Modify the client distribution in `select_keys_for_clients.sh` and run the script to get keys in the needed format
-- If needed, modify the `testnets/efoundation/custom_config_data/` folder with the `genesis.ssz` and `config.yaml`
-- Modify the `testnets/efoundation/inventory/group_vars/eth2client_<client_name>.yml` if required
-- Check the inventory with `ansible-inventory -i testnets/efoundation/inventory/inventory.ini --list`
-- Run the playbook to run all beacon nodes and validators with `ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml`
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/setup_logging.yml
+    ```
 
-## Updating example nodes with new configs/images
+4. Start up bootnodes, validators and beacon nodes
 
-Note!!: Assumptions made for the updating process:  
-    - Please do not change the volume maps, container names or key locations unless you know what you are doing
-    - Please do not change the `client_type`(lighthouse/teku/etc), the playbook `update-beacon-and-validator.yml` doesn't
-touch the keys: it will lead to format errors!
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml --extra-vars "runningTest=test1"
+    ```
 
-- Update `testnets/efoundation/inventory/inventory.ini` if needed
-- Make the required changes in the `inventory/group_vars` folder, the flags and image names are organized as `eth2client_<client-name>`
-- There are flags separately listed for beacon node and validator, make changes as needed. All clients work as separate
-beacon node/validator except for nimbus (runs both in one container).
-- Run `ansible-inventory -i testnets/efoundation/inventory/inventory.ini --list` to confirm the inventory is loaded as expected,
-check if the change shows up in the inventory variables
-- Run `ansible-playbook -i testnets/efoundation/inventory/inventory.ini consensus-deployment-ansible/playbooks/update_beacon_and_validator.yml`.
-This will stop existing beacon and validator containers and re-start them with the new config or versions. No key or beacon db is changed.
-- If you wish to change the client distribution or want to fully wipe and re-deploy the entire node, then please run
-`ansible-playbook -i testnets/efoundation/inventory/inventory.ini consensus-deployment-ansible/playbooks/setup_beacon_and_validators_full.yml`
-- Manually check the grafana dashboards or ssh into the instance and confirm changes.
+## Updating testnet with new configs/images
+
+You can update the testnet beacon/bootnodes/validators by running
+
+```text
+ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/update_beacon_and_validator.yml --extra-vars "runningTest=test1"
+```
+
+This will stop existing bootnode, beacon and validator containers and re-start them with the new config or versions.
+
+### `OR`
+
+```text
+ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/update_beacon_and_validator_and_keys.yml --extra-vars "runningTest=test1"
+```
+
+This will do the same as above and also remove existing keys and regenerate new ones. This means you must have ran `prepare_custom_conf_data.yml` playbook with new testnet configuration.
+
+```text
+If any other configuration is supposed to be changed, then run the specific playbook from number 1 - 4
+```
+
+## Other playbooks
+
+1. Clear the testnet by stopping beacon/validator and wiping their data
+
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/clear_testnet.yml --extra-vars "runningTest=test1"
+    ```
+
+2. Restart testnet containers in bootnode/beacon/validator nodes
+
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/restart_testnet.yml --extra-vars "runningTest=test1"
+    ```
+
+3. Remove all containers and data in all nodes. `NB: Use with caution though will prompt for confirm.`
+
+    ```text
+    ansible-playbook -i testnets/<testnet>/inventory/inventory.ini playbooks/wipe_all.yml
+    ```

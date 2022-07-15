@@ -1,33 +1,47 @@
-- name: Start bootnodes
-  hosts: geth
-  gather_facts: false
-  tasks:
-    - name: Include bootnode variables
-      include_vars: "{{inventory_dir}}/group_vars/bootnode.yml"
+---
+- name: Include bootnode variables
+  include_vars: "{{inventory_dir}}/group_vars/bootnode.yml"
 
-    - name: Start Eth2 bootnode
-      docker_container:
-        name: "{{ bootnode_container_name }}"
-        state: started
-        image: "{{ bootnode_image_name }}"
-        pull: true
-        restart_policy: unless-stopped
-        network_mode: host
-        restart: "{{ restart_container_if_exists | default(false) }}"
-        memory: "{{bootnode_memory}}"
-        command: "{{ bootnode_start_args }}"
-        log_options: "{{ common_log_options }}"
-        log_driver: "{{ common_log_driver }}"
-        volumes:
-          - "{{bootnode_host_dir}}:/data"
+- name: Include ENR all bootnodes variables
+  include_vars: "{{inventory_dir}}/group_vars/{{runningTest}}/enr_all.yml"
 
-    - name: Get ENR
-      shell: "curl http://localhost:8002/enr"
-      register: enr_output
+- name: Generate bootnode bootnode_p2p_priv_key
+  shell: "head -c 32 /dev/urandom|xxd -ps -c 32"
+  register: priv_key
 
-    - name: Add ENR to file
-      delegate_to: localhost
-      throttle: 1
-      lineinfile:
-        path: "{{ inventory_dir }}/group_vars/enr.yml"
-        line: "  - \"{{enr_output.stdout}}\""
+- name: Set bootnode_p2p_priv_key variable
+  set_fact:
+    bootnode_p2p_priv_key: "{{priv_key.stdout}}"
+
+- name: Start Eth2 bootnode
+  docker_container:
+    name: "{{ bootnode_container_name }}"
+    state: started
+    image: "{{ bootnode_image_name }}"
+    pull: true
+    restart_policy: unless-stopped
+    network_mode: host
+    restart: "{{ restart_container_if_exists | default(false) }}"
+    memory: "{{bootnode_memory}}"
+    command: "{{ bootnode_start_args }}"
+    log_options: "{{ common_log_options }}"
+    log_driver: "{{ common_log_driver }}"
+    volumes:
+      - "{{bootnode_host_dir}}:/data"
+    labels: "{{ testnet_labels }}"
+
+- name: Get ENR
+  shell: "curl http://localhost:8002/enr"
+  register: enr_output
+
+- name: Add ENR to enr_all file
+  delegate_to: localhost
+  lineinfile:
+    path: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_all.yml"
+    line: "  - \"{{enr_output.stdout}}\""
+
+- name: Add ENR to enr_groups file
+  delegate_to: localhost
+  lineinfile:
+    path: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_groups.yml"
+    line: "{{inventory_hostname}}_enr: \"{{enr_output.stdout}}\""

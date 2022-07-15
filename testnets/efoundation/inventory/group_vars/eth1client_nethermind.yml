@@ -3,7 +3,6 @@ eth1_image_name: nethermind/nethermind:latest
 eth1_container_name: eth1_nethermind
 
 eth1_memory: 5000M
-eth1_kernel_memory: 5500M
 
 eth1_volumes:
   - "{{eth1_node_dir}}:/eth1data"
@@ -16,7 +15,7 @@ eth1_start_args: >
   --JsonRpc.EnabledModules="net,eth,consensus,engine,subscribe,web3"
   --JsonRpc.Port={{eth1_rpc_port}}
   --JsonRpc.WebSocketsPort={{eth1_ws_rpc_port}}
-  --JsonRpc.Host=0.0.0.0
+  --JsonRpc.Host={{public_ip_address}}
   --Network.DiscoveryPort=30303
   --Network.P2PPort=30303
   --Init.DiagnosticMode="None"

@@ -1,0 +1,87 @@
+- name: Beacons firewall management
+  hosts: [beacons]
+  gather_facts: false
+  become: true
+  vars:
+    subnet_ips: []
+    group: ''
+    test: ''
+
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Reset UFW
+      ufw:
+        state: reset
+
+    - name: Configure ufw docker
+      import_tasks: configure_ufw_docker.yml
+
+    - name: Allow SSH port through firewall
+      ufw:
+        rule: allow
+        port: "22"
+        proto: "tcp"
+        comment: "Allow SSH"
+
+    - name: Allow peering through firewall network not split
+      when: GROUPS_PEERING == 'true'
+      ufw:
+        rule: allow
+        port: "9000"
+        comment: "Allow peering through firewall network not split"
+
+    - name: Allow peering through firewall NETWORK SPLIT
+      when: GROUPS_PEERING == 'false'
+      block:
+        - name: Run python to get subnet ips
+          delegate_to: localhost
+          throttle: 1
+          run_once: true
+          become: false
+          command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini"
+          register: python_result
+
+        - name: Set variables
+          set_fact:
+            subnet_ips: "{{python_result.stdout}}"
+            group: "{{hostvars[inventory_hostname].grp}}"
+            test: "{{hostvars[inventory_hostname].test}}"
+
+        - name: Set subnet_ips variables
+          set_fact:
+            subnet_ips: "{{subnet_ips[group + '_' + test]}}"
+
+        - name: Allow ports through firewall from same group hosts
+          ufw:
+            rule: allow
+            src: "{{ item }}"
+            port: "9000"
+            comment: "Allow peering from same group"
+          with_items: "{{ subnet_ips }}"
+
+        - name: Deny explicit after allows
+          ufw:
+            rule: deny
+            port: "9000"
+            comment: "Deny explicit no matching rule"
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        logging: 'on'
+
+    - name: Install conntrack
+      register: conntrack
+      apt:
+        name: conntrack
+        state: present
+    
+    - name: Setup conntrack
+      when: conntrack.changed == true
+      shell: "sysctl -w net.netfilter.nf_conntrack_tcp_loose=0"
+    
+    - name: Flush conntrack
+      shell: "conntrack -F"

@@ -2,9 +2,11 @@
 # image name and image location
 ##############################################
 eth2_client_name: teku
-beacon_image_name: consensys/teku:21.8.2
-validator_image_name: consensys/teku:21.8.2
-beacon_endpoint: "http://127.0.0.1:{{beacon_api_port}}"
+
+#todo check latest
+beacon_image_name: consensys/teku:22.3.2
+validator_image_name: consensys/teku:22.3.2
+beacon_endpoint: "http://{{beacon_container_name}}:{{beacon_api_port}}"
 
 ##############################################
 # volume mappings on remote host
@@ -47,7 +49,6 @@ beacon_start_args: >
   --rest-api-port="{{beacon_api_port}}"
   --metrics-host-allowlist="*"
   --rest-api-host-allowlist="*"
-  --Xdata-storage-non-canonical-blocks-enabled=true
 
 validator_start_args: >
   validator-client 
@@ -61,9 +62,7 @@ validator_start_args: >
 # memory limits
 ##############################################
 beacon_memory: 14000M
-beacon_kernel_memory: 14500M
 validator_memory: 2000M
-validator_kernel_memory: 2500M
 beacon_env:
   JAVA_OPTS: "-XX:SoftMaxHeapSize=2g -Xmx4g"
 

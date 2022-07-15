@@ -1,0 +1,10 @@
+- name: Add authorised ssh key
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Add ssh key
+      ansible.posix.authorized_key:
+        user: ubuntu
+        state: present
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINCCnX1VG3EbmuFuR6ZpjaEECcfWwHEhaVc4SOwFDx9u tbehrens@Meep"

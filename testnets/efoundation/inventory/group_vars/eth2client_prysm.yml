@@ -2,11 +2,13 @@
 # image name and image location
 ##############################################
 eth2_client_name: prysm
-beacon_image_name: gcr.io/prysmaticlabs/prysm/beacon-chain:v2.0.0-rc.1
-validator_image_name: gcr.io/prysmaticlabs/prysm/validator:v2.0.0-rc.1
+
+#todo check latest
+beacon_image_name: prysmaticlabs/prysm-beacon-chain:v2.0.6
+validator_image_name: prysmaticlabs/prysm-validator:v2.0.6
 
 # GRPC, not REST JSON
-beacon_endpoint: "127.0.0.1:{{beacon_grpc_port}}"
+beacon_endpoint: "{{beacon_container_name}}:{{beacon_grpc_port}}"
 
 ##############################################
 # volume mappings on remote host
@@ -59,9 +61,7 @@ validator_start_args: >
 # memory limits
 ##############################################
 validator_memory: 2000M
-validator_kernel_memory: 2500M
 beacon_memory: 5000M
-beacon_kernel_memory: 5500M
 
 ##############################################
 # file permissions and user ids

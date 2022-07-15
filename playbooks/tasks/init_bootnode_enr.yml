@@ -1,9 +1,15 @@
-- name: Initialize bootnode enr file
-  hosts: all[0]
-  connection: local
-  gather_facts: false
-  tasks:
-    - name: Create enr file or clear if exists
-      copy:
-        dest: "{{ inventory_dir }}/group_vars/enr.yml"
-        content: "bootnode_enrs:"
+---
+- name: Creates enr dir
+  file:
+    path: "{{ inventory_dir }}/group_vars/{{runningTest}}"
+    state: directory
+
+- name: Create enr_all file or clear if exists
+  copy:
+    dest: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_all.yml"
+    content: "bootnode_enrs:"
+
+- name: Create enr_groups file or clear if exists
+  copy:
+    dest: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_groups.yml"
+    content: ""

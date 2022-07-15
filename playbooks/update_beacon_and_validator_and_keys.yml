@@ -17,12 +17,15 @@
     - name: Start bootnode
       import_tasks: tasks/start_bootnode.yml
 
-- name: Unregister beacon and validator metrics
+- name: Wipe data & Unregister beacon and validator metrics
   hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
   gather_facts: false
   tasks:
     - name: unregister beacon and validator for metrics
       import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
+
+    - name: stop any running beacon/validator docker image, remove existing validator keys and beacon node data
+      import_tasks: tasks/stop_and_wipe_beacon_and_validator.yml
 
 - name: Beacon setup
   hosts: ["{{ runningTest + '_beacon' }}"]
@@ -31,9 +34,9 @@
     - name: Include secret variables
       include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
 
-    - name: Stop beacon
-      import_tasks: tasks/stop_beacon.yml
-
+    - name: uploads custom chain config and genesis data if needed
+      import_tasks: tasks/upload_custom_config_data.yml
+        
     - name: Start beacon
       import_tasks: tasks/start_beacon.yml
 
@@ -46,9 +49,9 @@
   tasks:
     - name: Include secret variables
       include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
-        
-    - name: Stop validator
-      import_tasks: tasks/stop_validator.yml
+
+    - name: Generate validator keys
+      import_tasks: tasks/generate_validator_keys.yml
 
     - name: Start validator
       import_tasks: tasks/start_validator.yml

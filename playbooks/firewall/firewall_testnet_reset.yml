@@ -1,0 +1,8 @@
+- name: Reset all firewall beacons
+  hosts: [beacons]
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Reset UFW
+      ufw:
+        state: reset

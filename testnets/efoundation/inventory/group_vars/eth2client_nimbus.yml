@@ -3,8 +3,9 @@
 ##############################################
 eth2_client_name: nimbus
 
-beacon_image_name: statusim/nimbus-eth2:amd64-latest
-validator_image_name: statusim/nimbus-eth2:amd64-latest
+#todo check latest
+beacon_image_name: "{{ 'statusim/nimbus-eth2:multiarch-v22.3.0' if TESTS[runningTest][1] == 12 else '%s%d'|format('gathecageorge/nimbus-eth2:slot', TESTS[runningTest][1]) }}"
+validator_image_name: "{{ beacon_image_name }}"
 
 ##############################################
 # volume mappings on remote host
@@ -44,9 +45,7 @@ beacon_start_args: >
 # memory limits
 ##############################################
 validator_memory: 2000M
-validator_kernel_memory: 2500M
 beacon_memory: 5000M
-beacon_kernel_memory: 5500M
 
 ##############################################
 # file permissions and user ids
