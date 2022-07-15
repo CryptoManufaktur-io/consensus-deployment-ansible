@@ -1,5 +1,5 @@
-- name: Reset all firewall
-  hosts: [beacon, validator]
+- name: Reset all firewall beacons
+  hosts: [beacons]
   gather_facts: false
   become: true
   tasks:

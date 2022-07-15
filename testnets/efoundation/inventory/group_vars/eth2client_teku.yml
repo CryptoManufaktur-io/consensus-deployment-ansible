@@ -2,8 +2,10 @@
 # image name and image location
 ##############################################
 eth2_client_name: teku
-beacon_image_name: consensys/teku:21.8.2 #todo check latest
-validator_image_name: consensys/teku:21.8.2
+
+#todo check latest
+beacon_image_name: consensys/teku:22.3.2
+validator_image_name: consensys/teku:22.3.2
 beacon_endpoint: "http://{{beacon_container_name}}:{{beacon_api_port}}"
 
 ##############################################

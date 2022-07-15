@@ -63,6 +63,12 @@
           ;;        
       esac
 
+- name: Disable ipv6
+  lineinfile:
+    dest: /etc/default/ufw
+    regexp: '^IPV6='
+    line: 'IPV6=no'
+
 - name: Reload UFW
   when: changedDocker.changed == true
   ufw:

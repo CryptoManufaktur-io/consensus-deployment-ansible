@@ -3,8 +3,9 @@
 ##############################################
 eth2_client_name: lighthouse
 
-beacon_image_name: sigp/lighthouse:latest-modern
-validator_image_name: sigp/lighthouse:latest-modern
+#todo check latest
+beacon_image_name: sigp/lighthouse:v2.1.5
+validator_image_name: sigp/lighthouse:v2.1.5
 beacon_endpoint: "http://{{beacon_container_name}}:{{beacon_api_port}}"
 
 ##############################################

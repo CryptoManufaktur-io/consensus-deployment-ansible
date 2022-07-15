@@ -3,7 +3,8 @@
 ##############################################
 eth2_client_name: nimbus
 
-beacon_image_name: "{{ 'statusim/nimbus-eth2:multiarch-latest' if TESTS[runningTest][1] == 12 else '%s%d'|format('gathecageorge/nimbus-eth2:slot', TESTS[runningTest][1]) }}"
+#todo check latest
+beacon_image_name: "{{ 'statusim/nimbus-eth2:multiarch-v22.3.0' if TESTS[runningTest][1] == 12 else '%s%d'|format('gathecageorge/nimbus-eth2:slot', TESTS[runningTest][1]) }}"
 validator_image_name: "{{ beacon_image_name }}"
 
 ##############################################

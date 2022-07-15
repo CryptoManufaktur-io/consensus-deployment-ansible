@@ -1,10 +1,11 @@
-- name: Beacon/Validator firewall management
-  hosts: [beacon]
-  # hosts: prysm0
+- name: Beacons firewall management
+  hosts: [beacons]
   gather_facts: false
   become: true
   vars:
-    specific_ips: []
+    subnet_ips: []
+    group: ''
+    test: ''
 
   tasks:
     - name: Include secret variables
@@ -34,11 +35,23 @@
     - name: Allow peering through firewall NETWORK SPLIT
       when: GROUPS_PEERING == 'false'
       block:
-        - name: Gets Group IPs to allow
-          set_fact: 
-            specific_ips: "{{ specific_ips }} + [ '{{ hostvars[item]['ansible_host'] }}/32' ]"
-          when: hostvars[item]['grp'] == grp
-          with_items:  "{{ groups['beacon'] }}"
+        - name: Run python to get subnet ips
+          delegate_to: localhost
+          throttle: 1
+          run_once: true
+          become: false
+          command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini"
+          register: python_result
+
+        - name: Set variables
+          set_fact:
+            subnet_ips: "{{python_result.stdout}}"
+            group: "{{hostvars[inventory_hostname].grp}}"
+            test: "{{hostvars[inventory_hostname].test}}"
+
+        - name: Set subnet_ips variables
+          set_fact:
+            subnet_ips: "{{subnet_ips[group + '_' + test]}}"
 
         - name: Allow ports through firewall from same group hosts
           ufw:
@@ -46,7 +59,7 @@
             src: "{{ item }}"
             port: "9000"
             comment: "Allow peering from same group"
-          with_items: "{{ specific_ips }}"
+          with_items: "{{ subnet_ips }}"
 
         - name: Deny explicit after allows
           ufw:
