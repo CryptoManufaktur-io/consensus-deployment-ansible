@@ -40,7 +40,7 @@
           throttle: 1
           run_once: true
           become: false
-          command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini"
+          command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini split"
           register: python_result
 
         - name: Set variables

@@ -1,0 +1,70 @@
+- name: Geth firewall management
+  hosts: [geth]
+  gather_facts: false
+  become: true
+  vars:
+    subnet_ips: []
+
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+
+    - name: Reset UFW
+      ufw:
+        state: reset
+
+    - name: Configure ufw docker
+      import_tasks: configure_ufw_docker.yml
+
+    - name: Allow ports through firewall
+      ufw:
+        rule: allow
+        port: "{{ item.0 }}"
+        proto: "{{ item.1 }}"
+        comment: "{{ item.2 }}"
+      loop:
+        - ["22", "tcp", "Allow SSH"]
+        - ["30303", "tcp", "Allow Go Ethereum TCP"]
+        - ["30303", "udp", "Allow Go Ethereum UDP"]
+        # - ["9001", "tcp", "Allow Bootnode Peering TC"]
+        # - ["9001", "udp", "Allow Bootnode Peering UDP"]
+
+    - name: Run python to get subnet ips
+      delegate_to: localhost
+      throttle: 1
+      run_once: true
+      become: false
+      command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini geth"
+      register: python_result
+
+    - name: Set variables
+      set_fact:
+        subnet_ips: "{{python_result.stdout}}"
+
+    - name: Set subnet_ips variables
+      set_fact:
+        subnet_ips: "{{subnet_ips[inventory_hostname]}}"
+
+    - name: Allow GETH API 8545
+      ufw:
+        rule: allow
+        src: "{{ item }}"
+        port: "8545"
+        proto: "tcp"
+        comment: "Allow GETH API 8545"
+      with_items: "{{ subnet_ips }}"
+
+    - name: Allow GETH WS API 8546
+      ufw:
+        rule: allow
+        src: "{{ item }}"
+        port: "8546"
+        proto: "tcp"
+        comment: "Allow GETH WS API 8546"
+      with_items: "{{ subnet_ips }}"
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        logging: 'on'
