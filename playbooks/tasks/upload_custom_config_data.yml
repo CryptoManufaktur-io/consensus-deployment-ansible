@@ -23,6 +23,11 @@
     src: "{{ local_custom_config_data_host_archive }}"
     dest: "{{ testnet_dir }}/"
 
+- name: Copy jwtsecret file
+  copy:
+    src: "{{local_gen_custom_config_data_host_dir}}/jwtsecret"
+    dest: "{{ testnet_dir }}/jwtsecret"
+
 - name: Remove {{local_custom_config_data_host_archive}} archive after upload
   file:
     path: "{{ local_custom_config_data_host_archive }}"

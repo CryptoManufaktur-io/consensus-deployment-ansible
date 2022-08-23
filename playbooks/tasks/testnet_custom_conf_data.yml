@@ -1,17 +1,17 @@
 ---
 - name: Creates test data dir
   file:
-    path: "{{data_dir}}/{{test.key}}"
+    path: "{{local_custom_config_data_host_dir}}/{{test.key}}"
     state: directory
 
 - name: Copy config file
   copy:
-    src: "{{ running_dir }}/config.yaml"
-    dest: "{{ data_dir }}/{{test.key}}"
+    src: "{{ local_gen_custom_config_data_host_dir }}/config.yaml"
+    dest: "{{ local_custom_config_data_host_dir }}/{{test.key}}"
 
 - name: Replace variable in conf file
   replace:
-    path: "{{ data_dir }}/{{test.key}}/config.yaml"
+    path: "{{ local_custom_config_data_host_dir }}/{{test.key}}/config.yaml"
     regexp: "{{item.0}}"
     replace: "{{item.1}}"
   loop:
@@ -28,24 +28,24 @@
 
 - name: Create deploy_block.txt
   copy:
-    dest: "{{ data_dir }}/{{test.key}}/deploy_block.txt"
+    dest: "{{ local_custom_config_data_host_dir }}/{{test.key}}/deploy_block.txt"
     content: |
       {{transaction_hash_details.block_number}}
 
 - name: Create deposit_contract.txt
   copy:
-    dest: "{{ data_dir }}/{{test.key}}/deposit_contract.txt"
+    dest: "{{ local_custom_config_data_host_dir }}/{{test.key}}/deposit_contract.txt"
     content: |
       {{transaction_hash_details.contract_address}}
 
 - name: Create empty mnemonics.yaml
   copy:
-    dest: "{{ data_dir }}/{{test.key}}/mnemonics.yaml"
+    dest: "{{ local_custom_config_data_host_dir }}/{{test.key}}/mnemonics.yaml"
     content: ""
 
 - name: Create empty secret_mnemonics.yaml
   copy:
-    dest: "{{ data_dir }}/{{test.key}}/secret_mnemonics.yaml"
+    dest: "{{ local_custom_config_data_host_dir }}/{{test.key}}/secret_mnemonics.yaml"
     content: ""
 
 - name: Generate mnenomic and add to file
@@ -53,4 +53,4 @@
   loop: "{{groups[test.key + '_validator']}}"
 
 - name: Generate genesis state
-  shell: "docker run --user $(id -u):$(id -u) --network host --rm -v {{data_dir}}/{{test.key}}:/data gathecageorge/eth2-test-genesis:latest phase0 --config /data/config.yaml --eth1-block {{transaction_hash_details.block_hash}} --mnemonics /data/mnemonics.yaml --timestamp {{MIN_GENESIS_TIME - GENESIS_DELAY}} --tranches-dir /data/tranches --state-output /data/genesis.ssz"
+  shell: "docker run --user $(id -u):$(id -u) --network host --rm -v {{local_custom_config_data_host_dir}}/{{test.key}}:/data gathecageorge/eth2-testnet-genesis:latest phase0 --config /data/config.yaml --eth1-block {{transaction_hash_details.block_hash}} --mnemonics /data/mnemonics.yaml --timestamp {{MIN_GENESIS_TIME - GENESIS_DELAY}} --tranches-dir /data/tranches --state-output /data/genesis.ssz"

@@ -4,7 +4,7 @@
   become: yes
   tasks:
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
 
     - name: Reset tc packet control
       command: "tc qdisc del dev eth0 root"

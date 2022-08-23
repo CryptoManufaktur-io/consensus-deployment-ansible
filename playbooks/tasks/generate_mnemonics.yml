@@ -5,7 +5,7 @@
 
 - name: Add mnenomic to mnemonics.yaml
   blockinfile:
-    path: "{{ data_dir }}/{{test.key}}/mnemonics.yaml"
+    path: "{{ local_custom_config_data_host_dir }}/{{test.key}}/mnemonics.yaml"
     block: |
       # {{item}}
       - mnemonic: "{{mnemonic_output.stdout}}"
@@ -14,7 +14,7 @@
 
 - name: Add mnenomic to secret_mnemonics.yaml
   blockinfile:
-    path: "{{ data_dir }}/{{test.key}}/secret_mnemonics.yaml"
+    path: "{{ local_custom_config_data_host_dir }}/{{test.key}}/secret_mnemonics.yaml"
     block: |
       {{item}}: "{{mnemonic_output.stdout}}"
     marker: ""

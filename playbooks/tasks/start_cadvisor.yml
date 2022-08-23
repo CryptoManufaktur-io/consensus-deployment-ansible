@@ -1,0 +1,21 @@
+---
+- name: Create docker monitoring network
+  docker_network:
+    name: "{{ docker_monitoring_network }}"
+
+- name: Start cadvisor container
+  docker_container:
+    name: "{{ cadvisor_container_name }}"
+    state: started
+    image: "{{ cadvisor_image_name }}"
+    pull: true
+    restart_policy: unless-stopped
+    memory_swappiness: 0
+    network_mode: "{{ docker_monitoring_network }}"
+    restart: "{{ restart_container_if_exists | default(false) }}"
+    log_options: "{{ common_log_options }}"
+    log_driver: "{{ common_log_driver }}"
+    volumes: "{{cadvisor_exporter_volumes}}"
+    memory: "{{cadvisor_exporter_memory}}"
+    memory_swap: "{{cadvisor_exporter_memory}}"
+    user: "{{ cadvisor_exporter_user_id }}"

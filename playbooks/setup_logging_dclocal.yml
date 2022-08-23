@@ -1,5 +1,6 @@
 ---
-- hosts: geth
+- name: Setup DC local servers
+  hosts: dclocal
   gather_facts: false
   tasks:
     - name: Include secret variables
@@ -22,13 +23,11 @@
     - name: start prometheus
       import_tasks: tasks/start_prometheus.yml
       vars:
+        enable_remote_receiver: "true"
         remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:10903/api/v1/receive" # write to thanos global
-
-    - name: start geth
-      import_tasks: tasks/start_geth.yml
-      when: eth1_client == "geth"
 
     - name: start promtail
       import_tasks: tasks/start_promtail.yml
       vars:
-        promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push" # write to global
+        push_receiver: "true"
+        promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push"  # write to global

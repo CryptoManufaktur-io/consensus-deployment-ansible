@@ -1,15 +1,15 @@
 ---
 - name: Creates enr dir
   file:
-    path: "{{ inventory_dir }}/group_vars/{{runningTest}}"
+    path: "{{enr_groups_all_path}}"
     state: directory
 
 - name: Create enr_all file or clear if exists
   copy:
-    dest: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_all.yml"
+    dest: "{{enr_all_file}}"
     content: "bootnode_enrs:"
 
 - name: Create enr_groups file or clear if exists
   copy:
-    dest: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_groups.yml"
+    dest: "{{enr_groups_file}}"
     content: ""

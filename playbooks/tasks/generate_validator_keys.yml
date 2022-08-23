@@ -8,7 +8,7 @@
   when: filesFound.examined == 0
   block:
     - name: Include mnemonic variables
-      include_vars: "{{inventory_dir}}/../custom_config_data/{{runningTest}}/secret_mnemonics.yaml"
+      include_vars: "{{local_custom_config_data_host_dir}}/{{runningTest}}/secret_mnemonics.yaml"
 
     - name: Remove temp_data if exists
       become: true

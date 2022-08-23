@@ -15,19 +15,23 @@ restart_container_if_exists: true
 # eth1 endpoints
 ##############################################
 # nimbus requires a websocket endpoint (http support unstable)
-eth1endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_ws_rpc_port }}"
+eth1endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_auth_rpc_port }}"
+eth1endpoint_prysm: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
 eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
 
 ##############################################
 # testnet specific information
 ##############################################
 eth1_client: geth
+fee_recipient: "0xf97e180c050e5Ab072211Ad2C213Eb5AEE4DF134"
 
 ##############################################
 # ports to configure
 ##############################################
 eth1_rpc_port: 8545
 eth1_ws_rpc_port: 8546
+eth1_auth_rpc_port: 8551
+eth1_pprof_port: 8002
 nimbus_rpc_port: 4009
 beacon_api_port: 4000
 beacon_grpc_port: 4001
@@ -44,8 +48,14 @@ graffiti: "{{eth2_client_name}}-{{eth1_client}}"
 ##############################################
 # local data directories
 ##############################################
+secrets_file: "{{inventory_dir}}/group_vars/secrets.yml"
+local_gen_custom_config_data_host_dir: "{{inventory_dir}}/../gen_custom_conf_data"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
 local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_custom_config_data.tar.gz"
+
+enr_groups_all_path: "{{local_custom_config_data_host_dir}}/{{runningTest}}_enr"
+enr_groups_file: "{{enr_groups_all_path}}/enr_groups.yml"
+enr_all_file: "{{enr_groups_all_path}}/enr_all.yml"
 
 ##############################################
 # remote host data directories
@@ -77,7 +87,7 @@ testnet_labels: >
 ##############################################
 beacon_container_name: beacon
 validator_container_name: validator
-hi_peer_count: 25
+hi_peer_count: 100
 separate_validator_process_enabled: true
 
 ##############################################
@@ -311,3 +321,18 @@ loki_volumes:
   - "{{loki_config_dir}}:/mnt/config"
   - "{{loki_data_dir}}:/loki"
 loki_memory: 5000M
+
+
+##############################################
+# cadvisor settings
+##############################################
+cadvisor_image_name: gcr.io/cadvisor/cadvisor:latest
+cadvisor_container_name: cadvisor
+cadvisor_exporter_volumes:
+  - "/etc/machine-id:/etc/machine-id:ro"
+  - "/:/rootfs:ro"
+  - "/var/run:/var/run:rw"
+  - "/sys:/sys:ro"
+  - "/var/lib/docker/:/var/lib/docker:ro"
+cadvisor_exporter_memory: 5000M
+cadvisor_exporter_user_id: "0:0"

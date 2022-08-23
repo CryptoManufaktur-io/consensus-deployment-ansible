@@ -13,6 +13,9 @@
 
     - name: install node_exporter
       import_tasks: tasks/deploy_node_exporter.yml
+
+    - name: install cadvisor
+      import_tasks: tasks/start_cadvisor.yml
     
     - name: start prometheus
       import_tasks: tasks/start_prometheus.yml
@@ -43,7 +46,7 @@
   gather_facts: false
   tasks:
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
 
     - name: Start bootnode
       import_tasks: tasks/start_bootnode.yml
@@ -53,7 +56,7 @@
   gather_facts: false
   tasks:
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
 
     - name: uploads custom chain config and genesis data if needed
       import_tasks: tasks/upload_custom_config_data.yml
@@ -69,7 +72,7 @@
   gather_facts: false
   tasks:
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
 
     - name: Generate validator keys
       import_tasks: tasks/generate_validator_keys.yml

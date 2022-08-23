@@ -16,16 +16,30 @@ eth1_volumes:
 ##############################################
 # arguments to run the containers with
 ##############################################
+jwtsecret_file_inside: "{{eth1_data_dir}}/geth/jwtsecret_new"
+jwtsecret_file_outside: "{{eth1_node_dir}}/geth/jwtsecret_new"
 eth1_start_args: >
    --{{ NETWORK }} 
    --datadir {{eth1_data_dir}}
-   --http --http.api "engine,net,eth,consensus" 
+   --http --http.api "admin,engine,net,eth,consensus" 
    --http.port {{ eth1_rpc_port }} 
-   --http.addr {{public_ip_address}} 
+   --http.addr 0.0.0.0 
    --http.corsdomain "*" 
    --ws --ws.api "engine,net,eth,consensus" 
    --ws.port {{ eth1_ws_rpc_port }} 
-   --ws.addr {{public_ip_address}}
+   --ws.addr 0.0.0.0
+   --authrpc.port={{ eth1_auth_rpc_port }}
+   --authrpc.addr=0.0.0.0
+   --authrpc.vhosts=*
+   --authrpc.jwtsecret={{jwtsecret_file_inside}}
+   --nat extip:{{ public_ip_address }}
+   --allow-insecure-unlock
+   --metrics
+   --pprof
+   --pprof.addr 0.0.0.0
+   --pprof.port={{ eth1_pprof_port }}
+   --vmodule=rpc=5
+   --maxpeers=75
 
 ##############################################
 # memory limits

@@ -1,5 +1,6 @@
 ---
-- hosts: geth
+- name: Setup global servers
+  hosts: globalfederation
   gather_facts: false
   tasks:
     - name: Include secret variables
@@ -18,17 +19,20 @@
 
     - name: install cadvisor
       import_tasks: tasks/start_cadvisor.yml
-      
+
     - name: start prometheus
       import_tasks: tasks/start_prometheus.yml
-      vars:
-        remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:10903/api/v1/receive" # write to thanos global
 
-    - name: start geth
-      import_tasks: tasks/start_geth.yml
-      when: eth1_client == "geth"
-
+    - name: start thanos
+      import_tasks: tasks/start_thanos.yml
+    
     - name: start promtail
       import_tasks: tasks/start_promtail.yml
       vars:
-        promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3100/loki/api/v1/push" # write to global
+        promtail_loki_url: "http://{{ loki_container_name }}:3100/loki/api/v1/push"
+    
+    - name: start loki
+      import_tasks: tasks/start_loki.yml
+    
+    - name: start grafana
+      import_tasks: tasks/start_grafana.yml

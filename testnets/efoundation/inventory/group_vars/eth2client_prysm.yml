@@ -4,8 +4,8 @@
 eth2_client_name: prysm
 
 #todo check latest
-beacon_image_name: prysmaticlabs/prysm-beacon-chain:v2.0.6
-validator_image_name: prysmaticlabs/prysm-validator:v2.0.6
+beacon_image_name: prysmaticlabs/prysm-beacon-chain:latest
+validator_image_name: prysmaticlabs/prysm-validator:latest
 
 # GRPC, not REST JSON
 beacon_endpoint: "{{beacon_container_name}}:{{beacon_grpc_port}}"
@@ -29,15 +29,16 @@ beacon_start_args: >
   --datadir="/beacondata"
   --genesis-state="/custom_config_data/genesis.ssz"
   --chain-config-file="/custom_config_data/config.yaml"
-  --http-web3provider="{{eth1endpoint}}"
-  {% if failover_eth1_rpc is defined %}
-    --fallback-web3provider={{failover_eth1_rpc}}
-  {% endif %}
-  {% if (bootnode_enrs is defined) and bootnode_enrs %}
-    --bootstrap-node="{{ bootnode_enrs | join(',') }}"
-  {% endif %}
-  --verbosity="{{ beacon_log_level | default('warn') }}"
-  --p2p-host-ip={{public_ip_address}}
+  --execution-endpoint="{{eth1endpoint_prysm}}"
+    {% if (bootnode_enrs is defined) and bootnode_enrs %}
+    {% for bootnode_enrs in bootnode_enrs %}
+    --bootstrap-node="{{ bootnode_enrs }}"
+    {% endfor %}
+    {% endif %}
+  --verbosity="{{ beacon_log_level | default('debug') }}"
+  --min-sync-peers=1
+  --pprof
+  --p2p-host-ip={{ansible_host}}
   --p2p-max-peers={{hi_peer_count}}
   --p2p-udp-port={{beacon_p2p_port}} --p2p-tcp-port={{beacon_p2p_port}}
   --monitoring-host=0.0.0.0 --monitoring-port={{beacon_metrics_port}}
@@ -45,7 +46,6 @@ beacon_start_args: >
   --grpc-gateway-host=0.0.0.0
   --grpc-gateway-port={{beacon_api_port}}
   --enable-debug-rpc-endpoints
-  --min-sync-peers 1
 
 validator_start_args: >
   --accept-terms-of-use=true

@@ -11,6 +11,11 @@
   shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
   become: true
 
+- name: Copy jwt secret
+  copy:
+    src: "{{local_gen_custom_config_data_host_dir}}/jwtsecret"
+    dest: "{{ jwtsecret_file_outside }}"
+
 - name: Start Eth1 container
   docker_container:
     name: "{{ eth1_container_name }}"

@@ -4,7 +4,8 @@
 eth2_client_name: nimbus
 
 #todo check latest
-beacon_image_name: "{{ 'statusim/nimbus-eth2:multiarch-v22.3.0' if TESTS[runningTest][1] == 12 else '%s%d'|format('gathecageorge/nimbus-eth2:slot', TESTS[runningTest][1]) }}"
+beacon_image_name: 'statusim/nimbus-eth2:multiarch-latest'
+#beacon_image_name: "{{ 'statusim/nimbus-eth2:multiarch-latest' if TESTS[runningTest][1] == 12 else '%s%d'|format('gathecageorge/nimbus-eth2:slot', TESTS[runningTest][1]) }}"
 validator_image_name: "{{ beacon_image_name }}"
 
 ##############################################
@@ -19,27 +20,31 @@ beacon_volumes:
 # arguments to run the containers with
 ##############################################
 beacon_start_args: >
-  --non-interactive=true
-  --network="/custom_config_data"
-  --max-peers="{{hi_peer_count}}"
   --data-dir="/beacondata"
+  --non-interactive
+  --status-bar=false
+  --tcp-port={{beacon_p2p_port}}
+  --udp-port={{beacon_p2p_port}}
+  --max-peers="{{hi_peer_count}}"
+  --network="/custom_config_data"
   --web3-url="{{eth1endpoint_nimbus}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --bootstrap-node="{{ bootnode_enrs | join(',') }}"
   {% endif %}
-  --udp-port={{beacon_p2p_port}}
-  --tcp-port={{beacon_p2p_port}}
-  --listen-address=0.0.0.0
   --graffiti="{{graffiti}}"
-  --nat="extip:{{ansible_host}}"
-  --enr-auto-update=false
-  --rest --rest-port={{beacon_api_port}} --rest-address=0.0.0.0
-  --metrics --metrics-port={{beacon_metrics_port}} --metrics-address=0.0.0.0
-  --log-level="{{ beacon_log_level | upper }}"
+  --log-level="{{ beacon_log_level | default('debug') }}"
   --log-file="/beacondata/nimbus.log"
+  --rest --rest-port={{beacon_api_port}} --rest-address=0.0.0.0
+  --enr-auto-update=false
   --doppelganger-detection=off
+  --metrics --metrics-port={{beacon_metrics_port}} --metrics-address=0.0.0.0
+  --listen-address=0.0.0.0
+  --nat="extip:{{ansible_host}}"
   --validators-dir="/validatordata/keys"
   --secrets-dir="/validatordata/secrets"
+  --validator-monitor-auto
+  --jwt-secret=/custom_config_data/jwtsecret
+  --dump:on
 
 ##############################################
 # memory limits

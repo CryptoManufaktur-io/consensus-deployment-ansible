@@ -7,7 +7,7 @@
 
   tasks:
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
 
     - name: Reset UFW
       ufw:
@@ -26,8 +26,6 @@
         - ["22", "tcp", "Allow SSH"]
         - ["30303", "tcp", "Allow Go Ethereum TCP"]
         - ["30303", "udp", "Allow Go Ethereum UDP"]
-        # - ["9001", "tcp", "Allow Bootnode Peering TC"]
-        # - ["9001", "udp", "Allow Bootnode Peering UDP"]
 
     - name: Run python to get subnet ips
       delegate_to: localhost
@@ -61,6 +59,15 @@
         port: "8546"
         proto: "tcp"
         comment: "Allow GETH WS API 8546"
+      with_items: "{{ subnet_ips }}"
+
+    - name: Allow GETH AUTH RPC API 8551
+      ufw:
+        rule: allow
+        src: "{{ item }}"
+        port: "8551"
+        proto: "tcp"
+        comment: "Allow GETH AUTH RPC API 8551"
       with_items: "{{ subnet_ips }}"
 
     - name: Enable UFW

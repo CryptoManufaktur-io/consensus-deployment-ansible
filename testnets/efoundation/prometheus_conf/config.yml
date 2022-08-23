@@ -20,6 +20,14 @@ scrape_configs:
           appname: 'node-exporter'
           instance: '##inventory_hostname##'
 
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: 
+        - 'cadvisor:8080'
+        labels:
+          appname: 'cadvisor'
+          instance: '##inventory_hostname##'
+
   - job_name: 'discovery'
     file_sd_configs:
     - files:

@@ -4,8 +4,8 @@
 eth2_client_name: teku
 
 #todo check latest
-beacon_image_name: consensys/teku:22.3.2
-validator_image_name: consensys/teku:22.3.2
+beacon_image_name: consensys/teku:latest
+validator_image_name: consensys/teku:latest
 beacon_endpoint: "http://{{beacon_container_name}}:{{beacon_api_port}}"
 
 ##############################################
@@ -32,10 +32,11 @@ beacon_start_args: >
   --p2p-advertised-ip={{public_ip_address}}
   --p2p-port="{{beacon_p2p_port}}"
   --p2p-advertised-port={{beacon_p2p_port}}
-  --logging={{beacon_log_level}}
+  --logging="{{ beacon_log_level | default('debug') }}"
   --log-destination=CONSOLE
   --log-file="/beacondata/log_outputs"
   --p2p-peer-upper-bound={{hi_peer_count}}
+  --ee-endpoint="{{eth1endpoint}}"
   --eth1-endpoint "{{eth1endpoint}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --p2p-discovery-bootnodes="{{ bootnode_enrs | join(',') }}"
@@ -54,6 +55,7 @@ validator_start_args: >
   validator-client 
   --network "/custom_config_data/config.yaml"
   --data-path "/validatordata"
+  --validators-proposer-default-fee-recipient={{fee_recipient}}
   --beacon-node-api-endpoint "{{beacon_endpoint}}"
   --validators-graffiti="{{graffiti}}"
   --validator-keys "/validatordata/keys:/validatordata/secrets"

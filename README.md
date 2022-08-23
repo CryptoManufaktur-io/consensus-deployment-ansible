@@ -51,26 +51,29 @@ This repository is a minimal set of playbooks and inventories required to set up
 3. Setup logging nodes
 
     ```bash
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging.yml
+    # Setup global logging once or when needed & firewall each time inventory changes
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging_global.yml
 
-    # Setup global logging firewall each time inventory changes
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_global.yml
+    # Setup dclocal logging once or when need & firewall each time inventory changes
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging_dclocal.yml
 
-    # Setup dclocal logging firewall each time inventory changes
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_dclocal.yml
     ```
 
 4. Start up bootnodes, validators and beacon nodes
 
     ```bash
+    #NB: Variable runningTest="test1" needs to be same name used with terraform for the test
+
+
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml --extra-vars "runningTest=test1"
 
     # Setup testnet network firewall each time inventory changes or Enable/Disable peering
     # To change peering update value in secrets.yml and rerun this
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_testnet.yml
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_testnet.yml --extra-vars "runningTest=test1"
 
     # Reset testnet network firewall
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_testnet_reset.yml
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_testnet_reset.yml --extra-vars "runningTest=test1"
     ```
 
 ## Updating testnet with new configs/images
