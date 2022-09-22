@@ -34,10 +34,6 @@
         - url: "{{ remote_write_url }}"
   when: remote_write_url | default('') != ''
 
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start prometheus container with receiver
   docker_container:
     name: "{{ prometheus_container_name }}"

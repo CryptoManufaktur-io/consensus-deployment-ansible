@@ -4,20 +4,14 @@
 ansible_user: "ubuntu"
 public_ip_address: "{{ansible_host}}"
 ansible_python_interpreter: /usr/bin/python3
-# docker_etc_hosts: >
-#   { 
-#     "dockerhost" : "{{ ansible_host_private }}" 
-#   }
 docker_monitoring_network: "monitoring_network"
 restart_container_if_exists: true
+merge_terminal_total_difficulty: 96652946912555663360000
 
 ##############################################
 # eth1 endpoints
 ##############################################
-# nimbus requires a websocket endpoint (http support unstable)
-eth1endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_auth_rpc_port }}"
-eth1endpoint_prysm: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
-eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_auth_rpc_port }}"
 
 ##############################################
 # testnet specific information
@@ -63,6 +57,8 @@ enr_all_file: "{{enr_groups_all_path}}/enr_all.yml"
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
 eth1_node_dir: "{{home_dir}}/.eth1data"   # Hidden folder so its not deleted on restart
+eth1_beacondata_dir: "{{home_dir}}/.beacondata"   # Hidden folder so its not deleted on restart
+jwtsecret_file_outside: "{{home_dir}}/jwtsecret"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -87,7 +83,7 @@ testnet_labels: >
 ##############################################
 beacon_container_name: beacon
 validator_container_name: validator
-hi_peer_count: 100
+hi_peer_count: 25
 separate_validator_process_enabled: true
 
 ##############################################

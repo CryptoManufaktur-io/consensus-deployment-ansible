@@ -70,3 +70,7 @@
 
     - name: Unconditionally reboot the machine with all defaults when docker is installed
       reboot:
+
+    - name: Create docker monitoring network
+      docker_network:
+        name: "{{ docker_monitoring_network }}"

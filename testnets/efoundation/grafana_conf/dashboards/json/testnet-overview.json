@@ -83,7 +83,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -211,7 +212,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -339,7 +341,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -467,7 +470,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -592,7 +596,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "rgba(50, 172, 45, 0.97)"
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": null
                   },
                   {
                     "color": "rgba(237, 129, 40, 0.89)",
@@ -713,7 +718,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "rgba(50, 172, 45, 0.97)"
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": null
                   },
                   {
                     "color": "rgba(237, 129, 40, 0.89)",
@@ -840,7 +846,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "rgba(50, 172, 45, 0.97)"
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": null
                   },
                   {
                     "color": "rgba(237, 129, 40, 0.89)",
@@ -958,7 +965,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "rgba(50, 172, 45, 0.97)"
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": null
                   },
                   {
                     "color": "rgba(237, 129, 40, 0.89)",
@@ -1078,7 +1086,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "rgba(50, 172, 45, 0.97)"
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": null
                   },
                   {
                     "color": "rgba(237, 129, 40, 0.89)",
@@ -1204,7 +1213,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "rgba(50, 172, 45, 0.97)"
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": null
                   },
                   {
                     "color": "rgba(237, 129, 40, 0.89)",
@@ -3036,130 +3046,6 @@
         "x": 0,
         "y": 29
       },
-      "id": 27,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "beacon_participation_prev_epoch_target_attesting_gwei_total{testnet=\"$testnet\", appname=\"beacon\"}/beacon_participation_prev_epoch_active_gwei_total{testnet=\"$testnet\", appname=\"beacon\"}",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "beacon_previous_live_validators{testnet=\"$testnet\", appname=\"beacon\"} / beacon_previous_active_validators{testnet=\"$testnet\", appname=\"beacon\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "beacon_previous_correct_validators{testnet=\"$testnet\", appname=\"beacon\"} / beacon_previous_active_validators{testnet=\"$testnet\", appname=\"beacon\"}",
-          "format": "time_series",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "Attestation participation rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 24,
-        "x": 0,
-        "y": 40
-      },
       "id": 91,
       "options": {
         "legend": {
@@ -3209,7 +3095,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "max by (instance)(\n    beacon_previous_live_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}\n    /\n    beacon_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}\n)",
+          "expr": "beacon_current_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}\n/\nbeacon_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -3246,7 +3132,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 40
       },
       "id": 29,
       "panels": [
@@ -3295,7 +3181,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3310,7 +3197,7 @@
             "h": 10,
             "w": 11,
             "x": 0,
-            "y": 52
+            "y": 41
           },
           "id": 31,
           "options": {
@@ -3387,7 +3274,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3402,7 +3290,7 @@
             "h": 10,
             "w": 13,
             "x": 11,
-            "y": 52
+            "y": 41
           },
           "id": 33,
           "options": {
@@ -3423,104 +3311,17 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "increase(beacon_reorgs_total{testnet=\"$testnet\"} [1m])",
+              "expr": "increase(beacon_reorgs_total{testnet=\"$testnet\", appname=\"beacon\"} [1m])",
               "interval": "",
               "legendFormat": "{{host_node}}",
               "queryType": "randomWalk",
+              "range": true,
               "refId": "A"
             }
           ],
           "title": "re-orgs/min",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "max": 10,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 24,
-            "x": 0,
-            "y": 62
-          },
-          "id": 42,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "PBFA97CFB590B2093"
-              },
-              "exemplar": true,
-              "expr": "avg by(host_node) (validator_inclusion_distance{testnet=\"$testnet\"})",
-              "interval": "",
-              "legendFormat": "{{host_node}}",
-              "queryType": "randomWalk",
-              "refId": "A"
-            }
-          ],
-          "title": "Validator inclusion distance",
           "type": "timeseries"
         }
       ],
@@ -3537,7 +3338,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 41
       },
       "id": 37,
       "panels": [
@@ -3590,7 +3391,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3606,7 +3408,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 53
+            "y": 42
           },
           "id": 39,
           "options": {
@@ -3618,7 +3420,7 @@
             },
             "tooltip": {
               "mode": "multi",
-              "sort": "asc"
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3687,7 +3489,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3703,7 +3506,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 61
+            "y": 50
           },
           "id": 40,
           "options": {
@@ -3715,7 +3518,7 @@
             },
             "tooltip": {
               "mode": "multi",
-              "sort": "asc"
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3784,7 +3587,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3800,7 +3604,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 69
+            "y": 58
           },
           "id": 43,
           "options": {
@@ -3812,7 +3616,7 @@
             },
             "tooltip": {
               "mode": "multi",
-              "sort": "asc"
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3845,7 +3649,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "EL-CL comparions",
+      "title": "Resource Usages",
       "type": "row"
     },
     {
@@ -3858,7 +3662,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 42
       },
       "id": 13,
       "panels": [
@@ -3907,7 +3711,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3922,7 +3727,7 @@
             "h": 10,
             "w": 11,
             "x": 0,
-            "y": 54
+            "y": 43
           },
           "id": 3,
           "options": {
@@ -3943,8 +3748,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "beacon_head_slot{testnet=\"$testnet\"}",
+              "expr": "beacon_head_slot{testnet=\"$testnet\", appname=\"beacon\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "{{host_node}}",
@@ -4000,7 +3806,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4015,7 +3822,7 @@
             "h": 10,
             "w": 13,
             "x": 11,
-            "y": 54
+            "y": 43
           },
           "id": 4,
           "options": {
@@ -4036,8 +3843,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "beacon_finalized_epoch{testnet=\"$testnet\"}",
+              "expr": "beacon_finalized_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "{{host_node}}",
@@ -4093,7 +3901,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4108,7 +3917,7 @@
             "h": 10,
             "w": 11,
             "x": 0,
-            "y": 64
+            "y": 53
           },
           "id": 5,
           "options": {
@@ -4129,8 +3938,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "beacon_current_justified_epoch{testnet=\"$testnet\"}",
+              "expr": "beacon_current_justified_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "{{host_node}}",
@@ -4186,7 +3996,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4201,7 +4012,7 @@
             "h": 10,
             "w": 13,
             "x": 11,
-            "y": 64
+            "y": 53
           },
           "id": 14,
           "options": {
@@ -4222,8 +4033,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "beacon_previous_justified_epoch{testnet=\"$testnet\"}",
+              "expr": "beacon_previous_justified_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "{{host_node}}",
@@ -4279,7 +4091,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4294,7 +4107,7 @@
             "h": 9,
             "w": 11,
             "x": 0,
-            "y": 74
+            "y": 63
           },
           "id": 8,
           "options": {
@@ -4315,8 +4128,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "beacon_reorgs_total{testnet=\"$testnet\"}",
+              "expr": "beacon_reorgs_total{testnet=\"$testnet\", appname=\"beacon\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "{{host_node}}",
@@ -4341,7 +4155,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 43
       },
       "id": 19,
       "panels": [
@@ -4390,7 +4204,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4405,7 +4220,7 @@
             "h": 9,
             "w": 11,
             "x": 0,
-            "y": 55
+            "y": 73
           },
           "id": 21,
           "options": {
@@ -4426,11 +4241,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "rate(beacon_block_processing_seconds_sum{testnet=\"$testnet\"}[30s])\n/\nrate(beacon_block_processing_seconds_count{testnet=\"$testnet\"}[30s])",
+              "expr": "rate(beacon_block_processing_seconds_sum{testnet=\"$testnet\", appname=\"beacon\"}[30s])\n/\nrate(beacon_block_processing_seconds_count{testnet=\"$testnet\", appname=\"beacon\"}[30s])",
               "interval": "",
               "legendFormat": "{{host_node}}",
               "queryType": "randomWalk",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4482,7 +4299,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4497,7 +4315,7 @@
             "h": 9,
             "w": 13,
             "x": 11,
-            "y": 55
+            "y": 73
           },
           "id": 23,
           "options": {
@@ -4518,11 +4336,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sync_slots_per_second{testnet=\"$testnet\"}",
+              "expr": "sync_slots_per_second{testnet=\"$testnet\", appname=\"beacon\"}",
               "interval": "",
               "legendFormat": "{{host_node}}",
               "queryType": "randomWalk",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4534,7 +4354,7 @@
       "type": "row"
     }
   ],
-  "refresh": false,
+  "refresh": "1m",
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
@@ -4543,8 +4363,8 @@
       {
         "current": {
           "selected": false,
-          "text": "phase2-test2-12s-slottime-split",
-          "value": "phase2-test2-12s-slottime-split"
+          "text": "phase2-test3-12s-slottime-standard",
+          "value": "phase2-test3-12s-slottime-standard"
         },
         "datasource": {
           "type": "prometheus",
@@ -4571,13 +4391,13 @@
     ]
   },
   "time": {
-    "from": "2022-08-20T12:25:00.000Z",
-    "to": "2022-08-20T13:55:00.000Z"
+    "from": "now-3h",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "utc",
   "title": "Testnet Overview",
   "uid": "KAiBRn5nk",
-  "version": 62,
+  "version": 63,
   "weekStart": ""
 }

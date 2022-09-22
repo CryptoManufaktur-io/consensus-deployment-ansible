@@ -6,6 +6,30 @@
     - name: Include secret variables
       include_vars: "{{secrets_file}}"
 
+    - name: Get current epoch time
+      shell: "TZ=GMT date +%s"
+      register: epoch_time
+    
+    - name: Create new epoch time and save to file
+      when: MIN_GENESIS_TIME < epoch_time.stdout | int
+      block:
+        - name: Add seconds to epoch time
+          set_fact:
+            epoch_time_new: "{{epoch_time.stdout | int + MIN_GENESIS_TIME_ADD_SECONDS}}"
+
+        - name: Add seconds to epoch time
+          shell: "TZ=GMT date -r {{epoch_time_new}} +'%A, %d %B %Y %H:%M:%S GMT'"
+          register: epoch_time_str
+        
+        - name: Replace MIN_GENESIS_TIME
+          lineinfile:
+            path: "{{secrets_file}}"
+            regexp: "^MIN_GENESIS_TIME: "
+            line: "MIN_GENESIS_TIME: {{epoch_time_new}} #{{epoch_time_str.stdout}}"
+
+        - name: Include secret variables
+          include_vars: "{{secrets_file}}"
+
     - name: Create contract and get transaction hash
       when: TX_HASH == 'new'
       block:

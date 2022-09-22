@@ -29,10 +29,6 @@
   shell: chown -R "{{ ansible_user }}" "{{ loki_config_dir }}" && chown -R "{{ ansible_user }}" "{{ loki_data_dir }}"
   become: true
 
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start loki container
   docker_container:
     name: "{{ loki_container_name }}"

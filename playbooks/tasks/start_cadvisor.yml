@@ -1,8 +1,4 @@
 ---
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start cadvisor container
   docker_container:
     name: "{{ cadvisor_container_name }}"

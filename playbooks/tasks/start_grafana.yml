@@ -46,10 +46,6 @@
   shell: chown -R "{{ ansible_user }}" "{{ grafana_data_dir }}" && chown -R "{{ ansible_user }}" "{{ grafana_conf_dir }}"
   become: true
 
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start cloudflare container
   docker_container:
     name: "{{ cloudflare_container_name }}"

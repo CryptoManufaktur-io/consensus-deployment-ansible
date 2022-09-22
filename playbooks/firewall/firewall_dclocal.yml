@@ -41,15 +41,6 @@
       set_fact:
         subnet_ips: "{{subnet_ips[inventory_hostname]}}"
 
-    - name: Allow bootnode peering TCP
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "9001"
-        proto: "tcp"
-        comment: "Allow bootnode peering TCP"
-      with_items: "{{ subnet_ips }}"
-
     - name: Allow bootnode peering UDP
       ufw:
         rule: allow

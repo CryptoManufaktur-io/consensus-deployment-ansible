@@ -29,10 +29,6 @@
   shell: chown -R "{{ ansible_user }}" "{{ thanos_data_dir }}" && chown -R "{{ ansible_user }}" "{{ thanos_conf_dir }}"
   become: true
 
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start thanos store container
   docker_container:
     name: "{{ thanos_store_container_name }}"

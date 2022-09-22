@@ -50,6 +50,7 @@ beacon_start_args: >
   --rest-api-port="{{beacon_api_port}}"
   --metrics-host-allowlist="*"
   --rest-api-host-allowlist="*"
+  --ee-jwt-secret-file=/custom_config_data/jwtsecret
 
 validator_start_args: >
   validator-client 
