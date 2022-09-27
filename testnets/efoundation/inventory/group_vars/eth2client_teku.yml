@@ -36,8 +36,6 @@ beacon_start_args: >
   --log-destination=CONSOLE
   --log-file="/beacondata/log_outputs"
   --p2p-peer-upper-bound={{hi_peer_count}}
-  --ee-endpoint="{{eth1endpoint}}"
-  --eth1-endpoint "{{eth1endpoint}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --p2p-discovery-bootnodes="{{ bootnode_enrs | join(',') }}"
   {% endif %}
@@ -50,7 +48,14 @@ beacon_start_args: >
   --rest-api-port="{{beacon_api_port}}"
   --metrics-host-allowlist="*"
   --rest-api-host-allowlist="*"
+  {% if (use_premerge_network) %}
+  --ee-endpoint="{{eth1endpoint_premerge}}"
+  --eth1-endpoint "{{eth1endpoint_premerge}}"
+  {% else %}
+  --ee-endpoint="{{eth1endpoint}}"
+  --eth1-endpoint "{{eth1endpoint}}"
   --ee-jwt-secret-file=/custom_config_data/jwtsecret
+  {% endif %}
 
 validator_start_args: >
   validator-client 

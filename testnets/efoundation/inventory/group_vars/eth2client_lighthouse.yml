@@ -31,12 +31,14 @@ beacon_start_args: >
   bn
   --disable-enr-auto-update
   --enr-address={{public_ip_address}}
-  --enr-tcp-port={{beacon_p2p_port}} --enr-udp-port={{beacon_p2p_port}}
-  --port={{beacon_p2p_port}} --discovery-port={{beacon_p2p_port}}
-  --eth1 --eth1-endpoints "{{eth1endpoint}}" --execution-endpoints "{{eth1endpoint}}"
+  --enr-tcp-port={{beacon_p2p_port}} 
+  --enr-udp-port={{beacon_p2p_port}}
+  --port={{beacon_p2p_port}} 
+  --discovery-port={{beacon_p2p_port}}
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --boot-nodes="{{ bootnode_enrs | join(',') }}"
-  {% endif %}  --http
+  {% endif %}  
+  --http
   --http-address 0.0.0.0
   --http-port "{{beacon_api_port}}"
   --metrics
@@ -45,8 +47,14 @@ beacon_start_args: >
   --listen-address 0.0.0.0
   --graffiti="{{graffiti}}"
   --target-peers={{hi_peer_count}}
-  --jwt-secrets="/custom_config_data/jwtsecret"
+  --eth1 
+  {% if (use_premerge_network) %}
+  --eth1-endpoints "{{eth1endpoint_premerge}}"
   --terminal-total-difficulty-override={{merge_terminal_total_difficulty}}
+  {% else %}
+  --execution-endpoints "{{eth1endpoint}}"
+  --jwt-secrets="/custom_config_data/jwtsecret"
+  {% endif %}
 
 # in case of eth1 deposit endpoint problems: --dummy-eth1
 

@@ -412,11 +412,11 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "avg(libp2p_connected_peers_current{testnet=\"$testnet\", host_node=~\".*teku.*\"}) by (host_node, Client)",
+              "expr": "avg(libp2p_connected_peers_current{testnet=\"$testnet\", host_node=~\".*teku.*\"}) by (host_node, client)",
               "hide": false,
               "instant": false,
               "interval": "",
-              "legendFormat": "{{host_node}}-{{Client}}",
+              "legendFormat": "{{client}} - {{host_node}}",
               "queryType": "randomWalk",
               "refId": "A"
             }
@@ -541,11 +541,11 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "avg(libp2p_connected_peers_current{testnet=\"$testnet\", host_node=~\".*prysm.*\"}) by (host_node, Client)",
+              "expr": "avg(connected_libp2p_peers{testnet=\"$testnet\", host_node=~\".*prysm.*\"}) by (host_node, agent)",
               "hide": false,
               "instant": false,
               "interval": "",
-              "legendFormat": "{{host_node}}-{{Client}}",
+              "legendFormat": "{{agent}} - {{host_node}}",
               "queryType": "randomWalk",
               "refId": "A"
             }
@@ -634,7 +634,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "9.1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -756,7 +756,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "9.1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -884,7 +884,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "9.1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -1004,7 +1004,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "9.1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -1124,7 +1124,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "9.1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -1251,7 +1251,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "9.1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -1387,13 +1387,14 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "avg(slotclock_slot_time_seconds{testnet=\"$testnet\"})",
           "instant": false,
@@ -1456,7 +1457,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1526,7 +1527,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1549,7 +1550,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(libp2p_peers{appname=\"beacon\",testnet=\"$testnet\",host_node=~\".*prysm.*\"})",
+          "expr": "avg(p2p_peer_count{appname=\"beacon\",testnet=\"$testnet\",host_node=~\".*prysm.*\", state=\"Connected\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Prysm",
@@ -1639,7 +1640,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1706,7 +1707,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1773,7 +1774,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1840,7 +1841,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -1909,7 +1910,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2024,7 +2025,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2091,7 +2092,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2162,7 +2163,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2229,7 +2230,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2301,7 +2302,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2394,7 +2395,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2493,7 +2494,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2558,7 +2559,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2629,7 +2630,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2722,7 +2723,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.1.0",
+      "pluginVersion": "9.1.6",
       "targets": [
         {
           "datasource": {
@@ -2882,6 +2883,21 @@
           "legendFormat": "{{host_node}}",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "p2p_peer_count{testnet=\"$testnet\", appname=\"beacon\", state=\"Connected\", host_node=~\".*prysm.*\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "B"
         }
       ],
       "title": "Peers",
@@ -4220,7 +4236,7 @@
             "h": 9,
             "w": 11,
             "x": 0,
-            "y": 73
+            "y": 44
           },
           "id": 21,
           "options": {
@@ -4315,7 +4331,7 @@
             "h": 9,
             "w": 13,
             "x": 11,
-            "y": 73
+            "y": 44
           },
           "id": 23,
           "options": {
@@ -4363,8 +4379,8 @@
       {
         "current": {
           "selected": false,
-          "text": "phase2-test3-12s-slottime-standard",
-          "value": "phase2-test3-12s-slottime-standard"
+          "text": "george-premerge-test1",
+          "value": "george-premerge-test1"
         },
         "datasource": {
           "type": "prometheus",
@@ -4398,6 +4414,6 @@
   "timezone": "utc",
   "title": "Testnet Overview",
   "uid": "KAiBRn5nk",
-  "version": 63,
+  "version": 4,
   "weekStart": ""
 }

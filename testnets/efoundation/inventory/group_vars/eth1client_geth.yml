@@ -48,7 +48,7 @@ beacon_user_id: "1000:1000"
 beacon_start_args: >
   lighthouse
   --debug-level="info"
-  --network goerli
+  --network {{ NETWORK }} 
   bn
   --datadir "/beacondata"
   --disable-enr-auto-update
@@ -70,5 +70,5 @@ beacon_start_args: >
   --graffiti="{{graffiti}}"
   --target-peers={{hi_peer_count}}
   --jwt-secrets="/jwtsecret"
-  --suggested-fee-recipient=0xA9CE3c09515F397752fca4F72cf4197E4572BB29
-  --checkpoint-sync-url=https://goerli.beaconstate.info
+  --suggested-fee-recipient={{ETH1_FROM_ADDR}}
+  --checkpoint-sync-url={{CL_CHECKPOINT_SYNC}}

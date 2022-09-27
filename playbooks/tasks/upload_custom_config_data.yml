@@ -24,6 +24,7 @@
     dest: "{{ testnet_dir }}/"
 
 - name: Copy jwtsecret file
+  when: use_premerge_network == false
   copy:
     src: "{{local_gen_custom_config_data_host_dir}}/jwtsecret"
     dest: "{{ testnet_dir }}/jwtsecret"

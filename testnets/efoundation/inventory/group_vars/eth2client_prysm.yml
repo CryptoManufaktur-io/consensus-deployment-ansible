@@ -29,7 +29,6 @@ beacon_start_args: >
   --datadir="/beacondata"
   --genesis-state="/custom_config_data/genesis.ssz"
   --chain-config-file="/custom_config_data/config.yaml"
-  --execution-endpoint="{{eth1endpoint}}"
     {% if (bootnode_enrs is defined) and bootnode_enrs %}
     {% for bootnode_enrs in bootnode_enrs %}
     --bootstrap-node="{{ bootnode_enrs }}"
@@ -46,8 +45,13 @@ beacon_start_args: >
   --grpc-gateway-host=0.0.0.0
   --grpc-gateway-port={{beacon_api_port}}
   --enable-debug-rpc-endpoints
-  --jwt-secret=/custom_config_data/jwtsecret
+  {% if (use_premerge_network) %}
+  --execution-endpoint="{{eth1endpoint_premerge}}"
   --terminal-total-difficulty-override={{merge_terminal_total_difficulty}}
+  {% else %}
+  --execution-endpoint="{{eth1endpoint}}"
+  --jwt-secret=/custom_config_data/jwtsecret
+  {% endif %}
 
 validator_start_args: >
   --accept-terms-of-use=true

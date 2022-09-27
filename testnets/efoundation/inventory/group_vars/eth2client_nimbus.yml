@@ -27,7 +27,6 @@ beacon_start_args: >
   --udp-port={{beacon_p2p_port}}
   --max-peers="{{hi_peer_count}}"
   --network="/custom_config_data"
-  --web3-url="{{eth1endpoint}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --bootstrap-node="{{ bootnode_enrs | join(',') }}"
   {% endif %}
@@ -42,9 +41,14 @@ beacon_start_args: >
   --validators-dir="/validatordata/keys"
   --secrets-dir="/validatordata/secrets"
   --validator-monitor-auto
-  --jwt-secret=/custom_config_data/jwtsecret
   --dump:on
+  {% if (use_premerge_network) %}
+  --web3-url="{{eth1endpoint_premerge}}"
   --terminal-total-difficulty-override={{merge_terminal_total_difficulty}}
+  {% else %}
+  --web3-url="{{eth1endpoint}}"
+  --jwt-secret=/custom_config_data/jwtsecret
+  {% endif %}
 
 ##############################################
 # memory limits
