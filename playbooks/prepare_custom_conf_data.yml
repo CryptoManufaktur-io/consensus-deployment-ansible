@@ -3,6 +3,10 @@
   connection: local
   gather_facts: false
   tasks:
+    - name: check operating system
+      shell: uname
+      register: uname_result
+
     - name: Include secret variables
       include_vars: "{{secrets_file}}"
 
@@ -18,7 +22,7 @@
             epoch_time_new: "{{epoch_time.stdout | int + MIN_GENESIS_TIME_ADD_SECONDS}}"
 
         - name: Add seconds to epoch time
-          shell: "TZ=GMT date -r {{epoch_time_new}} +'%A, %d %B %Y %H:%M:%S GMT'"
+          shell: "TZ=GMT date {{ '-r ' if (uname_result.stdout == 'Darwin') else '-d @' }}{{epoch_time_new}} +'%A, %d %B %Y %H:%M:%S GMT'"
           register: epoch_time_str
         
         - name: Replace MIN_GENESIS_TIME
