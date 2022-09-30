@@ -32,7 +32,7 @@
       throttle: 1
       run_once: true
       become: false
-      command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini geth"
+      command: "{{ansible_python_interpreter}} main.py {{ inventory_dir }}/inventory.ini geth"
       register: python_result
 
     - name: Set variables
