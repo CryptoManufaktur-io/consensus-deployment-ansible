@@ -1,5 +1,4 @@
 - name: Beacons firewall management
-  hosts: [beacons]
   hosts: ["{{ runningTest + '_beacon' }}"]
   gather_facts: false
   become: true
