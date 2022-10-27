@@ -11,6 +11,7 @@ restart_container_if_exists: true
 # eth1 endpoints
 ##############################################
 use_premerge_network: true
+enable_debug_public: true
 merge_terminal_total_difficulty: 96652946912555663360000
 eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_auth_rpc_port }}"
 eth1endpoint_premerge: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"

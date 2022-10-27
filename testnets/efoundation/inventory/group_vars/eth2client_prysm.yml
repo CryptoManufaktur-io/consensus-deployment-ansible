@@ -52,6 +52,9 @@ beacon_start_args: >
   --execution-endpoint="{{eth1endpoint}}"
   --jwt-secret=/custom_config_data/jwtsecret
   {% endif %}
+  {% if (enable_debug_public) %}
+  --enable-debug-rpc-endpoints
+  {% endif %}
 
 validator_start_args: >
   --accept-terms-of-use=true

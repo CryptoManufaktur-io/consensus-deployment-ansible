@@ -15,7 +15,32 @@
   shell: chown -R "{{ beacon_user_id }}" "{{ beacon_node_dir }}"
   become: true
 
-- name: Start Eth2 beacon node container
+- name: Start Eth2 beacon node container EXPOSED TO INTERNET DEBUG ENDPOINT
+  docker_container:
+    name: "{{ beacon_container_name }}"
+    state: started
+    image: "{{ beacon_image_name }}"
+    pull: true
+    ports:
+      - "{{public_ip_address}}:{{beacon_api_port}}:{{beacon_api_port}}"
+      - "{{public_ip_address}}:{{beacon_p2p_port}}:{{beacon_p2p_port}}"
+      - "{{public_ip_address}}:{{beacon_p2p_port}}:{{beacon_p2p_port}}/udp"
+    restart_policy: unless-stopped
+    memory_swappiness: 0
+    network_mode: "{{ docker_monitoring_network }}"
+    restart: "{{ restart_container_if_exists | default(false) }}"
+    log_options: "{{ common_log_options }}"
+    log_driver: "{{ common_log_driver }}"
+    volumes: "{{beacon_volumes}}"
+    memory: "{{beacon_memory}}"
+    memory_swap: "{{beacon_memory}}"
+    command: "{{ beacon_start_args }}"
+    env: "{{ beacon_env | default({}) }}"
+    user: "{{ beacon_user_id }}"
+    labels: "{{ testnet_labels }}"
+  when: enable_debug_public | default(false) == true
+
+- name: Start Eth2 beacon node container NOT EXPOSED TO INTERNET DEBUG ENDPOINT
   docker_container:
     name: "{{ beacon_container_name }}"
     state: started
@@ -37,3 +62,4 @@
     env: "{{ beacon_env | default({}) }}"
     user: "{{ beacon_user_id }}"
     labels: "{{ testnet_labels }}"
+  when: enable_debug_public | default(false) == false
