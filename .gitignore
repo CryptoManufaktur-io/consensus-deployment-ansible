@@ -9,3 +9,4 @@ selected_validator_keys
 **/secrets.yml
 **/enr*.yml
 **/custom_config_data/
+testnets/debug_data/data/*
