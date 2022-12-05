@@ -43,6 +43,17 @@ def splitFirewall(subnets, hostsList):
     for key in ips_list:
       data[key] = list(ips_list[key].values())
 
+    # check overlap
+    for group, ips in data.items():
+      for group_check, ips_check in data.items():
+        test = group.split("_")[1]
+        test_check = group_check.split("_")[1]
+
+        if(group != group_check and test == test_check):
+          for ip in ips:
+            if(ip in ips_check):
+              raise Exception("ERROR (" + group + ") checking in (" + group_check + ") " + ip + " OVERLAP")
+
     return data
 
 def gethFirewall(subnets, hostsList):
