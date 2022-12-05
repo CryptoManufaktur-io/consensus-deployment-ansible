@@ -22,7 +22,7 @@
 
 - name: Copy jwt secret
   copy:
-    src: "{{local_gen_custom_config_data_host_dir}}/jwtsecret"
+    src: "{{local_premerge_custom_config_data_host_dir}}/jwtsecret"
     dest: "{{ jwtsecret_file_outside }}"
 
 - name: Start Eth1 container

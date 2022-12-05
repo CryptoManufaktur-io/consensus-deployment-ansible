@@ -1,20 +1,20 @@
 ---
 - name: Stop and clear all containers, also remove all data if allowed!!
-  hosts: [all]
+  hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
   gather_facts: false
   
   vars_prompt:
     - name: confirm_containers
       prompt: Do you want to stop and remove all containers (yes/no)?
-      private: no
+      private: false
 
     - name: confirm_data
       prompt: Do you want to remove all data in home directory (yes/no)?
-      private: no
+      private: false
 
     - name: confirm_images
       prompt: Do you want to remove all docker images (yes/no)?
-      private: no
+      private: false
 
   tasks:
     - name: Stop all containers

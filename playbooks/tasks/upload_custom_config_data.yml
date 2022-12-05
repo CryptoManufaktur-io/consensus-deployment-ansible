@@ -10,9 +10,19 @@
     path: "{{testnet_dir}}"
     state: directory
 
-- name: Archive custom_config_data dir to prepare for upload
+- name: Archive custom_config_data dir to prepare for upload PREMERGE
+  when: TESTS[runningTest][3] == 'premerge'
   archive:
     path: "{{local_custom_config_data_host_dir}}/{{runningTest}}/*"
+    dest: "{{local_custom_config_data_host_archive}}"
+  throttle: 1
+  run_once: true
+  delegate_to: localhost
+
+- name: Archive custom_config_data dir to prepare for upload POSTMERGE
+  when: TESTS[runningTest][3] == 'postmerge'
+  archive:
+    path: "{{local_custom_config_data_host_dir}}/{{runningTest}}/data/custom_config_data/*"
     dest: "{{local_custom_config_data_host_archive}}"
   throttle: 1
   run_once: true
@@ -23,11 +33,25 @@
     src: "{{ local_custom_config_data_host_archive }}"
     dest: "{{ testnet_dir }}/"
 
-- name: Copy jwtsecret file
-  when: use_premerge_network == false
+- name: Copy jwtsecret file PREMERGE
+  when: TESTS[runningTest][3] == 'premerge'
   copy:
-    src: "{{local_gen_custom_config_data_host_dir}}/jwtsecret"
+    src: "{{local_premerge_custom_config_data_host_dir}}/jwtsecret"
     dest: "{{ testnet_dir }}/jwtsecret"
+
+- name: Copy jwtsecret file POSTMERGE
+  when: TESTS[runningTest][3] == 'postmerge'
+  block:
+    - name: Copy CL jwtsecret
+      copy:
+        src: "{{local_custom_config_data_host_dir}}/{{runningTest}}/data/cl/jwtsecret"
+        dest: "{{ testnet_dir }}/jwtsecret"
+
+    - name: Copy EL jwtsecret
+      become: true
+      copy:
+        src: "{{local_custom_config_data_host_dir}}/{{runningTest}}/data/el/jwtsecret"
+        dest: "{{ testnet_dir }}/el_jwtsecret"
 
 - name: Remove {{local_custom_config_data_host_archive}} archive after upload
   file:

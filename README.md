@@ -33,39 +33,35 @@ This repository is a minimal set of playbooks and inventories required to set up
 
 ## Playbooks setup for each action
 
-1. Prepare data for testnet. You need to setup some values in `testnets/efoundation/inventory/group_vars/secrets.yml` to configure how testnet will look like, eg Number of validators per node, Genesis time etc
+1. Setup eth1 execution client/geth `(Needed to run premerge testnet. This will be shared by all CL nodes)`
 
     ```bash
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/prepare_custom_conf_data.yml
-    ```
-
-2. Setup eth1 execution client/geth
-
-    ```bash
+    # Setup first time only
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_geth.yml
 
     # Setup geth firewall each time inventory changes
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_geth.yml
     ```
 
-3. Setup logging nodes
+2. Setup logging nodes
 
     ```bash
-    # Setup global logging once or when needed & firewall each time inventory changes
+    # Setup global logging first time only
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging_global.yml
 
-    # Setup dclocal logging once or when need & firewall each time inventory changes
+    # Setup dclocal logging and firewall each time inventory changes
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_logging_dclocal.yml
 
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/firewall/firewall_dclocal.yml
     ```
 
-4. Start up bootnodes, validators and beacon nodes
+3. Start up bootnodes, validators and beacon nodes `#NB: Variable runningTest="test1" needs to be same name used with terraform for the test and also same in secrets.yml`
 
     ```bash
-    #NB: Variable runningTest="test1" needs to be same name used with terraform for the test
+    # Prepare data for testnet. You need to setup some values in `testnets/efoundation/inventory/group_vars/secrets.yml` to configure how testnet will look like, eg Number of validators per node, Genesis time etc
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/prepare_custom_conf_data.yml --extra-vars "runningTest=test1"
 
-
+    # Full setup the first time
     ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_beacon_and_validators_full.yml --extra-vars "runningTest=test1"
 
     # Setup testnet network firewall each time inventory changes or Enable/Disable peering
@@ -115,12 +111,12 @@ If any other configuration is supposed to be changed, then run the specific play
 3. Remove all containers and data in all nodes. `NB: Use with caution though will prompt for confirm.`
 
     ```bash
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/wipe_all.yml
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/wipe_all.yml  --extra-vars "runningTest=test1"
     ```
 
 4. Enable packet loss feature
 
     ```bash
     # Need to update secrets.yml with percentage or delay to be setup on network
-    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_tc.yml
+    ansible-playbook -i testnets/efoundation/inventory/inventory.ini playbooks/setup_tc.yml  --extra-vars "runningTest=test1"
     ```

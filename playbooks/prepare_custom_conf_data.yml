@@ -38,7 +38,7 @@
       when: TX_HASH == 'new'
       block:
         - name: Create contract
-          shell: "docker run --network host --rm -v {{local_gen_custom_config_data_host_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
+          shell: "docker run --network host --rm -v {{local_premerge_custom_config_data_host_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
           register: contract_output
 
         - name: Set transaction hash variable
@@ -54,7 +54,7 @@
               URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}
 
     - name: Get details from transaction hash
-      command: "python3 {{local_gen_custom_config_data_host_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
+      command: "python3 {{local_premerge_custom_config_data_host_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
       register: transaction_hash_details
       until: transaction_hash_details is succeeded
       retries: 10
@@ -70,16 +70,18 @@
 
     - name: Remove testnet data dir first
       file:
-        path: "{{local_custom_config_data_host_dir}}"
+        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
         state: absent
 
     - name: Creates testnet data dir
       file:
-        path: "{{local_custom_config_data_host_dir}}"
+        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
         state: directory
 
-    - name: Testnet custom conf data
-      include_tasks: tasks/testnet_custom_conf_data.yml
-      with_dict: "{{ TESTS }}"
-      loop_control:
-        loop_var: test
+    - name: Testnet custom conf data premerge
+      include_tasks: tasks/premerge_testnet_custom_conf_data.yml
+      when: TESTS[runningTest][3] == 'premerge'
+
+    - name: Testnet custom conf data postmerge
+      include_tasks: tasks/postmerge_testnet_custom_conf_data.yml
+      when: TESTS[runningTest][3] == 'postmerge'

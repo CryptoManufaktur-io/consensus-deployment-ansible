@@ -26,7 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 14282,
   "graphTooltip": 0,
-  "id": 5,
+  "id": 4,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -74,7 +74,7 @@
         "y": 1
       },
       "hiddenSeries": false,
-      "id": 15,
+      "id": 20,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -93,7 +93,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.1.0-beta1",
+      "pluginVersion": "9.2.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -107,10 +107,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{instance=~\"$host\",name=~\"$container\",name=~\".+\"}[5m])) by (name) *100",
           "hide": false,
           "interval": "",
           "legendFormat": "{{name}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -209,7 +211,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.1.0-beta1",
+      "pluginVersion": "9.2.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -299,7 +301,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.1.0-beta1",
+      "pluginVersion": "9.2.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -417,7 +419,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.1.0-beta1",
+      "pluginVersion": "9.2.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -507,7 +509,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "9.1.0-beta1",
+      "pluginVersion": "9.2.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -593,6 +595,7 @@
       "fieldConfig": {
         "defaults": {
           "custom": {
+            "align": "auto",
             "displayMode": "auto",
             "filterable": false,
             "inspect": false
@@ -602,8 +605,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -672,7 +674,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.1.0-beta1",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -725,6 +727,7 @@
       "type": "table"
     }
   ],
+  "refresh": false,
   "schemaVersion": 37,
   "style": "dark",
   "tags": [
@@ -736,26 +739,27 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
-          "text": "geth0",
-          "value": "geth0"
+          "selected": false,
+          "text": "phase2-test3-12s-slottime-standard",
+          "value": "phase2-test3-12s-slottime-standard"
         },
         "datasource": {
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "label_values({__name__=~\"container.*\"},instance)",
+        "definition": "label_values({__name__=~\"container.*\"},container_label_testnet)",
+        "description": "network name",
         "hide": 0,
-        "includeAll": true,
-        "label": "Host",
+        "includeAll": false,
+        "label": "Testnet",
         "multi": false,
-        "name": "host",
+        "name": "testnet",
         "options": [],
         "query": {
-          "query": "label_values({__name__=~\"container.*\"},instance)",
-          "refId": "Prometheus-host-Variable-Query"
+          "query": "label_values({__name__=~\"container.*\"},container_label_testnet)",
+          "refId": "StandardVariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 5,
@@ -767,15 +771,46 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
-          "text": "eth1_geth",
-          "value": "eth1_geth"
+          "selected": false,
+          "text": "teststandardlighthouse1",
+          "value": "teststandardlighthouse1"
         },
         "datasource": {
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "label_values({__name__=~\"container.*\", instance=~\"$host\"},name)",
+        "definition": "label_values({__name__=~\"container.*\",container_label_testnet=\"$testnet\"},instance)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Host",
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": {
+          "query": "label_values({__name__=~\"container.*\",container_label_testnet=\"$testnet\"},instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 5,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "label_values({__name__=~\"container.*\", instance=\"$host\"},name)",
         "hide": 0,
         "includeAll": true,
         "label": "Container",
@@ -783,10 +818,10 @@
         "name": "container",
         "options": [],
         "query": {
-          "query": "label_values({__name__=~\"container.*\", instance=~\"$host\"},name)",
-          "refId": "Prometheus-container-Variable-Query"
+          "query": "label_values({__name__=~\"container.*\", instance=\"$host\"},name)",
+          "refId": "StandardVariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -798,13 +833,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2022-08-23T13:30:00.000Z",
+    "to": "2022-08-24T14:05:00.000Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Cadvisor exporter",
   "uid": "pMEd7m0Mz",
-  "version": 1,
+  "version": 6,
   "weekStart": ""
 }

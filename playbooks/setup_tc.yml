@@ -1,7 +1,7 @@
 ---
-- hosts: globalfederation
+- hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}", "{{ runningTest + '_dclocal' }}"]
   gather_facts: false
-  become: yes
+  become: true
   tasks:
     - name: Include secret variables
       include_vars: "{{secrets_file}}"

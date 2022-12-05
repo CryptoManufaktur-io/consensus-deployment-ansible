@@ -10,11 +10,9 @@ restart_container_if_exists: true
 ##############################################
 # eth1 endpoints
 ##############################################
-use_premerge_network: true
 enable_debug_public: true
 merge_terminal_total_difficulty: 96652946912555663360000
-eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_auth_rpc_port }}"
-eth1endpoint_premerge: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+el_bootnode_enode:
 
 ##############################################
 # testnet specific information
@@ -46,7 +44,8 @@ graffiti: "{{eth2_client_name}}-{{eth1_client}}"
 # local data directories
 ##############################################
 secrets_file: "{{inventory_dir}}/group_vars/secrets.yml"
-local_gen_custom_config_data_host_dir: "{{inventory_dir}}/../gen_custom_conf_data"
+local_premerge_custom_config_data_host_dir: "{{inventory_dir}}/../premerge_custom_conf_data"
+local_postmerge_custom_config_data_host_dir: "{{inventory_dir}}/../postmerge_custom_conf_data"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
 local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_custom_config_data.tar.gz"
 
