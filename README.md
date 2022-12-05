@@ -10,6 +10,13 @@ This repository is a minimal set of playbooks and inventories required to set up
 
 ## Initial configuration
 
+- Install required python modules
+
+```bash
+    # Preparation libraries required
+    pip3 install beautifulsoup4 ansible
+```
+
 - Ensure this repo is cloned locally
 
 - Ensure ansible has been installed `ansible --version`
