@@ -39,14 +39,12 @@
 
 - name: Add ENR to enr_all file
   delegate_to: localhost
-  throttle: 1
   lineinfile:
     path: "{{enr_all_file}}"
     line: "  - \"{{enr_output.stdout}}\""
 
 - name: Add ENR to enr_groups file
   delegate_to: localhost
-  throttle: 1
   lineinfile:
     path: "{{enr_groups_file}}"
     line: "{{inventory_hostname}}_enr: \"{{enr_output.stdout}}\""

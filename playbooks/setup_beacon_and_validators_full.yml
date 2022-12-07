@@ -44,6 +44,7 @@
 - name: Start bootnode
   hosts: "{{ runningTest + '_dclocal' }}"
   gather_facts: false
+  serial: 1
   tasks:
     - name: Include secret variables
       include_vars: "{{secrets_file}}"
