@@ -2892,9 +2892,11 @@
       "links": [],
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -3005,9 +3007,11 @@
       "id": 25,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -3100,9 +3104,11 @@
       "id": 91,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -3774,16 +3780,18 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 11,
+        "w": 24,
         "x": 0,
         "y": 43
       },
-      "id": 3,
+      "id": 101,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -3869,16 +3877,145 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 13,
-        "x": 11,
-        "y": 43
+        "w": 12,
+        "x": 0,
+        "y": 53
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "slotclock_present_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "beacon_current_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "beacon_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "C"
+        }
+      ],
+      "title": "Present Epoch",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 53
       },
       "id": 4,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -3964,16 +4101,18 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 11,
+        "w": 12,
         "x": 0,
-        "y": 53
+        "y": 63
       },
       "id": 5,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -4059,16 +4198,18 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 13,
-        "x": 11,
-        "y": 53
+        "w": 12,
+        "x": 12,
+        "y": 63
       },
       "id": 14,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -4153,17 +4294,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 10,
+        "w": 24,
         "x": 0,
-        "y": 63
+        "y": 73
       },
       "id": 8,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -4200,7 +4343,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 83
       },
       "id": 19,
       "panels": [
@@ -4397,7 +4540,7 @@
       "type": "row"
     }
   ],
-  "refresh": "5m",
+  "refresh": false,
   "schemaVersion": 37,
   "style": "dark",
   "tags": [],
@@ -4406,8 +4549,8 @@
       {
         "current": {
           "selected": false,
-          "text": "ef-phase2-premerge-12s-63nodes-split-no-prysm",
-          "value": "ef-phase2-premerge-12s-63nodes-split-no-prysm"
+          "text": "ef-phase2-premerge-12s-63nodes-split-no-prysm-redo",
+          "value": "ef-phase2-premerge-12s-63nodes-split-no-prysm-redo"
         },
         "datasource": {
           "type": "prometheus",
@@ -4434,13 +4577,13 @@
     ]
   },
   "time": {
-    "from": "2022-12-07T09:00:00.000Z",
-    "to": "2022-12-07T11:00:00.000Z"
+    "from": "now-30m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "utc",
   "title": "Testnet Overview",
   "uid": "KAiBRn5nk",
-  "version": 3,
+  "version": 5,
   "weekStart": ""
 }

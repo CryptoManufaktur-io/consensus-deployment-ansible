@@ -10,8 +10,6 @@
   register: dockerexist
 
 - name: Configure and install docker
-  vars:
-    docker_compose_version: "1.29.2"
   when: dockerexist.stat.exists == False
   block:
     - name: Install dependencies
@@ -54,22 +52,34 @@
         name: "{{ansible_user}}"
         group: docker
 
+    - name: Unconditionally reboot the machine with all defaults when docker is installed
+      reboot:
+
+- name: Configure and install docker-compose
+  vars:
+    docker_compose_version: "v2.15.1"
+  block:
+    - name: Check docker-compose {{ docker_compose_version }} is installed
+      stat: path=/usr/local/bin/docker-compose-{{ docker_compose_version }}
+      register: docker_compose
+
     - name: Download docker-compose {{ docker_compose_version }}
       get_url:
         url : https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
         dest: ~/docker-compose
         mode: '+x'
+      when: docker_compose.stat.exists == False
 
-    - name: Check docker-compose downloaded
-      stat: path=~/docker-compose
-      register: docker_compose
+    - name: Move docker-compose to /usr/local/bin/docker-compose-{{ docker_compose_version }}
+      command: mv ~/docker-compose /usr/local/bin/docker-compose-{{ docker_compose_version }}
+      when: docker_compose.stat.exists == False
 
-    - name: Move docker-compose to /usr/local/bin/docker-compose
-      command: mv ~/docker-compose /usr/local/bin/docker-compose
-      when: docker_compose.stat.exists
-
-    - name: Unconditionally reboot the machine with all defaults when docker is installed
-      reboot:
+    - name: Create a symbolic link
+      ansible.builtin.file:
+        src: /usr/local/bin/docker-compose-{{ docker_compose_version }}
+        dest: /usr/local/bin/docker-compose
+        state: link
+      when: docker_compose.stat.exists == False
 
 - name: Create docker monitoring network
   docker_network:
