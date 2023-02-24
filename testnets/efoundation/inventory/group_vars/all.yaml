@@ -110,7 +110,7 @@ node_exporter_memory: 5000M
 # prometheus settings
 ##############################################
 prometheus_container_name: prometheus
-prometheus_image_name: prom/prometheus:v2.32.1
+prometheus_image_name: prom/prometheus:latest
 prometheus_user_id: "1000:1000"
 prometheus_start_args: >
   --config.file=/etc/prometheus/config.yml 
@@ -131,7 +131,7 @@ prometheus_memory: 5000M
 ##############################################
 # thanos settings
 ##############################################
-thanos_image_name: thanosio/thanos:v0.24.0
+thanos_image_name: thanosio/thanos:v0.30.2
 thanos_user_id: "1000:1000"
 thanos_memory: 5000M
 thanos_conf_dir: "{{home_dir}}/thanos_conf"
@@ -324,7 +324,7 @@ loki_memory: 5000M
 ##############################################
 # cadvisor settings
 ##############################################
-cadvisor_image_name: gcr.io/cadvisor/cadvisor:latest
+cadvisor_image_name: gcr.io/cadvisor/cadvisor:v0.47.1
 cadvisor_container_name: cadvisor
 cadvisor_exporter_volumes:
   - "/etc/machine-id:/etc/machine-id:ro"
