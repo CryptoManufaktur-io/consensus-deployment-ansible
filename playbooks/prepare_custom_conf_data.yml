@@ -2,19 +2,43 @@
 - hosts: all[0]
   connection: local
   gather_facts: false
-  vars:
-    - data_dir: "{{inventory_dir}}/../custom_config_data"
-    - running_dir: "{{inventory_dir}}/../gen_custom_conf_data"
-
   tasks:
+    - name: check operating system
+      shell: uname
+      register: uname_result
+
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
+
+    - name: Get current epoch time
+      shell: "TZ=GMT date +%s"
+      register: epoch_time
+    
+    - name: Create new epoch time and save to file
+      when: MIN_GENESIS_TIME < epoch_time.stdout | int
+      block:
+        - name: Add seconds to epoch time
+          set_fact:
+            epoch_time_new: "{{epoch_time.stdout | int + MIN_GENESIS_TIME_ADD_SECONDS}}"
+
+        - name: Add seconds to epoch time
+          shell: "TZ=GMT date {{ '-r ' if (uname_result.stdout == 'Darwin') else '-d @' }}{{epoch_time_new}} +'%A, %d %B %Y %H:%M:%S GMT'"
+          register: epoch_time_str
+        
+        - name: Replace MIN_GENESIS_TIME
+          lineinfile:
+            path: "{{secrets_file}}"
+            regexp: "^MIN_GENESIS_TIME: "
+            line: "MIN_GENESIS_TIME: {{epoch_time_new}} #{{epoch_time_str.stdout}}"
+
+        - name: Include secret variables
+          include_vars: "{{secrets_file}}"
 
     - name: Create contract and get transaction hash
       when: TX_HASH == 'new'
       block:
         - name: Create contract
-          shell: "docker run --network host --rm -v {{running_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
+          shell: "docker run --network host --rm -v {{local_premerge_custom_config_data_host_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
           register: contract_output
 
         - name: Set transaction hash variable
@@ -30,7 +54,7 @@
               URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}
 
     - name: Get details from transaction hash
-      command: "python3 {{running_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
+      command: "python3 {{local_premerge_custom_config_data_host_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
       register: transaction_hash_details
       until: transaction_hash_details is succeeded
       retries: 10
@@ -46,16 +70,18 @@
 
     - name: Remove testnet data dir first
       file:
-        path: "{{data_dir}}"
+        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
         state: absent
 
     - name: Creates testnet data dir
       file:
-        path: "{{data_dir}}"
+        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
         state: directory
 
-    - name: Testnet custom conf data
-      include_tasks: tasks/testnet_custom_conf_data.yml
-      with_dict: "{{ TESTS }}"
-      loop_control:
-        loop_var: test
+    - name: Testnet custom conf data premerge
+      include_tasks: tasks/premerge_testnet_custom_conf_data.yml
+      when: TESTS[runningTest][3] == 'premerge'
+
+    - name: Testnet custom conf data postmerge
+      include_tasks: tasks/postmerge_testnet_custom_conf_data.yml
+      when: TESTS[runningTest][3] == 'postmerge'

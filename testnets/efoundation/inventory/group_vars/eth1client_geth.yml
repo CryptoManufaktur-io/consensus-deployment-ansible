@@ -1,38 +1,74 @@
 ##############################################
-# image name and image location
+# execution client
 ##############################################
 eth1_client_name: geth
 eth1_image_name: ethereum/client-go:stable
 eth1_container_name: eth1_geth
-
-##############################################
-# volume mappings on remote host
-##############################################
 eth1_data_dir: "/var/lib/goethereum"
 eth1_volumes:
   - "{{eth1_node_dir}}:{{eth1_data_dir}}"
-
-#Logging verbosity: 0-6 (0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=debug detail)
-##############################################
-# arguments to run the containers with
-##############################################
+  - "{{jwtsecret_file_outside}}:/jwtsecret"
+eth1_memory: 5000M
+eth1_user_id: "1000:1000"
 eth1_start_args: >
    --{{ NETWORK }} 
    --datadir {{eth1_data_dir}}
-   --http --http.api "engine,net,eth,consensus" 
+   --http --http.api "admin,engine,net,eth" 
    --http.port {{ eth1_rpc_port }} 
-   --http.addr {{public_ip_address}} 
+   --http.addr 0.0.0.0 
+   --http.vhosts=*
    --http.corsdomain "*" 
-   --ws --ws.api "engine,net,eth,consensus" 
+   --ws --ws.api "engine,net,eth" 
    --ws.port {{ eth1_ws_rpc_port }} 
-   --ws.addr {{public_ip_address}}
+   --ws.addr 0.0.0.0
+   --authrpc.port={{ eth1_auth_rpc_port }}
+   --authrpc.addr=0.0.0.0
+   --authrpc.vhosts=*
+   --authrpc.jwtsecret=/jwtsecret
+   --nat extip:{{ public_ip_address }}
+   --allow-insecure-unlock
+   --metrics
+   --pprof
+   --pprof.addr 0.0.0.0
+   --pprof.port={{ eth1_pprof_port }}
+   --vmodule=rpc=5
+   --maxpeers=75
 
 ##############################################
-# memory limits
+# consensus client
 ##############################################
-eth1_memory: 5000M
-
-##############################################
-# file permissions and user ids
-##############################################
-eth1_user_id: "1000:1000"
+eth2_client_name: lighthouse
+beacon_container_name: lighthouse
+beacon_image_name: sigp/lighthouse:latest
+beacon_volumes:
+  - "{{eth1_beacondata_dir}}:/beacondata"
+  - "{{jwtsecret_file_outside}}:/jwtsecret"
+beacon_memory: 5000M
+beacon_user_id: "1000:1000"
+beacon_start_args: >
+  lighthouse
+  --debug-level="info"
+  --network {{ NETWORK }} 
+  bn
+  --datadir "/beacondata"
+  --disable-enr-auto-update
+  --enr-address={{public_ip_address}}
+  --enr-tcp-port={{beacon_p2p_port}} --enr-udp-port={{beacon_p2p_port}}
+  --port={{beacon_p2p_port}} --discovery-port={{beacon_p2p_port}}
+  --eth1 --execution-endpoints http://{{eth1_container_name}}:8551
+  {% if (bootnode_enrs is defined) and bootnode_enrs %}
+  --boot-nodes="{{ bootnode_enrs | join(',') }}"
+  {% endif %}  
+  --http --http-allow-sync-stalled
+  --http-address 0.0.0.0
+  --http-port "{{beacon_api_port}}"
+  --metrics
+  --merge 
+  --metrics-address 0.0.0.0
+  --metrics-port "{{beacon_metrics_port}}"
+  --listen-address 0.0.0.0
+  --graffiti="{{graffiti}}"
+  --target-peers={{hi_peer_count}}
+  --jwt-secrets="/jwtsecret"
+  --suggested-fee-recipient={{ETH1_FROM_ADDR}}
+  --checkpoint-sync-url={{CL_CHECKPOINT_SYNC}}

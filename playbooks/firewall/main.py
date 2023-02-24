@@ -21,15 +21,8 @@ def getSubnets():
   subnets.sort()
   return subnets
 
-if __name__ == '__main__':
-    inventory_file_name = sys.argv[1]
-    data_loader = DataLoader()
-    inventory = InventoryManager(loader = data_loader, sources=[inventory_file_name])
-
-    subnets = getSubnets()
-
+def splitFirewall(subnets, hostsList):
     ips_list = {}
-    hostsList = inventory.get_hosts()
     for host in hostsList:
       if 'grp' in host.vars:
         grp = host.vars['grp']
@@ -49,5 +42,82 @@ if __name__ == '__main__':
     data = {}
     for key in ips_list:
       data[key] = list(ips_list[key].values())
+
+    # check overlap
+    for group, ips in data.items():
+      for group_check, ips_check in data.items():
+        test = group.split("_")[1]
+        test_check = group_check.split("_")[1]
+
+        if(group != group_check and test == test_check):
+          for ip in ips:
+            if(ip in ips_check):
+              raise Exception("ERROR (" + group + ") checking in (" + group_check + ") " + ip + " OVERLAP")
+
+    return data
+
+def gethFirewall(subnets, hostsList):
+    ips_list = {}
+    for host in hostsList:
+      if 'geth_host' in host.vars:
+        geth = host.vars['geth_host']
+        key = geth
+        ip = host.vars['ansible_host']
+
+        for subnet in subnets:
+          if ipaddress.ip_address(ip) in ipaddress.ip_network(subnet):
+            if key not in ips_list:
+              ips_list[key] = {}
+
+            ips_list[key][subnet] = subnet
+            break
+    
+    # get lists
+    data = {}
+    for key in ips_list:
+      data[key] = list(ips_list[key].values())
+
+    return data
+
+def rWFirewall(subnets, hostsList):
+    ips_list = {}
+    for host in hostsList:
+      if 'rw_host' in host.vars:
+        rw = host.vars['rw_host']
+        key = rw
+        ip = host.vars['ansible_host']
+
+        for subnet in subnets:
+          if ipaddress.ip_address(ip) in ipaddress.ip_network(subnet):
+            if key not in ips_list:
+              ips_list[key] = {}
+
+            ips_list[key][subnet] = subnet
+            break
+    
+    # get lists
+    data = {}
+    for key in ips_list:
+      data[key] = list(ips_list[key].values())
+
+    return data  
+
+if __name__ == '__main__':
+    inventory_file_name = sys.argv[1]
+    action = sys.argv[2]
+
+    data_loader = DataLoader()
+    inventory = InventoryManager(loader = data_loader, sources=[inventory_file_name])
+
+    subnets = getSubnets()
+
+    hostsList = inventory.get_hosts()
+
+    if action == 'split':
+      data = splitFirewall(subnets, hostsList)
+    elif action == 'geth':
+      data = gethFirewall(subnets, hostsList)
+    elif action == 'rw':
+      data = rWFirewall(subnets, hostsList)
 
     print(data)

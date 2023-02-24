@@ -1,8 +1,4 @@
 ---
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start node exporter container
   docker_container:
     name: "{{ node_exporter_container_name }}"

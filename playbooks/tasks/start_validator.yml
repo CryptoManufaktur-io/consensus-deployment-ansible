@@ -7,10 +7,6 @@
 - name: Modify permissions to match user-group inside docker image
   shell: chown -R "{{ validator_user_id }}" "{{ validator_node_dir }}"
   become: true
-
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
     
 - name: Start Eth2 validator client container
   docker_container:

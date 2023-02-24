@@ -1,10 +1,106 @@
 ---
+- name: Set use_premerge_network
+  set_fact:
+    use_premerge_network: "{{ TESTS[runningTest][3] == 'premerge' }}"
+
 - name: Include ENR groups
-  include_vars: "{{inventory_dir}}/group_vars/{{runningTest}}/enr_groups.yml"
+  include_vars: "{{enr_groups_file}}"
 
 - name: Set bootnodes_enr to the group enr
   set_fact:
     bootnode_enrs: ["{{ lookup('vars', hostvars[inventory_hostname].rw_host + '_enr') }}"]
+
+- name: Set eth1endpoint_premerge
+  when: use_premerge_network == true
+  set_fact:
+    eth1endpoint_premerge: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+
+- name: Start EL POSTMERGE
+  when: use_premerge_network == false
+  block:
+    - name: Include geth variables
+      include_vars: "{{inventory_dir}}/group_vars/postmerge_el.yml"
+
+    - name: Stop eth1 container
+      docker_container:
+        name: "{{ eth1_container_name }}"
+        state: stopped
+        image: "{{ eth1_image_name }}"
+
+    - name: Set eth1endpoint
+      set_fact:
+        eth1endpoint: "http://{{ eth1_container_name }}:{{ eth1_auth_rpc_port }}"
+
+    - name: Creates eth1 data dir
+      file:
+        path: "{{eth1_node_dir}}"
+        state: directory
+
+    - name: Modify permissions to match user-group inside docker image
+      shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
+      become: true
+
+    - name: Check if {{ eth1_node_dir }} is empty before proceeding
+      become: true
+      find:
+        paths: "{{ eth1_node_dir }}"
+      register: filesFound
+
+    - name: Run geth init
+      when: filesFound.examined == 0
+      docker_container:
+        name: "exec_tmp"
+        state: started
+        image: "{{ eth1_image_name }}"
+        pull: true
+        restart_policy: no
+        auto_remove: false
+        detach: no
+        network_mode: "{{docker_monitoring_network}}"
+        volumes: "{{eth1_volumes}}"
+        command: "{{ geth_init_args }}"
+        env: "{{ eth1_env | default({}) }}"
+        user: "{{ eth1_user_id }}"
+    
+    # - name: Remove init container
+    #   docker_container:
+    #     name: "exec_tmp"
+    #     state: absent
+    #     image: "{{ eth1_image_name }}"
+
+    - name: Start Eth1 container
+      docker_container:
+        name: "{{ eth1_container_name }}"
+        state: started
+        image: "{{ eth1_image_name }}"
+        pull: true
+        stop_timeout: 90
+        ports:
+          - "30303:30303"
+          - "30303:30303/udp"
+          - "{{eth1_auth_rpc_port}}:{{eth1_auth_rpc_port}}"
+        restart_policy: unless-stopped
+        memory_swappiness: 0
+        network_mode: "{{docker_monitoring_network}}"
+        restart: "{{ restart_container_if_exists | default(false) }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        volumes: "{{eth1_volumes}}"
+        memory: "{{eth1_memory}}"
+        memory_swap: "{{eth1_memory}}"
+        command: "{{ eth1_start_args }}"
+        env: "{{ eth1_env | default({}) }}"
+        user: "{{ eth1_user_id }}"
+
+    - name: Register geth metrics to prometheus
+      copy:
+        dest: "{{ prometheus_file_sd_dir }}/geth.yml"
+        content: |
+          - labels:
+              appname: {{ eth1_container_name }}
+            targets:
+            - {{ eth1_container_name }}:{{eth1_metrics_port}}
+      when: eth1_metrics_port | default('') != ''
 
 - name: Creates beacon dir
   file:
@@ -14,12 +110,33 @@
 - name: Modify permissions to match user-group inside docker image
   shell: chown -R "{{ beacon_user_id }}" "{{ beacon_node_dir }}"
   become: true
-  
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
 
-- name: Start Eth2 beacon node container
+- name: Start Eth2 beacon node container EXPOSED TO INTERNET DEBUG ENDPOINT
+  docker_container:
+    name: "{{ beacon_container_name }}"
+    state: started
+    image: "{{ beacon_image_name }}"
+    pull: true
+    ports:
+      - "{{public_ip_address}}:{{beacon_api_port}}:{{beacon_api_port}}"
+      - "{{public_ip_address}}:{{beacon_p2p_port}}:{{beacon_p2p_port}}"
+      - "{{public_ip_address}}:{{beacon_p2p_port}}:{{beacon_p2p_port}}/udp"
+    restart_policy: unless-stopped
+    memory_swappiness: 0
+    network_mode: "{{ docker_monitoring_network }}"
+    restart: "{{ restart_container_if_exists | default(false) }}"
+    log_options: "{{ common_log_options }}"
+    log_driver: "{{ common_log_driver }}"
+    volumes: "{{beacon_volumes}}"
+    memory: "{{beacon_memory}}"
+    memory_swap: "{{beacon_memory}}"
+    command: "{{ beacon_start_args }}"
+    env: "{{ beacon_env | default({}) }}"
+    user: "{{ beacon_user_id }}"
+    labels: "{{ testnet_labels }}"
+  when: enable_debug_public | default(false) == true
+
+- name: Start Eth2 beacon node container NOT EXPOSED TO INTERNET DEBUG ENDPOINT
   docker_container:
     name: "{{ beacon_container_name }}"
     state: started
@@ -41,3 +158,4 @@
     env: "{{ beacon_env | default({}) }}"
     user: "{{ beacon_user_id }}"
     labels: "{{ testnet_labels }}"
+  when: enable_debug_public | default(false) == false

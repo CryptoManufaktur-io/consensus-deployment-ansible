@@ -1,5 +1,5 @@
 - name: Beacons firewall management
-  hosts: [beacons]
+  hosts: ["{{ runningTest + '_beacon' }}"]
   gather_facts: false
   become: true
   vars:
@@ -9,7 +9,7 @@
 
   tasks:
     - name: Include secret variables
-      include_vars: "{{inventory_dir}}/group_vars/secrets.yml"
+      include_vars: "{{secrets_file}}"
 
     - name: Reset UFW
       ufw:
@@ -26,21 +26,21 @@
         comment: "Allow SSH"
 
     - name: Allow peering through firewall network not split
-      when: GROUPS_PEERING == 'true'
+      when: TESTS[runningTest][2] == 'true'
       ufw:
         rule: allow
         port: "9000"
         comment: "Allow peering through firewall network not split"
 
     - name: Allow peering through firewall NETWORK SPLIT
-      when: GROUPS_PEERING == 'false'
+      when: TESTS[runningTest][2] == 'false'
       block:
         - name: Run python to get subnet ips
           delegate_to: localhost
           throttle: 1
           run_once: true
           become: false
-          command: "/usr/local/bin/python3 main.py {{ inventory_dir }}/inventory.ini"
+          command: "{{ansible_python_interpreter}} main.py {{ inventory_dir }}/inventory.ini split"
           register: python_result
 
         - name: Set variables

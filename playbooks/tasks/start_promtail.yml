@@ -35,10 +35,6 @@
   shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
   become: true
 
-- name: Create docker monitoring network
-  docker_network:
-    name: "{{ docker_monitoring_network }}"
-
 - name: Start promtail container with receiver
   docker_container:
     name: "{{ promtail_container_name }}"

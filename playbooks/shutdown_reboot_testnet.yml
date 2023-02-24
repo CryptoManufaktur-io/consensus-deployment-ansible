@@ -1,12 +1,12 @@
 ---
 - name: Reboot/Shutdown testnet
-  hosts: [beacon, validator]
+  hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}", "{{ runningTest + '_dclocal' }}"]
   gather_facts: false
   
   vars_prompt:
     - name: action
       prompt: Which action do you want to do (reboot/shutdown)?
-      private: no
+      private: false
 
   tasks:
     - name: Shutdown testnet

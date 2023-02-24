@@ -4,8 +4,8 @@
 eth2_client_name: teku
 
 #todo check latest
-beacon_image_name: consensys/teku:22.3.2
-validator_image_name: consensys/teku:22.3.2
+beacon_image_name: consensys/teku:latest
+validator_image_name: consensys/teku:latest
 beacon_endpoint: "http://{{beacon_container_name}}:{{beacon_api_port}}"
 
 ##############################################
@@ -32,11 +32,10 @@ beacon_start_args: >
   --p2p-advertised-ip={{public_ip_address}}
   --p2p-port="{{beacon_p2p_port}}"
   --p2p-advertised-port={{beacon_p2p_port}}
-  --logging={{beacon_log_level}}
+  --logging="{{ beacon_log_level | default('debug') }}"
   --log-destination=CONSOLE
   --log-file="/beacondata/log_outputs"
   --p2p-peer-upper-bound={{hi_peer_count}}
-  --eth1-endpoint "{{eth1endpoint}}"
   {% if (bootnode_enrs is defined) and bootnode_enrs %}
   --p2p-discovery-bootnodes="{{ bootnode_enrs | join(',') }}"
   {% endif %}
@@ -49,11 +48,20 @@ beacon_start_args: >
   --rest-api-port="{{beacon_api_port}}"
   --metrics-host-allowlist="*"
   --rest-api-host-allowlist="*"
+  {% if (use_premerge_network) %}
+  --ee-endpoint="{{eth1endpoint_premerge}}"
+  --eth1-endpoint "{{eth1endpoint_premerge}}"
+  {% else %}
+  --ee-endpoint="{{eth1endpoint}}"
+  --eth1-endpoint "{{eth1endpoint}}"
+  --ee-jwt-secret-file=/custom_config_data/jwtsecret
+  {% endif %}
 
 validator_start_args: >
   validator-client 
   --network "/custom_config_data/config.yaml"
   --data-path "/validatordata"
+  --validators-proposer-default-fee-recipient={{fee_recipient}}
   --beacon-node-api-endpoint "{{beacon_endpoint}}"
   --validators-graffiti="{{graffiti}}"
   --validator-keys "/validatordata/keys:/validatordata/secrets"
@@ -61,7 +69,7 @@ validator_start_args: >
 ##############################################
 # memory limits
 ##############################################
-beacon_memory: 14000M
+beacon_memory: 5000M
 validator_memory: 2000M
 beacon_env:
   JAVA_OPTS: "-XX:SoftMaxHeapSize=2g -Xmx4g"

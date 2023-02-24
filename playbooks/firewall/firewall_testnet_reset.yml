@@ -1,5 +1,5 @@
 - name: Reset all firewall beacons
-  hosts: [beacons]
+  hosts: ["{{ runningTest + '_beacon' }}"]
   gather_facts: false
   become: true
   tasks:

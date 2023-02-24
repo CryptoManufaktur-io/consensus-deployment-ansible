@@ -4,30 +4,29 @@
 ansible_user: "ubuntu"
 public_ip_address: "{{ansible_host}}"
 ansible_python_interpreter: /usr/bin/python3
-# docker_etc_hosts: >
-#   { 
-#     "dockerhost" : "{{ ansible_host_private }}" 
-#   }
 docker_monitoring_network: "monitoring_network"
 restart_container_if_exists: true
 
 ##############################################
 # eth1 endpoints
 ##############################################
-# nimbus requires a websocket endpoint (http support unstable)
-eth1endpoint_nimbus: "ws://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_ws_rpc_port }}"
-eth1endpoint: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+enable_debug_public: true
+merge_terminal_total_difficulty: 96652946912555663360000
+el_bootnode_enode:
 
 ##############################################
 # testnet specific information
 ##############################################
 eth1_client: geth
+fee_recipient: "0xf97e180c050e5Ab072211Ad2C213Eb5AEE4DF134"
 
 ##############################################
 # ports to configure
 ##############################################
 eth1_rpc_port: 8545
 eth1_ws_rpc_port: 8546
+eth1_auth_rpc_port: 8551
+eth1_pprof_port: 8002
 nimbus_rpc_port: 4009
 beacon_api_port: 4000
 beacon_grpc_port: 4001
@@ -44,8 +43,15 @@ graffiti: "{{eth2_client_name}}-{{eth1_client}}"
 ##############################################
 # local data directories
 ##############################################
+secrets_file: "{{inventory_dir}}/group_vars/secrets.yml"
+local_premerge_custom_config_data_host_dir: "{{inventory_dir}}/../premerge_custom_conf_data"
+local_postmerge_custom_config_data_host_dir: "{{inventory_dir}}/../postmerge_custom_conf_data"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
 local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_custom_config_data.tar.gz"
+
+enr_groups_all_path: "{{local_custom_config_data_host_dir}}/{{runningTest}}_enr"
+enr_groups_file: "{{enr_groups_all_path}}/enr_groups.yml"
+enr_all_file: "{{enr_groups_all_path}}/enr_all.yml"
 
 ##############################################
 # remote host data directories
@@ -53,6 +59,8 @@ local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_cus
 home_dir: "/home/{{ ansible_user }}"
 beacon_node_dir: "{{home_dir}}/beacon"
 eth1_node_dir: "{{home_dir}}/.eth1data"   # Hidden folder so its not deleted on restart
+eth1_beacondata_dir: "{{home_dir}}/.beacondata"   # Hidden folder so its not deleted on restart
+jwtsecret_file_outside: "{{home_dir}}/jwtsecret"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
 
@@ -102,7 +110,7 @@ node_exporter_memory: 5000M
 # prometheus settings
 ##############################################
 prometheus_container_name: prometheus
-prometheus_image_name: prom/prometheus:v2.32.1
+prometheus_image_name: prom/prometheus:latest
 prometheus_user_id: "1000:1000"
 prometheus_start_args: >
   --config.file=/etc/prometheus/config.yml 
@@ -123,7 +131,7 @@ prometheus_memory: 5000M
 ##############################################
 # thanos settings
 ##############################################
-thanos_image_name: thanosio/thanos:v0.24.0
+thanos_image_name: thanosio/thanos:v0.30.2
 thanos_user_id: "1000:1000"
 thanos_memory: 5000M
 thanos_conf_dir: "{{home_dir}}/thanos_conf"
@@ -311,3 +319,18 @@ loki_volumes:
   - "{{loki_config_dir}}:/mnt/config"
   - "{{loki_data_dir}}:/loki"
 loki_memory: 5000M
+
+
+##############################################
+# cadvisor settings
+##############################################
+cadvisor_image_name: gcr.io/cadvisor/cadvisor:v0.47.1
+cadvisor_container_name: cadvisor
+cadvisor_exporter_volumes:
+  - "/etc/machine-id:/etc/machine-id:ro"
+  - "/:/rootfs:ro"
+  - "/var/run:/var/run:rw"
+  - "/sys:/sys:ro"
+  - "/var/lib/docker/:/var/lib/docker:ro"
+cadvisor_exporter_memory: 5000M
+cadvisor_exporter_user_id: "0:0"

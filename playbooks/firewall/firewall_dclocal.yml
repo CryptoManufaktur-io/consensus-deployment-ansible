@@ -1,0 +1,75 @@
+- name: DC local logging firewall management
+  hosts: [dclocal]
+  gather_facts: false
+  become: true
+  vars:
+    subnet_ips: []
+
+  tasks:
+    - name: Include secret variables
+      include_vars: "{{secrets_file}}"
+
+    - name: Reset UFW
+      ufw:
+        state: reset
+
+    - name: Configure ufw docker
+      import_tasks: configure_ufw_docker.yml
+
+    - name: Allow ports through firewall
+      ufw:
+        rule: allow
+        port: "{{ item.0 }}"
+        proto: "{{ item.1 }}"
+        comment: "{{ item.2 }}"
+      loop:
+        - ["22", "tcp", "Allow SSH"]
+
+    - name: Run python to get subnet ips
+      delegate_to: localhost
+      throttle: 1
+      run_once: true
+      become: false
+      command: "{{ansible_python_interpreter}} main.py {{ inventory_dir }}/inventory.ini rw"
+      register: python_result
+
+    - name: Set variables
+      set_fact:
+        subnet_ips: "{{python_result.stdout}}"
+
+    - name: Set subnet_ips variables
+      set_fact:
+        subnet_ips: "{{subnet_ips[inventory_hostname]}}"
+
+    - name: Allow bootnode peering UDP
+      ufw:
+        rule: allow
+        src: "{{ item }}"
+        port: "9001"
+        proto: "udp"
+        comment: "Allow bootnode peering UDP"
+      with_items: "{{ subnet_ips }}"
+
+    - name: Allow prometheus remote write
+      ufw:
+        rule: allow
+        src: "{{ item }}"
+        port: "9090"
+        proto: "tcp"
+        comment: "Allow prometheus remote write"
+      with_items: "{{ subnet_ips }}"
+
+    - name: Allow promtail receive
+      ufw:
+        rule: allow
+        src: "{{ item }}"
+        port: "3500"
+        proto: "tcp"
+        comment: "Allow promtail receive"
+      with_items: "{{ subnet_ips }}"
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
+        logging: 'on'

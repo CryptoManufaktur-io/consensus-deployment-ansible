@@ -3,7 +3,7 @@
   include_vars: "{{inventory_dir}}/group_vars/bootnode.yml"
 
 - name: Include ENR all bootnodes variables
-  include_vars: "{{inventory_dir}}/group_vars/{{runningTest}}/enr_all.yml"
+  include_vars: "{{enr_all_file}}"
 
 - name: Generate bootnode bootnode_p2p_priv_key
   shell: "head -c 32 /dev/urandom|xxd -ps -c 32"
@@ -19,8 +19,11 @@
     state: started
     image: "{{ bootnode_image_name }}"
     pull: true
+    ports:
+      - "{{bootnode_api_port}}:{{bootnode_api_port}}"
+      - "{{public_ip_address}}:{{bootnode_port}}:{{bootnode_port}}/udp"
     restart_policy: unless-stopped
-    network_mode: host
+    network_mode: "{{ docker_monitoring_network }}"
     restart: "{{ restart_container_if_exists | default(false) }}"
     memory: "{{bootnode_memory}}"
     command: "{{ bootnode_start_args }}"
@@ -31,17 +34,17 @@
     labels: "{{ testnet_labels }}"
 
 - name: Get ENR
-  shell: "curl http://localhost:8002/enr"
+  shell: "curl http://localhost:{{bootnode_api_port}}/enr"
   register: enr_output
 
 - name: Add ENR to enr_all file
   delegate_to: localhost
   lineinfile:
-    path: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_all.yml"
+    path: "{{enr_all_file}}"
     line: "  - \"{{enr_output.stdout}}\""
 
 - name: Add ENR to enr_groups file
   delegate_to: localhost
   lineinfile:
-    path: "{{ inventory_dir }}/group_vars/{{runningTest}}/enr_groups.yml"
+    path: "{{enr_groups_file}}"
     line: "{{inventory_hostname}}_enr: \"{{enr_output.stdout}}\""

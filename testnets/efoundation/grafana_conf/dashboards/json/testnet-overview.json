@@ -25,7 +25,6 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1653114244218,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -36,6 +35,532 @@
         "w": 24,
         "x": 0,
         "y": 0
+      },
+      "id": 97,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "dockerhost:8000"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 95,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.4.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg(libp2p_peers_per_client{testnet=\"$testnet\"}) by (host_node, Client)",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{Client}} - {{host_node}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "Peers Per Client Lighthouse",
+          "transformations": [],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "dockerhost:8000"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 98,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.4.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg(libp2p_peers_identity{testnet=\"$testnet\"}) by (host_node, agent) ",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{agent}} - {{host_node}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "Peers Per Client Nimbus",
+          "transformations": [],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "dockerhost:8000"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 9
+          },
+          "id": 99,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.4.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg(libp2p_connected_peers_current{testnet=\"$testnet\", host_node=~\".*teku.*\"}) by (host_node, client)",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{client}} - {{host_node}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "Peers Per Client Teku",
+          "transformations": [],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "dockerhost:8000"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 9
+          },
+          "id": 100,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.4.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg(connected_libp2p_peers{testnet=\"$testnet\", host_node=~\".*prysm.*\"}) by (host_node, agent)",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{agent}} - {{host_node}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "Peers Per Client Prysm",
+          "transformations": [],
+          "type": "timeseries"
+        }
+      ],
+      "title": "Peers Per Client",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
       },
       "id": 59,
       "panels": [
@@ -87,7 +612,7 @@
             "h": 11,
             "w": 4,
             "x": 0,
-            "y": 1
+            "y": 2
           },
           "id": 64,
           "links": [],
@@ -104,7 +629,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "v1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -112,7 +637,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "(((count(count(node_cpu_seconds_total{instance=~\"lighthouse.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"lighthouse.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\"lighthouse.*\",job=\"node-exporter\"}) by (cpu))",
+              "expr": "(((count(count(node_cpu_seconds_total{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\".*lighthouse.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) by (cpu))",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Lighthouse",
@@ -126,7 +651,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "(((count(count(node_cpu_seconds_total{instance=~\"prysm.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"prysm.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\"prysm.*\",job=\"node-exporter\"}) by (cpu))",
+              "expr": "(((count(count(node_cpu_seconds_total{instance=~\".*prysm.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\".*prysm.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\".*prysm.*\",job=\"node-exporter\"}) by (cpu))",
               "hide": false,
               "legendFormat": "Prysm",
               "range": true,
@@ -138,7 +663,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "(((count(count(node_cpu_seconds_total{instance=~\"nimbus.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"nimbus.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\"nimbus.*\",job=\"node-exporter\"}) by (cpu))",
+              "expr": "(((count(count(node_cpu_seconds_total{instance=~\".*nimbus.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\".*nimbus.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\".*nimbus.*\",job=\"node-exporter\"}) by (cpu))",
               "hide": false,
               "legendFormat": "Nimbus",
               "range": true,
@@ -150,7 +675,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "(((count(count(node_cpu_seconds_total{instance=~\"teku.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"teku.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\"teku.*\",job=\"node-exporter\"}) by (cpu))",
+              "expr": "(((count(count(node_cpu_seconds_total{instance=~\".*teku.*\",job=\"node-exporter\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\".*teku.*\",job=\"node-exporter\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=~\".*teku.*\",job=\"node-exporter\"}) by (cpu))",
               "hide": false,
               "legendFormat": "Teku",
               "range": true,
@@ -208,7 +733,7 @@
             "h": 11,
             "w": 4,
             "x": 4,
-            "y": 1
+            "y": 2
           },
           "id": 57,
           "links": [],
@@ -225,7 +750,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "v1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -233,7 +758,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load5{instance=~\"lighthouse.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"lighthouse.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load5{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Lighthouse",
@@ -247,7 +772,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load5{instance=~\"prysm.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"prysm.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load5{instance=~\".*prysm.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*prysm.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Prysm",
@@ -261,7 +786,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load5{instance=~\"nimbus.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"nimbus.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load5{instance=~\".*nimbus.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*nimbus.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Nimbus",
@@ -275,7 +800,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load5{instance=~\"teku.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"teku.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load5{instance=~\".*teku.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*teku.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Teku",
@@ -335,7 +860,7 @@
             "h": 11,
             "w": 4,
             "x": 8,
-            "y": 1
+            "y": 2
           },
           "id": 60,
           "links": [],
@@ -352,7 +877,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "v1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -360,7 +885,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load15{instance=~\"lighthouse.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"lighthouse.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load15{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Lighthouse",
@@ -374,7 +899,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load15{instance=~\"prysm.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"prysm.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load15{instance=~\".*prysm.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*prysm.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Prysm",
@@ -388,7 +913,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load15{instance=~\"nimbus.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"nimbus.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load15{instance=~\".*nimbus.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*nimbus.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Nimbus",
@@ -402,7 +927,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg(node_load15{instance=~\"teku.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\"teku.*\",job=\"node-exporter\"}) by (cpu)) * 100",
+              "expr": "avg(node_load15{instance=~\".*teku.*\",job=\"node-exporter\"}) /  count(count(node_cpu_seconds_total{instance=~\".*teku.*\",job=\"node-exporter\"}) by (cpu)) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Teku",
@@ -453,7 +978,7 @@
             "h": 11,
             "w": 4,
             "x": 12,
-            "y": 1
+            "y": 2
           },
           "hideTimeOverride": false,
           "id": 88,
@@ -471,7 +996,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "v1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -479,7 +1004,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\"}))",
+              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\"}))",
               "hide": false,
               "legendFormat": "Lighthouse",
               "range": true,
@@ -491,7 +1016,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\"prysm.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\"prysm.*\",job=\"node-exporter\"}))",
+              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\".*prysm.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\".*prysm.*\",job=\"node-exporter\"}))",
               "hide": false,
               "legendFormat": "Prysm",
               "range": true,
@@ -503,7 +1028,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\"nimbus.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\"nimbus.*\",job=\"node-exporter\"}))",
+              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\"}))",
               "hide": false,
               "legendFormat": "Nimbus",
               "range": true,
@@ -515,7 +1040,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\"teku.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\"teku.*\",job=\"node-exporter\"}))",
+              "expr": "100 - avg((node_memory_MemAvailable_bytes{instance=~\".*teku.*\",job=\"node-exporter\"} * 100) / (node_memory_MemTotal_bytes{instance=~\".*teku.*\",job=\"node-exporter\"}))",
               "hide": false,
               "legendFormat": "Teku",
               "range": true,
@@ -573,7 +1098,7 @@
             "h": 11,
             "w": 4,
             "x": 16,
-            "y": 1
+            "y": 2
           },
           "id": 73,
           "links": [],
@@ -590,7 +1115,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "v1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -598,7 +1123,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\"} )) * 100",
+              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\"} )) * 100",
               "intervalFactor": 1,
               "legendFormat": "Lighthouse",
               "range": true,
@@ -611,7 +1136,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\"prysm.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\"prysm.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\"prysm.*\",job=\"node-exporter\"} )) * 100",
+              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\".*prysm.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\".*prysm.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\".*prysm.*\",job=\"node-exporter\"} )) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Prysm",
@@ -625,7 +1150,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\"nimbus.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\"nimbus.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\"nimbus.*\",job=\"node-exporter\"} )) * 100",
+              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\"} )) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Nimbus",
@@ -639,7 +1164,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\"teku.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\"teku.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\"teku.*\",job=\"node-exporter\"} )) * 100",
+              "expr": "avg((node_memory_SwapTotal_bytes{instance=~\".*teku.*\",job=\"node-exporter\"} - node_memory_SwapFree_bytes{instance=~\".*teku.*\",job=\"node-exporter\"}) / (node_memory_SwapTotal_bytes{instance=~\".*teku.*\",job=\"node-exporter\"} )) * 100",
               "hide": false,
               "intervalFactor": 1,
               "legendFormat": "Teku",
@@ -699,7 +1224,7 @@
             "h": 11,
             "w": 4,
             "x": 20,
-            "y": 1
+            "y": 2
           },
           "id": 90,
           "links": [],
@@ -716,7 +1241,7 @@
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "v1.0",
+          "pluginVersion": "9.1.6",
           "targets": [
             {
               "datasource": {
@@ -724,7 +1249,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\"lighthouse.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
+              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\".*lighthouse.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Lighthouse",
@@ -738,7 +1263,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\"prysm.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\"prysm.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
+              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\".*prysm.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\".*prysm.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
@@ -753,7 +1278,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\"nimbus.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\"nimbus.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
+              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\".*nimbus.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
@@ -768,7 +1293,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "editorMode": "code",
-              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\"teku.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\"teku.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
+              "expr": "100 - avg((node_filesystem_avail_bytes{instance=~\".*teku.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=~\".*teku.*\",job=\"node-exporter\",mountpoint=\"/\",fstype!=\"rootfs\"})",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 1,
@@ -795,7 +1320,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 2
       },
       "id": 11,
       "panels": [],
@@ -834,7 +1359,7 @@
         "h": 3,
         "w": 2,
         "x": 0,
-        "y": 2
+        "y": 3
       },
       "id": 44,
       "options": {
@@ -852,13 +1377,14 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "avg(slotclock_slot_time_seconds{testnet=\"$testnet\"})",
           "instant": false,
@@ -903,7 +1429,7 @@
         "h": 3,
         "w": 2,
         "x": 2,
-        "y": 2
+        "y": 3
       },
       "id": 46,
       "options": {
@@ -921,7 +1447,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -973,7 +1499,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 2
+        "y": 3
       },
       "id": 47,
       "options": {
@@ -991,7 +1517,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -1000,7 +1526,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(sync_peers_per_status{testnet=\"$testnet\", sync_status=\"Synced\"})",
+          "expr": "avg(libp2p_peers{appname=\"beacon\",testnet=\"$testnet\",host_node=~\".*lighthouse.*\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "Lighthouse",
@@ -1014,7 +1540,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(p2p_peer_count{testnet=\"$testnet\", state=\"Connected\"})",
+          "expr": "avg(p2p_peer_count{appname=\"beacon\",testnet=\"$testnet\",host_node=~\".*prysm.*\", state=\"Connected\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Prysm",
@@ -1028,7 +1554,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(libp2p_peers{testnet=\"$testnet\",host_node=~\"nimbus.*\"})",
+          "expr": "avg(libp2p_peers{appname=\"beacon\",testnet=\"$testnet\",host_node=~\".*nimbus.*\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Nimbus",
@@ -1042,7 +1568,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(libp2p_peers{testnet=\"$testnet\",host_node=~\"teku.*\"})",
+          "expr": "avg(libp2p_peers{appname=\"beacon\",testnet=\"$testnet\",host_node=~\".*teku.*\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Teku",
@@ -1086,7 +1612,7 @@
         "h": 3,
         "w": 4,
         "x": 8,
-        "y": 2
+        "y": 3
       },
       "id": 48,
       "options": {
@@ -1104,15 +1630,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(vc_genesis_distance_seconds{testnet=\"$testnet\"})",
+          "expr": "avg(vc_genesis_distance_seconds{testnet=\"$testnet\", appname=\"validator\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{instance}}",
@@ -1152,7 +1679,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 2
+        "y": 3
       },
       "id": 45,
       "options": {
@@ -1170,15 +1697,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(slotclock_present_epoch{testnet=\"$testnet\"})",
+          "expr": "avg(slotclock_present_epoch{testnet=\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{instance}}",
@@ -1218,7 +1746,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 2
+        "y": 3
       },
       "id": 54,
       "options": {
@@ -1236,20 +1764,36 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_head_state_current_justified_epoch{testnet=\"$testnet\"})",
+          "expr": "min(beacon_current_justified_epoch{testnet=\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "Min",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "max(beacon_current_justified_epoch{testnet=\"$testnet\", appname=\"beacon\"})",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Max",
+          "queryType": "randomWalk",
+          "refId": "B"
         }
       ],
       "title": "Current Justified epoch",
@@ -1284,7 +1828,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 2
+        "y": 3
       },
       "id": 15,
       "options": {
@@ -1302,20 +1846,36 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_head_state_finalized_epoch{testnet=\"$testnet\"})",
+          "expr": "min(beacon_finalized_epoch{testnet=\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "Min",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "max(beacon_finalized_epoch{testnet=\"$testnet\", appname=\"beacon\"})",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Max",
+          "queryType": "randomWalk",
+          "refId": "B"
         }
       ],
       "title": "Current finalized epoch",
@@ -1352,7 +1912,7 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 5
+        "y": 6
       },
       "id": 50,
       "options": {
@@ -1370,7 +1930,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -1379,9 +1939,10 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "lighthouse_info{testnet=\"$testnet\"}",
+          "expr": "max by(version) (lighthouse_info{testnet=\"$testnet\", host_node=~\".*lighthouse.*\"})",
+          "instant": false,
           "interval": "",
-          "legendFormat": "Lighthouse Version",
+          "legendFormat": "{{version}}",
           "queryType": "randomWalk",
           "range": true,
           "refId": "A"
@@ -1393,11 +1954,11 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "prysm_version{testnet=\"$testnet\"}",
+          "expr": "max by(version) (prysm_version{testnet=\"$testnet\", host_node=~\".*prysm.*\"})",
           "hide": false,
           "instant": false,
           "interval": "",
-          "legendFormat": "Prysm Version",
+          "legendFormat": "Prysm: {{version}}",
           "refId": "B"
         },
         {
@@ -1407,10 +1968,10 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "version{testnet=\"$testnet\"}",
+          "expr": "max by(version) (version{testnet=\"$testnet\", host_node=~\".*nimbus.*\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Nimbus Version",
+          "legendFormat": "Nimbus: {{version}}",
           "range": true,
           "refId": "C"
         },
@@ -1421,37 +1982,16 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "beacon_teku_version{testnet=\"$testnet\"}",
+          "expr": "max by(version) (beacon_teku_version{testnet=\"$testnet\", host_node=~\".*teku.*\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Teku Version",
+          "legendFormat": "Teku: {{version}}",
           "range": true,
           "refId": "D"
         }
       ],
       "title": "Client Build Versions in order Lighthouse/Prysm/Nimbus/Teku",
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "keepLabels": [
-              "job",
-              "receive",
-              "tenant_id",
-              "testnet",
-              "version",
-              "buildDate",
-              "commit"
-            ],
-            "mode": "columns",
-            "valueLabel": "version"
-          }
-        },
-        {
-          "id": "merge",
-          "options": {}
-        }
-      ],
+      "transformations": [],
       "type": "stat"
     },
     {
@@ -1487,7 +2027,7 @@
         "h": 2,
         "w": 4,
         "x": 8,
-        "y": 5
+        "y": 6
       },
       "id": 53,
       "options": {
@@ -1505,15 +2045,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(vc_beacon_attester_count{testnet=\"$testnet\", task=\"current_epoch\"})",
+          "expr": "avg(vc_beacon_attester_count{testnet=\"$testnet\", task=\"current_epoch\", appname=\"validator\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "",
@@ -1553,7 +2094,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 7
+        "y": 8
       },
       "id": 16,
       "options": {
@@ -1571,16 +2112,36 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_head_state_slot{testnet=\"$testnet\"})",
+          "expr": "min(beacon_head_slot{testnet=\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "Min",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "max(beacon_head_slot{testnet=\"$testnet\", appname=\"beacon\"})",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Max",
+          "queryType": "randomWalk",
+          "refId": "B"
         }
       ],
       "title": "Current slot",
@@ -1619,7 +2180,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 7
+        "y": 8
       },
       "id": 7,
       "options": {
@@ -1637,11 +2198,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_current_active_validators{testnet=~\"$testnet\"})",
+          "expr": "avg(beacon_current_active_validators{testnet=~\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{instance}}",
@@ -1681,7 +2247,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 7
+        "y": 8
       },
       "id": 17,
       "options": {
@@ -1699,15 +2265,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_attn_observation_epoch_attesters{testnet=\"$testnet\"})",
+          "expr": "avg(beacon_attn_observation_epoch_attesters{testnet=\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{instance}}",
@@ -1752,7 +2319,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 11
+        "y": 12
       },
       "id": 51,
       "options": {
@@ -1770,7 +2337,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -1778,7 +2345,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"prysm.*\"})",
+          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*prysm.*\"})",
           "hide": false,
           "legendFormat": "AVG",
           "range": true,
@@ -1790,7 +2357,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"prysm.*\"})",
+          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*prysm.*\"})",
           "hide": false,
           "legendFormat": "MIN",
           "range": true,
@@ -1802,7 +2369,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"prysm.*\"})",
+          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*prysm.*\"})",
           "hide": false,
           "legendFormat": "MAX",
           "range": true,
@@ -1845,7 +2412,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 11
+        "y": 12
       },
       "id": 92,
       "options": {
@@ -1863,7 +2430,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -1872,7 +2439,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"teku.*\"})",
+          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*teku.*\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "AVG",
@@ -1886,7 +2453,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"teku.*\"})",
+          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*teku.*\"})",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -1901,7 +2468,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"teku.*\"})",
+          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*teku.*\"})",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -1944,7 +2511,7 @@
         "h": 5,
         "w": 8,
         "x": 12,
-        "y": 12
+        "y": 13
       },
       "id": 9,
       "options": {
@@ -1962,11 +2529,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_processed_deposits_total{testnet=~\"$testnet\"})",
+          "expr": "avg(beacon_processed_deposits_total{testnet=~\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{instance}}",
@@ -2001,10 +2573,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 4,
         "x": 20,
-        "y": 12
+        "y": 13
       },
       "id": 55,
       "options": {
@@ -2022,11 +2594,16 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(beacon_pending_deposits{testnet=\"$testnet\"})",
+          "expr": "avg(beacon_pending_deposits{testnet=\"$testnet\", appname=\"beacon\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "{{instance}}",
@@ -2070,7 +2647,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 14
+        "y": 15
       },
       "id": 93,
       "options": {
@@ -2088,7 +2665,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -2096,7 +2673,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"nimbus.*\"})",
+          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*nimbus.*\"})",
           "hide": false,
           "legendFormat": "AVG",
           "range": true,
@@ -2108,7 +2685,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"nimbus.*\"})",
+          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*nimbus.*\"})",
           "hide": false,
           "legendFormat": "MIN",
           "range": true,
@@ -2120,7 +2697,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"nimbus.*\"})",
+          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*nimbus.*\"})",
           "hide": false,
           "legendFormat": "MAX",
           "range": true,
@@ -2163,7 +2740,7 @@
         "h": 3,
         "w": 4,
         "x": 4,
-        "y": 14
+        "y": 15
       },
       "id": 94,
       "options": {
@@ -2181,7 +2758,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.2.3",
       "targets": [
         {
           "datasource": {
@@ -2189,7 +2766,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"lighthouse.*\"})",
+          "expr": "avg(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*lighthouse.*\"})",
           "hide": false,
           "legendFormat": "AVG",
           "range": true,
@@ -2201,7 +2778,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"lighthouse.*\"})",
+          "expr": "min(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*lighthouse.*\"})",
           "hide": false,
           "legendFormat": "MIN",
           "range": true,
@@ -2213,7 +2790,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\"lighthouse.*\"})",
+          "expr": "max(beacon_reorgs_total{testnet=\"$testnet\",host_node=~\".*lighthouse.*\"})",
           "hide": false,
           "legendFormat": "MAX",
           "range": true,
@@ -2234,6 +2811,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -2307,18 +2886,21 @@
         "h": 11,
         "w": 14,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "id": 2,
       "links": [],
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -2329,8 +2911,9 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "libp2p_peers{testnet=\"$testnet\"}",
+          "expr": "libp2p_peers{testnet=\"$testnet\", appname=\"beacon\"}",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -2343,24 +2926,15 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "p2p_peer_count{state=\"Connected\"}",
+          "expr": "p2p_peer_count{testnet=\"$testnet\", appname=\"beacon\", state=\"Connected\", host_node=~\".*prysm.*\"}",
           "hide": false,
+          "instant": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
           "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "sync_peers_per_status{sync_status=\"Synced\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "refId": "C"
         }
       ],
       "title": "Peers",
@@ -2378,6 +2952,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -2426,17 +3002,20 @@
         "h": 11,
         "w": 10,
         "x": 14,
-        "y": 17
+        "y": 18
       },
       "id": 25,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -2446,11 +3025,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "slotclock_present_slot{testnet=\"$testnet\"} - beacon_head_state_slot{testnet=\"$testnet\"}",
+          "expr": "slotclock_present_slot{testnet=\"$testnet\", appname=\"beacon\"} - beacon_head_state_slot{testnet=\"$testnet\", appname=\"beacon\"}",
           "interval": "",
           "legendFormat": "{{host_node}}",
           "queryType": "randomWalk",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -2468,6 +3049,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -2516,132 +3099,20 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 28
-      },
-      "id": 27,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "beacon_participation_prev_epoch_target_attesting_gwei_total{testnet=\"$testnet\"}/beacon_participation_prev_epoch_active_gwei_total{testnet=\"$testnet\"}",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "beacon_previous_live_validators{testnet=\"$testnet\"} / beacon_previous_active_validators{testnet=\"$testnet\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "beacon_previous_correct_validators{testnet=\"$testnet\"} / beacon_previous_active_validators{testnet=\"$testnet\"}",
-          "format": "time_series",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "refId": "C"
-        }
-      ],
-      "title": "Attestation participation rate",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 11,
-        "w": 24,
-        "x": 0,
-        "y": 39
+        "y": 29
       },
       "id": 91,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -2651,11 +3122,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "beacon_previous_live_validators{testnet=\"$testnet\", host_node=~\"teku.*\"}\n/\nbeacon_previous_active_validators{testnet=\"$testnet\", host_node=~\"teku.*\"}",
+          "expr": "beacon_previous_live_validators{testnet=\"$testnet\", host_node=~\".*teku.*\", appname=\"beacon\"}\n/\nbeacon_previous_active_validators{testnet=\"$testnet\", host_node=~\".*teku.*\", appname=\"beacon\"}",
           "interval": "",
           "legendFormat": "{{host_node}}",
           "queryType": "randomWalk",
+          "range": true,
           "refId": "A"
         },
         {
@@ -2663,11 +3136,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "beacon_prev_epoch_target_gwei{testnet=\"$testnet\", host_node=~\"prysm.*\"}\n/\nbeacon_prev_epoch_active_gwei{testnet=\"$testnet\", host_node=~\"prysm.*\"}",
+          "expr": "beacon_prev_epoch_target_gwei{testnet=\"$testnet\", host_node=~\".*prysm.*\", appname=\"beacon\"}\n/\nbeacon_prev_epoch_active_gwei{testnet=\"$testnet\", host_node=~\".*prysm.*\", appname=\"beacon\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
+          "range": true,
           "refId": "B"
         },
         {
@@ -2675,12 +3150,14 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "max by (instance)(\n    beacon_previous_live_validators{testnet=\"$testnet\", host_node=~\"nimbus.*\"}\n    /\n    beacon_active_validators{testnet=\"$testnet\", host_node=~\"nimbus.*\"}\n)",
+          "expr": "beacon_current_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}\n/\nbeacon_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}",
           "format": "time_series",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
+          "range": true,
           "refId": "C"
         },
         {
@@ -2688,300 +3165,18 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "beacon_participation_prev_epoch_target_attesting_gwei_total{testnet=\"$testnet\", host_node=~\"lighthouse.*\"}\n/\nbeacon_participation_prev_epoch_active_gwei_total{testnet=\"$testnet\", host_node=~\"lighthouse.*\"}",
+          "expr": "beacon_participation_prev_epoch_target_attesting_gwei_total{testnet=\"$testnet\", host_node=~\".*lighthouse.*\", appname=\"beacon\"}\n/\nbeacon_participation_prev_epoch_active_gwei_total{testnet=\"$testnet\", host_node=~\".*lighthouse.*\", appname=\"beacon\"}",
           "format": "time_series",
           "hide": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
+          "range": true,
           "refId": "D"
         }
       ],
       "title": "Attestation Percentage  Grapgh",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
-      },
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 50
-      },
-      "id": 29,
-      "panels": [],
-      "title": "Chain health",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 11,
-        "x": 0,
-        "y": 51
-      },
-      "id": 31,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "beacon_attn_observation_epoch_aggregators{testnet=\"$testnet\"}",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "Epoch aggregators",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 13,
-        "x": 11,
-        "y": 51
-      },
-      "id": 33,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "increase(beacon_reorgs_total{testnet=\"$testnet\"} [1m])",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "re-orgs/min",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "max": 10,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 61
-      },
-      "id": 42,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "avg by(host_node) (validator_inclusion_distance{testnet=\"$testnet\"})",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "Validator inclusion distance",
       "type": "timeseries"
     },
     {
@@ -2994,7 +3189,211 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 70
+        "y": 40
+      },
+      "id": 29,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 11,
+            "x": 0,
+            "y": 41
+          },
+          "id": 31,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": true,
+              "expr": "beacon_attn_observation_epoch_aggregators{testnet=\"$testnet\"}",
+              "interval": "",
+              "legendFormat": "{{host_node}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "Epoch aggregators",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 13,
+            "x": 11,
+            "y": 41
+          },
+          "id": 33,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "increase(beacon_reorgs_total{testnet=\"$testnet\", appname=\"beacon\"} [1m])",
+              "interval": "",
+              "legendFormat": "{{host_node}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "re-orgs/min",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Chain health",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
       },
       "id": 37,
       "panels": [
@@ -3010,6 +3409,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMin": 0,
@@ -3061,18 +3462,19 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 4
+            "y": 42
           },
           "id": 39,
           "options": {
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
-              "mode": "single",
-              "sort": "none"
+              "mode": "multi",
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3104,6 +3506,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMin": 0,
@@ -3155,18 +3559,19 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 12
+            "y": 50
           },
           "id": 40,
           "options": {
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
-              "mode": "single",
-              "sort": "none"
+              "mode": "multi",
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3198,6 +3603,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMin": 0,
@@ -3249,18 +3656,19 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 20
+            "y": 58
           },
           "id": 43,
           "options": {
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
-              "mode": "single",
-              "sort": "none"
+              "mode": "multi",
+              "sort": "desc"
             }
           },
           "targets": [
@@ -3293,7 +3701,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "EL-CL comparions",
+      "title": "Resource Usages",
       "type": "row"
     },
     {
@@ -3306,7 +3714,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 42
       },
       "id": 13,
       "panels": [],
@@ -3324,6 +3732,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -3370,19 +3780,22 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 11,
+        "w": 24,
         "x": 0,
-        "y": 72
+        "y": 43
       },
-      "id": 3,
+      "id": 101,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -3392,8 +3805,9 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "beacon_head_slot{testnet=\"$testnet\"}",
+          "expr": "beacon_head_slot{testnet=\"$testnet\", appname=\"beacon\"}",
           "instant": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
@@ -3415,6 +3829,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -3461,19 +3877,22 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 13,
-        "x": 11,
-        "y": 72
+        "w": 12,
+        "x": 0,
+        "y": 53
       },
-      "id": 4,
+      "id": 3,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -3483,8 +3902,136 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "beacon_finalized_epoch{testnet=\"$testnet\"}",
+          "expr": "slotclock_present_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "beacon_current_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "beacon_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{host_node}}",
+          "queryType": "randomWalk",
+          "refId": "C"
+        }
+      ],
+      "title": "Present Epoch",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 53
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "beacon_finalized_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
           "instant": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
@@ -3506,6 +4053,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -3552,19 +4101,22 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 11,
+        "w": 12,
         "x": 0,
-        "y": 82
+        "y": 63
       },
       "id": 5,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -3574,8 +4126,9 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "beacon_current_justified_epoch{testnet=\"$testnet\"}",
+          "expr": "beacon_current_justified_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
           "instant": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
@@ -3597,6 +4150,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -3643,19 +4198,22 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 13,
-        "x": 11,
-        "y": 82
+        "w": 12,
+        "x": 12,
+        "y": 63
       },
       "id": 14,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -3665,8 +4223,9 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "beacon_previous_justified_epoch{testnet=\"$testnet\"}",
+          "expr": "beacon_previous_justified_epoch{testnet=\"$testnet\", appname=\"beacon\"}",
           "instant": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
@@ -3688,6 +4247,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -3733,20 +4294,23 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 10,
+        "w": 24,
         "x": 0,
-        "y": 92
+        "y": 73
       },
       "id": 8,
       "options": {
         "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -3756,8 +4320,9 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "beacon_reorgs_total{testnet=\"$testnet\"}",
+          "expr": "beacon_reorgs_total{testnet=\"$testnet\", appname=\"beacon\"}",
           "instant": false,
           "interval": "",
           "legendFormat": "{{host_node}}",
@@ -3769,7 +4334,7 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": {
         "type": "datasource",
         "uid": "grafana"
@@ -3778,196 +4343,205 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 101
+        "y": 83
       },
       "id": 19,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 11,
+            "x": 0,
+            "y": 44
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "rate(beacon_block_processing_seconds_sum{testnet=\"$testnet\", appname=\"beacon\"}[30s])\n/\nrate(beacon_block_processing_seconds_count{testnet=\"$testnet\", appname=\"beacon\"}[30s])",
+              "interval": "",
+              "legendFormat": "{{host_node}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Block processing time (lighthose)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 13,
+            "x": 11,
+            "y": 44
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sync_slots_per_second{testnet=\"$testnet\", appname=\"beacon\"}",
+              "interval": "",
+              "legendFormat": "{{host_node}}",
+              "queryType": "randomWalk",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Syncing slots per second",
+          "type": "timeseries"
+        }
+      ],
       "title": "Block processing",
       "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 11,
-        "x": 0,
-        "y": 102
-      },
-      "id": 21,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "rate(beacon_block_processing_seconds_sum{testnet=\"$testnet\"}[30s])\n/\nrate(beacon_block_processing_seconds_count{testnet=\"$testnet\"}[30s])",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "Block processing time (lighthose)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 13,
-        "x": 11,
-        "y": 102
-      },
-      "id": 23,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "sync_slots_per_second{testnet=\"$testnet\"}",
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "Syncing slots per second",
-      "type": "timeseries"
     }
   ],
   "refresh": false,
-  "schemaVersion": 36,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -3975,8 +4549,8 @@
       {
         "current": {
           "selected": false,
-          "text": "ef-test1-1s-slottime-fix",
-          "value": "ef-test1-1s-slottime-fix"
+          "text": "ef-phase2-premerge-12s-63nodes-split-no-prysm-redo",
+          "value": "ef-phase2-premerge-12s-63nodes-split-no-prysm-redo"
         },
         "datasource": {
           "type": "prometheus",
@@ -4003,13 +4577,13 @@
     ]
   },
   "time": {
-    "from": "2022-04-13T11:00:00.000Z",
-    "to": "2022-04-14T06:43:00.000Z"
+    "from": "now-30m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "utc",
   "title": "Testnet Overview",
   "uid": "KAiBRn5nk",
-  "version": 42,
+  "version": 5,
   "weekStart": ""
 }

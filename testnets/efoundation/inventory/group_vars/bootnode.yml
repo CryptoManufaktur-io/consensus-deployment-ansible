@@ -5,6 +5,7 @@ bootnode_image_name: protolambda/eth2-bootnode:cleanup
 bootnode_host_dir: "{{home_dir}}/bootnode_data"
 
 bootnode_port: 9001
+bootnode_api_port: 8002
 
 bootnode_ip: "{{ansible_host}}"
 
@@ -20,8 +21,8 @@ bootnode_start_args: >
   --enr-ip="{{bootnode_ip}}"
   --enr-udp="{{bootnode_port}}"
   --level=error
-  --listen-ip={{public_ip_address}}
+  --listen-ip=0.0.0.0
   --listen-udp="{{bootnode_port}}"
-  --api-addr="127.0.0.1:8002"
+  --api-addr="0.0.0.0:{{bootnode_api_port}}"
   --node-db="/data/localnode.db"
   --priv="{{bootnode_p2p_priv_key}}"
