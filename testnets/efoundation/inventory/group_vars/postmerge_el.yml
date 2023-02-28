@@ -3,7 +3,7 @@
 ##############################################
 eth1_client_name: geth
 eth1_image_name: ethereum/client-go:stable
-eth1_container_name: postmerge_el
+eth1_container_name: postmergeel
 eth1_data_dir: "/var/lib/goethereum"
 eth1_node_dir: "{{home_dir}}/eth1data"   # NOT Hidden folder so its deleted on wipe
 eth1_volumes:

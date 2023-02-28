@@ -6,19 +6,23 @@
   file:
     path: "{{eth1_node_dir}}"
     state: directory
+  register: eth1_node_dir_created
 
 - name: Modify permissions to match user-group inside docker image
   shell: chown -R "{{ eth1_user_id }}" "{{ eth1_node_dir }}"
   become: true
+  when: eth1_node_dir_created.changed == true
 
 - name: Creates eth1 beacondata dir
   file:
     path: "{{eth1_beacondata_dir}}"
     state: directory
+  register: eth1_beacondata_dir_created
 
 - name: Modify permissions to match user-group inside docker image
   shell: chown -R "{{ eth1_user_id }}" "{{ eth1_beacondata_dir }}"
   become: true
+  when: eth1_beacondata_dir_created.changed == true
 
 - name: Copy jwt secret
   copy:
