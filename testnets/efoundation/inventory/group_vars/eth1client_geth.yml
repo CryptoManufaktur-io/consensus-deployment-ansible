@@ -3,15 +3,16 @@
 ##############################################
 eth1_client_name: geth
 eth1_image_name: ethereum/client-go:stable
-eth1_container_name: eth1_geth
+eth1_container_name: geth
 eth1_data_dir: "/var/lib/goethereum"
 eth1_volumes:
   - "{{eth1_node_dir}}:{{eth1_data_dir}}"
   - "{{jwtsecret_file_outside}}:/jwtsecret"
-eth1_memory: 5000M
+eth1_memory: 2500M
 eth1_user_id: "1000:1000"
 eth1_start_args: >
    --{{ NETWORK }} 
+   --verbosity 1
    --datadir {{eth1_data_dir}}
    --http --http.api "admin,engine,net,eth" 
    --http.port {{ eth1_rpc_port }} 
@@ -38,12 +39,12 @@ eth1_start_args: >
 # consensus client
 ##############################################
 eth2_client_name: lighthouse
-beacon_container_name: lighthouse
+beacon_container_name: beacon
 beacon_image_name: sigp/lighthouse:latest
 beacon_volumes:
   - "{{eth1_beacondata_dir}}:/beacondata"
   - "{{jwtsecret_file_outside}}:/jwtsecret"
-beacon_memory: 5000M
+beacon_memory: 2500M
 beacon_user_id: "1000:1000"
 beacon_start_args: >
   lighthouse
@@ -63,7 +64,6 @@ beacon_start_args: >
   --http-address 0.0.0.0
   --http-port "{{beacon_api_port}}"
   --metrics
-  --merge 
   --metrics-address 0.0.0.0
   --metrics-port "{{beacon_metrics_port}}"
   --listen-address 0.0.0.0
@@ -72,3 +72,41 @@ beacon_start_args: >
   --jwt-secrets="/jwtsecret"
   --suggested-fee-recipient={{ETH1_FROM_ADDR}}
   --checkpoint-sync-url={{CL_CHECKPOINT_SYNC}}
+
+# eth2_client_name: teku
+# beacon_container_name: beacon
+# beacon_image_name: consensys/teku:latest
+# beacon_volumes:
+#   - "{{eth1_beacondata_dir}}:/beacondata"
+#   - "{{jwtsecret_file_outside}}:/jwtsecret"
+# beacon_memory: 2500M
+# beacon_user_id: "1000:1000"
+# beacon_start_args: >
+#   --network {{ NETWORK }} 
+#   --initial-state "{{CL_CHECKPOINT_SYNC_TEKU}}"
+#   --data-path "/beacondata"
+#   --data-storage-mode=PRUNE
+#   --p2p-enabled=true
+#   --p2p-advertised-ip={{public_ip_address}}
+#   --p2p-port="{{beacon_p2p_port}}"
+#   --p2p-advertised-port={{beacon_p2p_port}}
+#   --logging="{{ beacon_log_level | default('debug') }}"
+#   --log-destination=CONSOLE
+#   --log-file="/beacondata/log_outputs"
+#   --p2p-peer-upper-bound={{hi_peer_count}}
+#   {% if (bootnode_enrs is defined) and bootnode_enrs %}
+#   --p2p-discovery-bootnodes="{{ bootnode_enrs | join(',') }}"
+#   {% endif %}
+#   --metrics-enabled=true --metrics-interface=0.0.0.0 --metrics-port="{{beacon_metrics_port}}"
+#   --p2p-discovery-enabled=true
+#   --p2p-peer-lower-bound=1
+#   --rest-api-enabled=true
+#   --rest-api-docs-enabled=true
+#   --rest-api-interface=0.0.0.0
+#   --rest-api-port="{{beacon_api_port}}"
+#   --metrics-host-allowlist="*"
+#   --rest-api-host-allowlist="*"
+#   --ee-endpoint="http://{{eth1_container_name}}:8551"
+#   --eth1-endpoint "http://{{eth1_container_name}}:8551"
+#   --ee-jwt-secret-file=/jwtsecret
+#   --validators-proposer-default-fee-recipient={{ETH1_FROM_ADDR}}

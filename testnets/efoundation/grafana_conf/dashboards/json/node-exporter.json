@@ -27,7 +27,6 @@
   "gnetId": 1860,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1653114345723,
   "links": [
     {
       "icon": "external link",
@@ -129,7 +128,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "(((count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))) - avg(sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=\"$node\",job=\"$job\"}[$__rate_interval])))) * 100) / count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))",
@@ -209,7 +208,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "avg(node_load5{instance=\"$node\",job=\"$job\"}) /  count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu)) * 100",
@@ -289,7 +288,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "avg(node_load15{instance=\"$node\",job=\"$job\"}) /  count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu)) * 100",
@@ -360,7 +359,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "((node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"} - node_memory_MemFree_bytes{instance=\"$node\",job=\"$job\"}) / (node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
@@ -448,7 +447,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "((node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"} - node_memory_SwapFree_bytes{instance=\"$node\",job=\"$job\"}) / (node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"} )) * 100",
@@ -526,7 +525,7 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "100 - ((node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"})",
@@ -602,7 +601,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "count(count(node_cpu_seconds_total{instance=\"$node\",job=\"$job\"}) by (cpu))",
@@ -681,7 +680,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "node_time_seconds{instance=\"$node\",job=\"$job\"} - node_boot_time_seconds{instance=\"$node\",job=\"$job\"}",
@@ -761,7 +760,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype!=\"rootfs\"}",
@@ -839,7 +838,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"}",
@@ -915,7 +914,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "targets": [
         {
           "expr": "node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"}",
@@ -1007,7 +1006,7 @@
         "alertThreshold": true
       },
       "percentage": true,
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1191,7 +1190,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1369,7 +1368,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1481,7 +1480,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "v1.0",
+      "pluginVersion": "9.3.6",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1491,10 +1490,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "100 - ((node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",device!~'rootfs'} * 100) / node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",device!~'rootfs'})",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "100 - ((node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",device!~'rootfs|tmpfs|none'} * 100) / node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",device!~'rootfs|tmpfs|none'})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{mountpoint}}",
+          "legendFormat": "{{device}}({{fstype}}) - {{mountpoint}}",
+          "range": true,
           "refId": "A",
           "step": 240
         }
@@ -13260,8 +13265,8 @@
       "type": "row"
     }
   ],
-  "refresh": false,
-  "schemaVersion": 36,
+  "refresh": "1m",
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -13350,7 +13355,7 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
