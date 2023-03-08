@@ -33,6 +33,12 @@
     content: |
       {{transaction_hash_details.contract_address}}
 
+- name: Create deposit_contract_block_hash.txt
+  copy:
+    dest: "{{ local_custom_config_data_host_dir }}/{{runningTest}}/deposit_contract_block_hash.txt"
+    content: |
+      {{transaction_hash_details.block_hash}}
+
 - name: Set mnemonics path
   set_fact:
     MNEMONICS_PATH: "{{ local_custom_config_data_host_dir }}/{{runningTest}}"

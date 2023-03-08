@@ -11,7 +11,6 @@ restart_container_if_exists: true
 # eth1 endpoints
 ##############################################
 enable_debug_public: true
-merge_terminal_total_difficulty: 96652946912555663360000
 el_bootnode_enode:
 
 ##############################################
@@ -57,9 +56,10 @@ enr_all_file: "{{enr_groups_all_path}}/enr_all.yml"
 # remote host data directories
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
+# volume_mount_dir: "/mnt/geth"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/.eth1data"   # Hidden folder so its not deleted on restart
-eth1_beacondata_dir: "{{home_dir}}/.beacondata"   # Hidden folder so its not deleted on restart
+eth1_node_dir: "{{home_dir}}/eth1data"   # Hidden folder so its not deleted on restart
+eth1_beacondata_dir: "{{home_dir}}/beacondata"   # Hidden folder so its not deleted on restart
 jwtsecret_file_outside: "{{home_dir}}/jwtsecret"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
@@ -74,7 +74,7 @@ common_log_options:
   max-buffer-size: "4m"
   tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}|{{'{{'}}if (index .ContainerLabels \"testnet\"){{'}}'}}{{'{{'}}index .ContainerLabels \"testnet\"{{'}}'}}{{'{{'}}else{{'}}'}}default{{'{{'}}end{{'}}'}}"
 common_log_driver: json-file
-beacon_log_level: debug
+beacon_log_level: info
 testnet_labels: >
   {
     "testnet" : "{{ TESTS[runningTest][0] }}"
@@ -251,13 +251,13 @@ traefik_memory: 5000M
 traefik_user_id: "0:0"
 
 grafana_container_name: grafana
-grafana_image_name: grafana/grafana-enterprise:latest
+grafana_image_name: grafana/grafana-enterprise:9.3.2
 grafana_user_id: "1000:1000"
 grafana_start_args: ""
 local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
 local_grafana_conf_archive: "{{inventory_dir}}/../grafana_conf.tar.gz"
-grafana_data_dir: "{{home_dir}}/.grafana_data" # Hidden folder so its not deleted on restart
-grafana_conf_dir: "{{home_dir}}/.grafana_conf" # Hidden folder so its not deleted on restart
+grafana_data_dir: "{{home_dir}}/grafana_data"
+grafana_conf_dir: "{{home_dir}}/grafana_conf"
 grafana_volumes:
   - "{{grafana_data_dir}}:/var/lib/grafana"
   - "{{grafana_conf_dir}}:/etc/grafana/provisioning/"
