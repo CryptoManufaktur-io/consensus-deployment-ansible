@@ -40,3 +40,13 @@ providers:
   updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
   options:
     path: "/etc/grafana/provisioning/dashboards/json/cadvisor.json"
+
+- name: 'My Alerts'
+  orgId: 1
+  folder: ''
+  type: file
+  disableDeletion: false
+  allowUiUpdates: true
+  updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+  options:
+    path: "/etc/grafana/provisioning/dashboards/json/my-alerts.json"

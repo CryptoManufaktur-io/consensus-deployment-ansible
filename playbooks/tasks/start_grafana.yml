@@ -40,6 +40,7 @@
     - ["##grafana_github_client_id##", "{{grafana_github_client_id}}"]
     - ["##grafana_github_client_secret##", "{{grafana_github_client_secret}}"]
     - ["##grafana_github_organizations##", "{{grafana_github_organizations}}"]
+    - ["##grafana_github_organizations_team##", "{{grafana_github_organizations_team}}"]
 
 - name: Modify permissions to match user-group inside docker image
   when: confDirCreated.changed

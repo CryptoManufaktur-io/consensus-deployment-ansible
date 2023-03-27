@@ -251,7 +251,7 @@ traefik_memory: 5000M
 traefik_user_id: "0:0"
 
 grafana_container_name: grafana
-grafana_image_name: grafana/grafana-enterprise:9.3.2
+grafana_image_name: grafana/grafana:9.3.8
 grafana_user_id: "1000:1000"
 grafana_start_args: ""
 local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
