@@ -1,3 +1,27 @@
+# LogCLI get logs
+docker run --rm --network monitoring_network grafana/logcli:main-336e08f-amd64 query \
+  '{container_name="beacon",testnet="ef-phase2-premerge-12s-split-new-clients", host_node="premergetest1prysm1"}' \
+  --timezone=UTC \
+  --from="2023-03-06T16:19:00Z" \
+  --to="2023-03-14T15:59:00Z" \
+  -o raw  \
+  --addr="http://loki:3100" \
+  --limit 1000000 > mylog.txt
+
+# LogCLI get logs parallel
+docker run --rm --network monitoring_network -v $PWD:/workdir grafana/logcli:main-336e08f-amd64 query \
+  '{container_name="beacon",testnet="ef-phase2-premerge-12s-split-new-clients", host_node="premergetest1prysm1"}' \
+  --timezone=UTC \
+  --from="2023-03-06T16:19:00Z" \
+  --to="2023-03-14T15:59:00Z" \
+  -o raw  \
+  --addr="http://loki:3100" \
+  --parallel-duration="30m" \
+  --parallel-max-workers="1" \
+  --part-path-prefix="/workdir/myquery" \
+  --merge-parts
+
+# Run prysm client test
 docker run --rm --name ptest \
 -v $PWD/testnets/efoundation/custom_config_data/test1:/custom_config_data \
 prysmaticlabs/prysm-beacon-chain:latest \
@@ -17,7 +41,7 @@ prysmaticlabs/prysm-beacon-chain:latest \
 --grpc-gateway-port=4004 \
 --execution-endpoint="http://geth:8545"
 
-
+# Run lighthouse client test
 docker run --rm --name ltest \
 -v $PWD/testnets/efoundation/custom_config_data/test1:/custom_config_data \
 sigp/lighthouse:latest \
@@ -44,7 +68,7 @@ bn \
 --eth1  \
 --eth1-endpoints "http://geth:8545"
 
-
+# Run teku client test
 docker run --rm --name ttest \
 -v $PWD/testnets/efoundation/custom_config_data/test1:/custom_config_data \
 consensys/teku:latest \
@@ -71,7 +95,7 @@ consensys/teku:latest \
 --ee-endpoint="http://geth:8545" \
 --eth1-endpoint "http://geth:8545"
 
-
+# Run nimbus client test
 docker run --rm --name ntest \
 -v $PWD/testnets/efoundation/custom_config_data/test1:/custom_config_data \
 statusim/nimbus-eth2:multiarch-latest \
