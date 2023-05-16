@@ -28,10 +28,27 @@
   run_once: true
   delegate_to: localhost
 
-- name: Upload config data to remote
-  unarchive:
+- name: Upload config data to globalfederation1 so all other servers can get it from there instead of multiple upload
+  copy:
     src: "{{ local_custom_config_data_host_archive }}"
+    dest: "{{ home_dir }}/tmp/{{ custom_config_data_host_archive_filename }}"
+  throttle: 1
+  run_once: true
+  delegate_to: globalfederation1
+
+- name: Download and Extract config data
+  unarchive:
+    src: "http://{{ hostvars['globalfederation1']['public_ip_address'] }}:1111/{{ custom_config_data_host_archive_filename }}"
     dest: "{{ testnet_dir }}/"
+    remote_src: true
+
+- name: Remove config from globalfederation1
+  file:
+    path: "{{ home_dir }}/tmp/{{ custom_config_data_host_archive_filename }}"
+    state: absent
+  throttle: 1
+  run_once: true
+  delegate_to: globalfederation1
 
 - name: Copy jwtsecret file PREMERGE
   when: TESTS[runningTest][3] == 'premerge'
