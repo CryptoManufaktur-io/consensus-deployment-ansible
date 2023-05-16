@@ -46,7 +46,8 @@ secrets_file: "{{inventory_dir}}/group_vars/secrets.yml"
 local_premerge_custom_config_data_host_dir: "{{inventory_dir}}/../premerge_custom_conf_data"
 local_postmerge_custom_config_data_host_dir: "{{inventory_dir}}/../postmerge_custom_conf_data"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
-local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_custom_config_data.tar.gz"
+custom_config_data_host_archive_filename: "{{runningTest}}_custom_config_data.tar.gz"
+local_custom_config_data_host_archive: "{{inventory_dir}}/../{{custom_config_data_host_archive_filename}}"
 
 enr_groups_all_path: "{{local_custom_config_data_host_dir}}/{{runningTest}}_enr"
 enr_groups_file: "{{enr_groups_all_path}}/enr_groups.yml"
@@ -56,10 +57,10 @@ enr_all_file: "{{enr_groups_all_path}}/enr_all.yml"
 # remote host data directories
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
-# volume_mount_dir: "/mnt/geth"
+volume_mount_dir: "/mnt/Geth/ubuntu"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/eth1data"   # Hidden folder so its not deleted on restart
-eth1_beacondata_dir: "{{home_dir}}/beacondata"   # Hidden folder so its not deleted on restart
+eth1_node_dir: "{{volume_mount_dir}}/eth1data"
+eth1_beacondata_dir: "{{volume_mount_dir}}/beacondata"
 jwtsecret_file_outside: "{{home_dir}}/jwtsecret"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
@@ -85,7 +86,7 @@ testnet_labels: >
 ##############################################
 beacon_container_name: beacon
 validator_container_name: validator
-hi_peer_count: 25
+hi_peer_count: 1000
 separate_validator_process_enabled: true
 
 ##############################################

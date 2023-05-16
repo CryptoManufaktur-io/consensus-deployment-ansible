@@ -36,3 +36,17 @@
     
     - name: start grafana
       import_tasks: tasks/start_grafana.yml
+
+    - name: Create tmp dir
+      file:
+        path: "{{home_dir}}/tmp"
+        state: directory
+
+    - name: File server
+      community.docker.docker_container:
+        name: fileserver
+        image: halverneus/static-file-server
+        ports:
+          - "1111:8080"
+        volumes:
+          - "{{home_dir}}/tmp:/web"
