@@ -53,13 +53,8 @@
           set_fact:
             subnet_ips: "{{subnet_ips[group + '_' + test]}}"
 
-        - name: Allow ports through firewall from same group hosts
-          ufw:
-            rule: allow
-            src: "{{ item }}"
-            port: "9000"
-            comment: "Allow peering from same group"
-          with_items: "{{ subnet_ips }}"
+        - name: Allow peering from same group TCP and UDP
+          shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 9000 comment 'Allow peering from same group TCP/UDP'"
 
         - name: Deny explicit after allows
           ufw:
