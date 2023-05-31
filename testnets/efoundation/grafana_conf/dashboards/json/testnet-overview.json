@@ -1377,7 +1377,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1447,7 +1447,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1517,7 +1517,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1630,7 +1630,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1697,7 +1697,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1764,7 +1764,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1846,7 +1846,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1930,7 +1930,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2045,7 +2045,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2112,7 +2112,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2198,7 +2198,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2265,7 +2265,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2337,7 +2337,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2430,7 +2430,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2529,7 +2529,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2594,7 +2594,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2665,7 +2665,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2758,7 +2758,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -2901,7 +2901,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "pluginVersion": "8.4.3",
@@ -3016,7 +3016,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "targets": [
@@ -3144,21 +3144,6 @@
           "legendFormat": "{{host_node}}",
           "range": true,
           "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "beacon_current_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}\n/\nbeacon_active_validators{testnet=\"$testnet\", host_node=~\".*nimbus.*\", appname=\"beacon\"}",
-          "format": "time_series",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{host_node}}",
-          "range": true,
-          "refId": "C"
         },
         {
           "datasource": {
@@ -3796,7 +3781,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "desc"
+          "sort": "asc"
         }
       },
       "targets": [
@@ -3893,7 +3878,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "targets": [
@@ -4020,7 +4005,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "targets": [
@@ -4117,7 +4102,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "targets": [
@@ -4214,7 +4199,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "targets": [
@@ -4311,7 +4296,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "targets": [
@@ -4637,8 +4622,8 @@
       "type": "row"
     }
   ],
-  "refresh": "1m",
-  "schemaVersion": 37,
+  "refresh": false,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -4646,8 +4631,8 @@
       {
         "current": {
           "selected": false,
-          "text": "ef-phase2-premerge-12s-split-new-clients",
-          "value": "ef-phase2-premerge-12s-split-new-clients"
+          "text": "ef-phase2-premerge-12s-128nodes-trace-3",
+          "value": "ef-phase2-premerge-12s-128nodes-trace-3"
         },
         "datasource": {
           "type": "prometheus",
@@ -4674,8 +4659,8 @@
     ]
   },
   "time": {
-    "from": "2023-03-13T14:29:00.000Z",
-    "to": "now"
+    "from": "2023-04-30T18:10:00.000Z",
+    "to": "2023-05-02T07:10:00.000Z"
   },
   "timepicker": {},
   "timezone": "utc",
