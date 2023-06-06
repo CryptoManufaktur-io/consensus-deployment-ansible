@@ -6,6 +6,7 @@ public_ip_address: "{{ansible_host}}"
 ansible_python_interpreter: /usr/bin/python3
 docker_monitoring_network: "monitoring_network"
 restart_container_if_exists: true
+JWTSECRET: "0xeb78cee3e07be65e47cbd1de65803982fe9a9418bc754c15d45ce4f6b9f82b3e"
 
 ##############################################
 # eth1 endpoints
@@ -101,15 +102,9 @@ prometheus_start_args: >
   --storage.tsdb.path=/prometheus 
   --storage.tsdb.max-block-duration=2h 
   --storage.tsdb.min-block-duration=2h
-prometheus_rw_start_args: "{{ prometheus_start_args }} --enable-feature=remote-write-receiver"
 prometheus_data_dir: "{{home_dir}}/prometheus_data"
 prometheus_config_dir: "{{home_dir}}/prometheus_config"
 prometheus_file_sd_dir: "{{prometheus_config_dir}}/file_sd"
-local_prometheus_conf_dir: "{{inventory_dir}}/../prometheus_conf"
-prometheus_volumes:
-  - "{{prometheus_data_dir}}:/prometheus"
-  - "{{prometheus_config_dir}}:/etc/prometheus"
-prometheus_memory: 5000M
 
 ##############################################
 # thanos settings
@@ -276,15 +271,8 @@ promtail_image_name: grafana/promtail:latest
 promtail_container_name: promtail
 promtail_user_id: "0:0"
 promtail_config_dir: "{{ home_dir }}/promtail_conf"
-local_promtail_conf_dir: "{{inventory_dir}}/../promtail_conf"
 promtail_start_args: >
   -config.file=/mnt/config/config.yml
-promtail_volumes:
-  - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-  - "{{promtail_config_dir}}:/mnt/config"
-  - "/etc/machine-id:/etc/machine-id:ro"
-  - /var/log:/var/log:ro
-promtail_memory: 5000M
 
 
 ##############################################

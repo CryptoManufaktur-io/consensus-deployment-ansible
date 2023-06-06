@@ -1,12 +1,25 @@
 ---
-- name: Creates validator dir
-  file:
-    path: "{{validator_node_dir}}"
-    state: directory
+- name: Recreate validator_node_dir and register metrics
+  shell: |
+    # Stop validator container and unregister metrics
+    sudo rm -f {{ prometheus_file_sd_dir }}/validator.yml
+    docker rm -f {{validator_container_name}} || true
 
-- name: Modify permissions to match user-group inside docker image
-  shell: chown -R "{{ validator_user_id }}" "{{ validator_node_dir }}"
-  become: true
+    # Create validator_node_dir
+    mkdir -p {{validator_node_dir}}
+    chown -R "{{ validator_user_id }}" "{{ validator_node_dir }}"
+
+    # Register validator metrics to prometheus
+    if [[ '{{ eth2_client_name }}' = 'lighthouse' || '{{ eth2_client_name }}' = 'prysm' ]]; then
+    cat > {{ prometheus_file_sd_dir }}/validator.yml << EOF
+    - labels:
+        appname: validator
+        testnet: {{ TESTS[runningTest][0] }}
+      targets:
+      - {{ validator_container_name }}:{{ validator_metrics_port }}
+    EOF
+    fi
+
     
 - name: Start Eth2 validator client container
   docker_container:

@@ -1,23 +1,19 @@
 ---
-- name: Setup Machine
+- name: Setup Machines
   hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
   gather_facts: false
   tasks:
     - name: start prometheus
       import_tasks: tasks/start_prometheus.yml
       vars:
+        enable_remote_receiver: "false"
         remote_write_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:9090/api/v1/write" # write to prometheus dc local
 
     - name: start promtail
       import_tasks: tasks/start_promtail.yml
       vars:
+        push_receiver: "false"
         promtail_loki_url: "http://{{ hostvars[hostvars[inventory_hostname].rw_host]['public_ip_address'] }}:3500/loki/api/v1/push"  # write to dc local
-
-    - name: unregister beacon and validator for metrics
-      import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
-
-    - name: stop any running beacon/validator docker image, remove existing validator keys and beacon node data
-      import_tasks: tasks/stop_and_wipe_beacon_and_validator.yml
 
 - name: Initialize bootnode enr file
   hosts: "{{ runningTest + '_beacon' }}[0]"
@@ -48,11 +44,8 @@
     - name: uploads custom chain config and genesis data if needed
       import_tasks: tasks/upload_custom_config_data.yml
 
-    - name: starts beacon node docker container
+    - name: Start beacon
       import_tasks: tasks/start_beacon.yml
-
-    - name: register beacon for metrics
-      import_tasks: tasks/start_registermetrics_beacon.yml
 
 - name: Validator setup
   hosts: "{{ runningTest + '_validator' }}"
@@ -64,10 +57,7 @@
     - name: Generate validator keys
       import_tasks: tasks/generate_validator_keys.yml
 
-    - name: starts validator docker container
-      when: separate_validator_process_enabled
+    - name: Start validator
       import_tasks: tasks/start_validator.yml
-
-    - name: register validator for metrics
-      import_tasks: tasks/start_registermetrics_validator.yml
+      when: separate_validator_process_enabled
 

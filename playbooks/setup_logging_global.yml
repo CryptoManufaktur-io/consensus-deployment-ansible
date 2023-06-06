@@ -8,14 +8,18 @@
 
     - name: start prometheus
       import_tasks: tasks/start_prometheus.yml
-
-    - name: start thanos
-      import_tasks: tasks/start_thanos.yml
+      vars:
+        enable_remote_receiver: "false"
+        remote_write_url: ""
     
     - name: start promtail
       import_tasks: tasks/start_promtail.yml
       vars:
+        push_receiver: "false"
         promtail_loki_url: "http://{{ loki_container_name }}:3100/loki/api/v1/push"
+
+    - name: start thanos
+      import_tasks: tasks/start_thanos.yml
     
     - name: start loki
       import_tasks: tasks/start_loki.yml

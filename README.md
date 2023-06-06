@@ -4,7 +4,7 @@ This repository is a minimal set of playbooks and inventories required to set up
 
 ## Assumption
 
-- This setup assumes you already have provisioned virtual machines that will act as nodes and have an ansible.ini inventory with their details
+- This setup assumes you already have provisioned virtual machines that will act as nodes with docker and docker compose installed already and have an ansible.ini inventory with their details
 - [Checkout this repo for terraform project that can create virtual machines using linode provider and create inventory.ini automatically.](https://github.com/gathecageorge/eth-testnet)
 - This setup is ideally aimed at public testnets and helps quickly provision validators
 

@@ -18,13 +18,6 @@
     - name: Start bootnode
       import_tasks: tasks/start_bootnode.yml
 
-- name: Unregister beacon and validator metrics
-  hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
-  gather_facts: false
-  tasks:
-    - name: unregister beacon and validator for metrics
-      import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
-
 - name: Beacon setup
   hosts: ["{{ runningTest + '_beacon' }}"]
   gather_facts: false
@@ -32,14 +25,8 @@
     - name: Include secret variables
       include_vars: "{{secrets_file}}"
 
-    - name: Stop beacon
-      import_tasks: tasks/stop_beacon.yml
-
     - name: Start beacon
       import_tasks: tasks/start_beacon.yml
-
-    - name: register beacon for metrics
-      import_tasks: tasks/start_registermetrics_beacon.yml
 
 - name: Validator setup
   hosts: ["{{ runningTest + '_validator' }}"]
@@ -47,14 +34,8 @@
   tasks:
     - name: Include secret variables
       include_vars: "{{secrets_file}}"
-        
-    - name: Stop validator
-      import_tasks: tasks/stop_validator.yml
-
+    
     - name: Start validator
       import_tasks: tasks/start_validator.yml
       when: separate_validator_process_enabled  
-
-    - name: register validator for metrics
-      import_tasks: tasks/start_registermetrics_validator.yml
 

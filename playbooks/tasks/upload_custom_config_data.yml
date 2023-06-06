@@ -1,15 +1,4 @@
 ---
-- name: Remove testnet directory
-  become: true
-  file:
-    path: "{{testnet_dir}}"
-    state: absent
-
-- name: Recreate testnet dir
-  file:
-    path: "{{testnet_dir}}"
-    state: directory
-
 - name: Archive custom_config_data dir to prepare for upload PREMERGE
   when: TESTS[runningTest][3] == 'premerge'
   archive:
@@ -36,11 +25,31 @@
   run_once: true
   delegate_to: globalfederation1
 
-- name: Download and Extract config data
-  unarchive:
-    src: "http://{{ hostvars['globalfederation1']['public_ip_address'] }}:1111/{{ custom_config_data_host_archive_filename }}"
-    dest: "{{ testnet_dir }}/"
-    remote_src: true
+- name: uploads custom chain config and genesis data if needed, create jwtsecrets required
+  shell: |
+    # Remove beacon container &&  beacon data if present && unregister metrics
+    sudo rm -f {{ prometheus_file_sd_dir }}/beacon.yml
+    docker rm -f {{beacon_container_name}} || true
+    sudo rm -f {{beacon_node_dir}}
+
+    # Recreate testnet config and upload custom_config_data
+    sudo rm -rf {{testnet_dir}}
+    mkdir {{testnet_dir}}
+    curl -O http://{{ hostvars['globalfederation1']['public_ip_address'] }}:1111/{{ custom_config_data_host_archive_filename }}
+    tar -xvf {{ custom_config_data_host_archive_filename }} -C {{ testnet_dir }}
+
+    # Copy CL jwtsecret file
+    cat > {{ testnet_dir }}/jwtsecret << EOF
+    {{JWTSECRET}}
+    EOF
+
+    # Copy EL jwtsecret file POSTMERGE
+    if [ '{{ TESTS[runningTest][3] }}' = 'postmerge' ]; then
+    cat > {{ testnet_dir }}/el_jwtsecret << EOF
+    {{JWTSECRET}}
+    EOF
+    fi
+
 
 - name: Remove config from globalfederation1
   file:
@@ -49,26 +58,6 @@
   throttle: 1
   run_once: true
   delegate_to: globalfederation1
-
-- name: Copy jwtsecret file PREMERGE
-  when: TESTS[runningTest][3] == 'premerge'
-  copy:
-    src: "{{local_premerge_custom_config_data_host_dir}}/jwtsecret"
-    dest: "{{ testnet_dir }}/jwtsecret"
-
-- name: Copy jwtsecret file POSTMERGE
-  when: TESTS[runningTest][3] == 'postmerge'
-  block:
-    - name: Copy CL jwtsecret
-      copy:
-        src: "{{local_custom_config_data_host_dir}}/{{runningTest}}/data/cl/jwtsecret"
-        dest: "{{ testnet_dir }}/jwtsecret"
-
-    - name: Copy EL jwtsecret
-      become: true
-      copy:
-        src: "{{local_custom_config_data_host_dir}}/{{runningTest}}/data/el/jwtsecret"
-        dest: "{{ testnet_dir }}/el_jwtsecret"
 
 - name: Remove {{local_custom_config_data_host_archive}} archive after upload
   file:

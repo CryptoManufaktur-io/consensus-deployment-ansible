@@ -1,8 +1,4 @@
 ---
-- name: Set use_premerge_network
-  set_fact:
-    use_premerge_network: "{{ TESTS[runningTest][3] == 'premerge' }}"
-
 - name: Include ENR groups
   include_vars: "{{enr_groups_file}}"
 
@@ -10,10 +6,33 @@
   set_fact:
     bootnode_enrs: ["{{ lookup('vars', hostvars[inventory_hostname].rw_host + '_enr') }}"]
 
+- name: Set use_premerge_network
+  set_fact:
+    use_premerge_network: "{{ TESTS[runningTest][3] == 'premerge' }}"
+
 - name: Set eth1endpoint_premerge
   when: use_premerge_network == true
   set_fact:
     eth1endpoint_premerge: "http://{{ hostvars[hostvars[inventory_hostname].geth_host]['public_ip_address'] }}:{{ eth1_rpc_port }}"
+
+- name: Recreate beacon_node_dir and register metrics
+  shell: |
+    # Stop beacon container and unregister metrics
+    sudo rm -f {{ prometheus_file_sd_dir }}/beacon.yml
+    docker rm -f {{beacon_container_name}} || true
+
+    # Create beacon_node_dir
+    mkdir -p {{beacon_node_dir}}
+    chown -R "{{ beacon_user_id }}" "{{ beacon_node_dir }}"
+
+    # Register beacon metrics to prometheus
+    cat > {{ prometheus_file_sd_dir }}/beacon.yml << EOF
+    - labels:
+        appname: beacon
+        testnet: {{ TESTS[runningTest][0] }}
+      targets:
+      - {{ beacon_container_name }}:{{ beacon_metrics_port }}
+    EOF
 
 - name: Start EL POSTMERGE
   when: use_premerge_network == false
@@ -21,15 +40,15 @@
     - name: Include geth variables
       include_vars: "{{inventory_dir}}/group_vars/postmerge_el.yml"
 
+    - name: Set eth1endpoint
+      set_fact:
+        eth1endpoint: "http://{{ eth1_container_name }}:{{ eth1_auth_rpc_port }}"
+
     - name: Stop eth1 container
       docker_container:
         name: "{{ eth1_container_name }}"
         state: stopped
         image: "{{ eth1_image_name }}"
-
-    - name: Set eth1endpoint
-      set_fact:
-        eth1endpoint: "http://{{ eth1_container_name }}:{{ eth1_auth_rpc_port }}"
 
     - name: Creates eth1 data dir
       file:
@@ -101,15 +120,6 @@
             targets:
             - {{ eth1_container_name }}:{{eth1_metrics_port}}
       when: eth1_metrics_port | default('') != ''
-
-- name: Creates beacon dir
-  file:
-    path: "{{beacon_node_dir}}"
-    state: directory
-    
-- name: Modify permissions to match user-group inside docker image
-  shell: chown -R "{{ beacon_user_id }}" "{{ beacon_node_dir }}"
-  become: true
 
 - name: Start Eth2 beacon node container EXPOSED TO INTERNET DEBUG ENDPOINT
   docker_container:

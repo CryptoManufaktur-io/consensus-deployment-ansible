@@ -3,9 +3,6 @@
   hosts: dclocal
   gather_facts: false
   tasks:
-    - name: Include secret variables
-      include_vars: "{{secrets_file}}"
-
     - name: start prometheus
       import_tasks: tasks/start_prometheus.yml
       vars:

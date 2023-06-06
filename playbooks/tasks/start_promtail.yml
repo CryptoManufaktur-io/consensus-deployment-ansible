@@ -1,87 +1,90 @@
 ---
-- name: Creates promtail config dir
-  file:
-    path: "{{ promtail_config_dir }}"
-    state: directory
+- name: Setup promtail and run
+  shell: |
+    mkdir -p {{ promtail_config_dir }}
+    chown -R {{ ansible_user }} {{ promtail_config_dir }}
 
-- name: Copy promtail conf to remote
-  copy:
-    src: "{{ local_promtail_conf_dir }}/"
-    dest: "{{ promtail_config_dir }}"
+    # Create config file
+    cat > {{ promtail_config_dir }}/config.yml << EOF
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+      log_level: warn
 
-- name: Replace variable in conf file
-  replace:
-    path: "{{ promtail_config_dir }}/config.yml"
-    regexp: "{{item.0}}"
-    replace: "{{item.1}}"
-  loop:
-    - ["##inventory_hostname##", "{{inventory_hostname}}"]
-    - ["##promtail_loki_url##", "{{promtail_loki_url}}"]
+    positions:
+      filename: /mnt/config/positions.yml
 
-- name: Enable receiver when set to receive
-  blockinfile:
-    path: "{{ promtail_config_dir }}/config.yml"
-    block: |
-      - job_name: {{ inventory_hostname }}_push
-        loki_push_api:
-          server:
-            http_listen_port: 3500
-            grpc_listen_port: 3600
-          labels:
-            pushserver: {{ inventory_hostname }}_push
-  when: push_receiver | default('false') == 'true'
+    clients:
+      - url: {{promtail_loki_url}}
 
-- name: Modify permissions to match user-group inside docker image
-  shell: chown -R "{{ ansible_user }}" "{{ promtail_config_dir }}"
-  become: true
+    scrape_configs:
+    - job_name: containers
+      static_configs:
+      - targets:
+          - localhost
+        labels:
+          host_node: {{inventory_hostname}}
+          __path__: /var/lib/docker/containers/*/*log
 
-- name: Start promtail container with receiver
-  docker_container:
-    name: "{{ promtail_container_name }}"
-    state: started
-    image: "{{ promtail_image_name }}"
-    pull: true
-    ports:
-      - "{{public_ip_address}}:3500:3500"
-    restart_policy: unless-stopped
-    memory_swappiness: 0
-    network_mode: "{{ docker_monitoring_network }}"
-    restart: "{{ restart_container_if_exists | default(false) }}"
-    log_options: "{{ common_log_options }}"
-    log_driver: "{{ common_log_driver }}"
-    volumes: "{{promtail_volumes}}"
-    memory: "{{promtail_memory}}"
-    memory_swap: "{{promtail_memory}}"
-    command: "{{ promtail_start_args }}"
-    env: "{{ promtail_env | default({}) }}"
-    user: "{{ promtail_user_id }}"
-  when: push_receiver | default('false') == 'true'
+      pipeline_stages:
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            attrs:
 
-- name: Start promtail container without receiver
-  docker_container:
-    name: "{{ promtail_container_name }}"
-    state: started
-    image: "{{ promtail_image_name }}"
-    pull: true
-    restart_policy: unless-stopped
-    memory_swappiness: 0
-    network_mode: "{{ docker_monitoring_network }}"
-    restart: "{{ restart_container_if_exists | default(false) }}"
-    log_options: "{{ common_log_options }}"
-    log_driver: "{{ common_log_driver }}"
-    volumes: "{{promtail_volumes}}"
-    memory: "{{promtail_memory}}"
-    memory_swap: "{{promtail_memory}}"
-    command: "{{ promtail_start_args }}"
-    env: "{{ promtail_env | default({}) }}"
-    user: "{{ promtail_user_id }}"
-  when: push_receiver | default('false') != 'true'
+      - json:
+          expressions:
+            tag:
+          source: attrs
 
-- name: Register promtail metrics to prometheus
-  copy:
-    dest: "{{ prometheus_file_sd_dir }}/promtail.yml"
-    content: |
+      - regex:
+          expression: (?P<image_name>(?:[^|]*[^|])).(?P<container_name>(?:[^|]*[^|])).(?P<image_id>(?:[^|]*[^|])).(?P<container_id>(?:[^|]*[^|])).(?P<testnet>(?:[^|]*[^|]))
+          source: tag
+
+      - timestamp:
+          format: RFC3339Nano
+          source: time
+
       - labels:
-          appname: {{ promtail_container_name }}
-        targets:
-        - {{ promtail_container_name }}:9080
+          stream:
+          container_name:
+          testnet:
+
+      - labeldrop:
+        - filename
+
+      - output:
+          source: output
+
+    EOF
+
+    # Enable receiver when set to receive
+    if [ '{{ push_receiver }}' = 'true' ]; then
+    cat >> {{ promtail_config_dir }}/config.yml << EOF
+    - job_name: {{ inventory_hostname }}_push
+      loki_push_api:
+        server:
+          http_listen_port: 3500
+          grpc_listen_port: 3600
+        labels:
+          pushserver: {{ inventory_hostname }}_push
+
+    EOF
+    fi
+
+    # Run promtail
+    if [ '{{ push_receiver }}' = 'true' ]; then
+    docker rm -f {{ promtail_container_name }} || true && docker run -d --log-driver {{common_log_driver}} --log-opt tag="{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}|default" --name {{ promtail_container_name }} -u {{ promtail_user_id }} -v /var/lib/docker/containers:/var/lib/docker/containers:ro -v {{promtail_config_dir}}:/mnt/config -v /etc/machine-id:/etc/machine-id:ro -v /var/log:/var/log:ro -p {{public_ip_address}}:3500:3500 --restart unless-stopped --network {{ docker_monitoring_network }} {{ promtail_image_name }} {{ promtail_start_args }}
+    else
+    docker rm -f {{ promtail_container_name }} || true && docker run -d --log-driver {{common_log_driver}} --log-opt tag="{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}|default" --name {{ promtail_container_name }} -u {{ promtail_user_id }} -v /var/lib/docker/containers:/var/lib/docker/containers:ro -v {{promtail_config_dir}}:/mnt/config -v /etc/machine-id:/etc/machine-id:ro -v /var/log:/var/log:ro --restart unless-stopped --network {{ docker_monitoring_network }} {{ promtail_image_name }} {{ promtail_start_args }}
+    fi
+
+    # Register promtail metrics to prometheus
+    cat > {{ prometheus_file_sd_dir }}/promtail.yml << EOF
+    - labels:
+        appname: {{ promtail_container_name }}
+      targets:
+      - {{ promtail_container_name }}:9080
+
+    EOF

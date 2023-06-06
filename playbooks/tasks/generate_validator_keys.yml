@@ -1,4 +1,10 @@
 ---
+- name: Remove validator data
+  become: true
+  file:
+    path: "{{validator_node_dir}}"
+    state: absent
+
 - name: Check if {{ validator_node_dir }} is empty before proceeding
   find:
     paths: "{{ validator_node_dir }}"
