@@ -53,6 +53,7 @@ beacon_start_args: >
   {% if (enable_debug_public) %}
   --enable-debug-rpc-endpoints
   {% endif %}
+  --suggested-fee-recipient=0x123463a4b065722e99115d6c222f267d9cabb524
 
 validator_start_args: >
   --accept-terms-of-use=true

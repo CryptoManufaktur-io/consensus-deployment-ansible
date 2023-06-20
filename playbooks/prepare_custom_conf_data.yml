@@ -3,12 +3,23 @@
   connection: local
   gather_facts: false
   tasks:
+    - name: Include secret variables
+      include_vars: "{{secrets_file}}"
+
+    - name: Remove testnet data dir first
+      become: true
+      file:
+        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
+        state: absent
+
+    - name: Recreates testnet data dir
+      file:
+        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
+        state: directory
+
     - name: check operating system
       shell: uname
       register: uname_result
-
-    - name: Include secret variables
-      include_vars: "{{secrets_file}}"
 
     - name: Get current epoch time
       shell: "TZ=GMT date +%s"
@@ -35,53 +46,45 @@
           include_vars: "{{secrets_file}}"
 
     - name: Create contract and get transaction hash
-      when: TX_HASH == 'new'
-      block:
-        - name: Create contract
-          shell: "docker run --network host --rm -v {{local_premerge_custom_config_data_host_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
-          register: contract_output
-
-        - name: Set transaction hash variable
-          set_fact:
-            TX_HASH: "{{contract_output.stdout}}"
-          when: contract_output.rc == 0
-          failed_when: contract_output.rc >= 1
-
-        - name: Created transaction hash
-          debug:
-            msg: |
-              TRANSACTION HASH: {{TX_HASH}}
-              URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}
-
-    - name: Get details from transaction hash
-      command: "python3 {{local_premerge_custom_config_data_host_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
-      register: transaction_hash_details
-      until: transaction_hash_details is succeeded
-      retries: 10
-      delay: 30
-
-    - name: Parse json
-      set_fact:
-        transaction_hash_details: "{{ transaction_hash_details.stdout | from_json }}"
-
-    - name: Convert epoch to date full
-      shell: "echo {{MIN_GENESIS_TIME}} | perl -pe 's/(\\d+)/localtime($1)/e'"
-      register: DATE_FULL
-
-    - name: Remove testnet data dir first
-      file:
-        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
-        state: absent
-
-    - name: Creates testnet data dir
-      file:
-        path: "{{local_custom_config_data_host_dir}}/{{runningTest}}"
-        state: directory
-
-    - name: Testnet custom conf data premerge
-      include_tasks: tasks/premerge_testnet_custom_conf_data.yml
       when: TESTS[runningTest][3] == 'premerge'
+      block:
+        - name: Create contract and get transaction hash
+          when: TX_HASH == 'new'
+          block:
+            - name: Create contract
+              shell: "docker run --network host --rm -v {{local_premerge_custom_config_data_host_dir}}/combined.json:/data/combined.json --entrypoint ethereal ethstaker/eth-val-tools contract deploy --network={{NETWORK}} --name=DepositContract --json=/data/combined.json --from={{ETH1_FROM_ADDR}} --privatekey={{ETH1_FROM_PRIV}}"
+              register: contract_output
+
+            - name: Set transaction hash variable
+              set_fact:
+                TX_HASH: "{{contract_output.stdout}}"
+              when: contract_output.rc == 0
+              failed_when: contract_output.rc >= 1
+
+            - name: Created transaction hash
+              debug:
+                msg: |
+                  TRANSACTION HASH: {{TX_HASH}}
+                  URL: https://{{NETWORK}}.etherscan.io/tx/{{TX_HASH}}
+
+        - name: Get details from transaction hash
+          command: "python3 {{local_premerge_custom_config_data_host_dir}}/transaction.py https://{{NETWORK}}.etherscan.io {{TX_HASH}}"
+          register: transaction_hash_details
+          until: transaction_hash_details is succeeded
+          retries: 10
+          delay: 30
+
+        - name: Parse json
+          set_fact:
+            transaction_hash_details: "{{ transaction_hash_details.stdout | from_json }}"
+
+        - name: Convert epoch to date full
+          shell: "echo {{MIN_GENESIS_TIME}} | perl -pe 's/(\\d+)/localtime($1)/e'"
+          register: DATE_FULL
+
+        - name: Testnet custom conf data premerge
+          include_tasks: tasks/premerge_testnet_custom_conf_data.yml
 
     - name: Testnet custom conf data postmerge
-      include_tasks: tasks/postmerge_testnet_custom_conf_data.yml
       when: TESTS[runningTest][3] == 'postmerge'
+      include_tasks: tasks/postmerge_testnet_custom_conf_data.yml

@@ -68,7 +68,7 @@
     - name: Run geth init
       when: filesFound.examined == 0
       docker_container:
-        name: "exec_tmp"
+        name: "{{ eth1_init_name }}"
         state: started
         image: "{{ eth1_image_name }}"
         pull: true
@@ -80,13 +80,10 @@
         command: "{{ geth_init_args }}"
         env: "{{ eth1_env | default({}) }}"
         user: "{{ eth1_user_id }}"
+        log_options: "{{ common_log_options }}"
+        log_driver: "{{ common_log_driver }}"
+        labels: "{{ testnet_labels }}"
     
-    # - name: Remove init container
-    #   docker_container:
-    #     name: "exec_tmp"
-    #     state: absent
-    #     image: "{{ eth1_image_name }}"
-
     - name: Start Eth1 container
       docker_container:
         name: "{{ eth1_container_name }}"
@@ -110,6 +107,7 @@
         command: "{{ eth1_start_args }}"
         env: "{{ eth1_env | default({}) }}"
         user: "{{ eth1_user_id }}"
+        labels: "{{ testnet_labels }}"
 
     - name: Register geth metrics to prometheus
       copy:

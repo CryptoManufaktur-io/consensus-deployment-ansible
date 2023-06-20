@@ -30,13 +30,14 @@
     # Remove beacon container &&  beacon data if present && unregister metrics
     sudo rm -f {{ prometheus_file_sd_dir }}/beacon.yml
     docker rm -f {{beacon_container_name}} || true
-    sudo rm -f {{beacon_node_dir}}
+    sudo rm -rf {{beacon_node_dir}}
 
     # Recreate testnet config and upload custom_config_data
     sudo rm -rf {{testnet_dir}}
     mkdir {{testnet_dir}}
     curl -O http://{{ hostvars['globalfederation1']['public_ip_address'] }}:1111/{{ custom_config_data_host_archive_filename }}
     tar -xvf {{ custom_config_data_host_archive_filename }} -C {{ testnet_dir }}
+    rm {{ custom_config_data_host_archive_filename }}
 
     # Copy CL jwtsecret file
     cat > {{ testnet_dir }}/jwtsecret << EOF
@@ -49,7 +50,6 @@
     {{JWTSECRET}}
     EOF
     fi
-
 
 - name: Remove config from globalfederation1
   file:
