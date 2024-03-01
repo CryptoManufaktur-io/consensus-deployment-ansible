@@ -8,7 +8,7 @@ eth1_data_dir: "/var/lib/goethereum"
 eth1_volumes:
   - "{{eth1_node_dir}}:{{eth1_data_dir}}"
   - "{{jwtsecret_file_outside}}:/jwtsecret"
-eth1_memory: 2500M
+eth1_memory: 10000M
 eth1_user_id: "1000:1000"
 eth1_start_args: >
    --{{ NETWORK }} 
@@ -44,7 +44,7 @@ beacon_image_name: sigp/lighthouse:latest
 beacon_volumes:
   - "{{eth1_beacondata_dir}}:/beacondata"
   - "{{jwtsecret_file_outside}}:/jwtsecret"
-beacon_memory: 2500M
+beacon_memory: 10000M
 beacon_user_id: "1000:1000"
 beacon_start_args: >
   lighthouse
@@ -80,6 +80,8 @@ beacon_start_args: >
 #   - "{{eth1_beacondata_dir}}:/beacondata"
 #   - "{{jwtsecret_file_outside}}:/jwtsecret"
 # beacon_memory: 2500M
+# beacon_env:
+#   JAVA_OPTS: "-XX:SoftMaxHeapSize=2g -Xmx4g"
 # beacon_user_id: "1000:1000"
 # beacon_start_args: >
 #   --network {{ NETWORK }} 

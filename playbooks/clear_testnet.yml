@@ -3,8 +3,22 @@
   hosts: ["{{ runningTest + '_beacon' }}", "{{ runningTest + '_validator' }}"]
   gather_facts: false
   tasks:
-    - name: unregister beacon and validator for metrics
-      import_tasks: tasks/start_unregistermetrics_beacon_validator.yml
+    - name: Include geth variables
+      include_vars: "{{inventory_dir}}/group_vars/postmerge_el.yml"
 
-    - name: stop any running beacon/validator docker image, remove existing validator keys and beacon node data
-      import_tasks: tasks/stop_and_wipe_beacon_and_validator.yml
+    - name: Wipe data & Unregister beacon and validator metrics
+      shell: |
+        # Unregister metrics
+        sudo rm -f {{ prometheus_file_sd_dir }}/beacon.yml
+        sudo rm -f {{ prometheus_file_sd_dir }}/validator.yml
+
+        # Stop beacons, postmergeel and validators
+        docker rm -f {{eth1_init_name}} || true
+        docker rm -f {{eth1_container_name}} || true
+        docker rm -f {{beacon_container_name}} || true
+        docker rm -f {{validator_container_name}} || true
+
+        # remove data
+        sudo rm -rf {{eth1_node_dir}}
+        sudo rm -rf {{beacon_node_dir}}
+        sudo rm -rf {{validator_node_dir}}

@@ -50,7 +50,6 @@ beacon_start_args: >
   --eth1 
   {% if (use_premerge_network) %}
   --eth1-endpoints "{{eth1endpoint_premerge}}"
-  --terminal-total-difficulty-override={{merge_terminal_total_difficulty}}
   {% else %}
   --execution-endpoints "{{eth1endpoint}}"
   --jwt-secrets="/custom_config_data/jwtsecret"

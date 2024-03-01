@@ -2,6 +2,9 @@
 # execution client
 ##############################################
 eth1_client_name: geth
+eth1_init_name: exec_tmp
+
+# eth1_image_name: ethereum/client-go:v1.11.6
 eth1_image_name: ethereum/client-go:stable
 eth1_container_name: postmergeel
 eth1_data_dir: "/var/lib/goethereum"
@@ -35,8 +38,10 @@ eth1_start_args: >
    --pprof
    --pprof.addr 0.0.0.0
    --pprof.port={{ eth1_pprof_port }}
-   --vmodule=rpc=5
+   --log.vmodule=rpc=5
    --maxpeers=75
    {% if (el_bootnode_enode is defined) and el_bootnode_enode %}
    --bootnodes="{{ el_bootnode_enode | join(',') }}"
-   {% endif %}  
+   {% endif %}
+   --nodiscover
+   --syncmode=full

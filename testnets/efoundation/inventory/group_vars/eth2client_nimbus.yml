@@ -44,7 +44,6 @@ beacon_start_args: >
   --dump:on
   {% if (use_premerge_network) %}
   --web3-url="{{eth1endpoint_premerge}}"
-  --terminal-total-difficulty-override={{merge_terminal_total_difficulty}}
   {% else %}
   --web3-url="{{eth1endpoint}}"
   --jwt-secret=/custom_config_data/jwtsecret

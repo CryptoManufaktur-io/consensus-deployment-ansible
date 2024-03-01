@@ -26,8 +26,8 @@
 
 - name: Copy jwt secret
   copy:
-    src: "{{local_premerge_custom_config_data_host_dir}}/jwtsecret"
     dest: "{{ jwtsecret_file_outside }}"
+    content: "{{ JWTSECRET }}"
 
 - name: Start Eth1 container
   docker_container:

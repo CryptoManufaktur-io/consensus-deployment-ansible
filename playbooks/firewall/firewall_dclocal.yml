@@ -40,33 +40,15 @@
     - name: Set subnet_ips variables
       set_fact:
         subnet_ips: "{{subnet_ips[inventory_hostname]}}"
-
+    
     - name: Allow bootnode peering UDP
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "9001"
-        proto: "udp"
-        comment: "Allow bootnode peering UDP"
-      with_items: "{{ subnet_ips }}"
+      shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 9001 proto udp comment 'Allow bootnode peering UDP'"
 
     - name: Allow prometheus remote write
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "9090"
-        proto: "tcp"
-        comment: "Allow prometheus remote write"
-      with_items: "{{ subnet_ips }}"
+      shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 9090 proto tcp comment 'Allow prometheus remote write'"
 
     - name: Allow promtail receive
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "3500"
-        proto: "tcp"
-        comment: "Allow promtail receive"
-      with_items: "{{ subnet_ips }}"
+      shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 3500 proto tcp comment 'Allow promtail receive'"
 
     - name: Enable UFW
       ufw:

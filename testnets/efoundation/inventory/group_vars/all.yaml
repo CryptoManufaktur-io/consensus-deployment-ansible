@@ -6,12 +6,12 @@ public_ip_address: "{{ansible_host}}"
 ansible_python_interpreter: /usr/bin/python3
 docker_monitoring_network: "monitoring_network"
 restart_container_if_exists: true
+JWTSECRET: "0xeb78cee3e07be65e47cbd1de65803982fe9a9418bc754c15d45ce4f6b9f82b3e"
 
 ##############################################
 # eth1 endpoints
 ##############################################
 enable_debug_public: true
-merge_terminal_total_difficulty: 96652946912555663360000
 el_bootnode_enode:
 
 ##############################################
@@ -47,7 +47,8 @@ secrets_file: "{{inventory_dir}}/group_vars/secrets.yml"
 local_premerge_custom_config_data_host_dir: "{{inventory_dir}}/../premerge_custom_conf_data"
 local_postmerge_custom_config_data_host_dir: "{{inventory_dir}}/../postmerge_custom_conf_data"
 local_custom_config_data_host_dir: "{{inventory_dir}}/../custom_config_data"
-local_custom_config_data_host_archive: "{{inventory_dir}}/../{{runningTest}}_custom_config_data.tar.gz"
+custom_config_data_host_archive_filename: "{{runningTest}}_custom_config_data.tar.gz"
+local_custom_config_data_host_archive: "{{inventory_dir}}/../{{custom_config_data_host_archive_filename}}"
 
 enr_groups_all_path: "{{local_custom_config_data_host_dir}}/{{runningTest}}_enr"
 enr_groups_file: "{{enr_groups_all_path}}/enr_groups.yml"
@@ -57,9 +58,10 @@ enr_all_file: "{{enr_groups_all_path}}/enr_all.yml"
 # remote host data directories
 ##############################################
 home_dir: "/home/{{ ansible_user }}"
+volume_mount_dir: "/mnt/Geth/ubuntu"
 beacon_node_dir: "{{home_dir}}/beacon"
-eth1_node_dir: "{{home_dir}}/.eth1data"   # Hidden folder so its not deleted on restart
-eth1_beacondata_dir: "{{home_dir}}/.beacondata"   # Hidden folder so its not deleted on restart
+eth1_node_dir: "{{volume_mount_dir}}/eth1data"
+eth1_beacondata_dir: "{{volume_mount_dir}}/beacondata"
 jwtsecret_file_outside: "{{home_dir}}/jwtsecret"
 validator_node_dir: "{{home_dir}}/validator"
 testnet_dir: "{{home_dir}}/custom_config_data"
@@ -74,7 +76,7 @@ common_log_options:
   max-buffer-size: "4m"
   tag: "{{'{{'}}.ImageName{{'}}'}}|{{'{{'}}.Name{{'}}'}}|{{'{{'}}.ImageFullID{{'}}'}}|{{'{{'}}.FullID{{'}}'}}|{{'{{'}}if (index .ContainerLabels \"testnet\"){{'}}'}}{{'{{'}}index .ContainerLabels \"testnet\"{{'}}'}}{{'{{'}}else{{'}}'}}default{{'{{'}}end{{'}}'}}"
 common_log_driver: json-file
-beacon_log_level: debug
+beacon_log_level: info
 testnet_labels: >
   {
     "testnet" : "{{ TESTS[runningTest][0] }}"
@@ -85,26 +87,8 @@ testnet_labels: >
 ##############################################
 beacon_container_name: beacon
 validator_container_name: validator
-hi_peer_count: 25
+hi_peer_count: 1000
 separate_validator_process_enabled: true
-
-##############################################
-# node_exporter settings
-##############################################
-node_exporter_container_name: node-exporter
-node_exporter_image_name: prom/node-exporter:latest
-node_exporter_user_id: "0:0"
-node_exporter_start_args: >
-  --path.procfs=/host/proc
-  --path.rootfs=/rootfs
-  --path.sysfs=/host/sys
-  --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
-node_exporter_volumes:
-  - "/etc/machine-id:/etc/machine-id:ro"
-  - "/proc:/host/proc:ro"
-  - "/sys:/host/sys:ro"
-  - "/:/rootfs:ro"
-node_exporter_memory: 5000M
 
 ##############################################
 # prometheus settings
@@ -118,15 +102,9 @@ prometheus_start_args: >
   --storage.tsdb.path=/prometheus 
   --storage.tsdb.max-block-duration=2h 
   --storage.tsdb.min-block-duration=2h
-prometheus_rw_start_args: "{{ prometheus_start_args }} --enable-feature=remote-write-receiver"
 prometheus_data_dir: "{{home_dir}}/prometheus_data"
 prometheus_config_dir: "{{home_dir}}/prometheus_config"
 prometheus_file_sd_dir: "{{prometheus_config_dir}}/file_sd"
-local_prometheus_conf_dir: "{{inventory_dir}}/../prometheus_conf"
-prometheus_volumes:
-  - "{{prometheus_data_dir}}:/prometheus"
-  - "{{prometheus_config_dir}}:/etc/prometheus"
-prometheus_memory: 5000M
 
 ##############################################
 # thanos settings
@@ -251,13 +229,13 @@ traefik_memory: 5000M
 traefik_user_id: "0:0"
 
 grafana_container_name: grafana
-grafana_image_name: grafana/grafana-enterprise:latest
+grafana_image_name: grafana/grafana:latest
 grafana_user_id: "1000:1000"
 grafana_start_args: ""
 local_grafana_conf_dir: "{{inventory_dir}}/../grafana_conf"
 local_grafana_conf_archive: "{{inventory_dir}}/../grafana_conf.tar.gz"
-grafana_data_dir: "{{home_dir}}/.grafana_data" # Hidden folder so its not deleted on restart
-grafana_conf_dir: "{{home_dir}}/.grafana_conf" # Hidden folder so its not deleted on restart
+grafana_data_dir: "{{home_dir}}/grafana_data"
+grafana_conf_dir: "{{home_dir}}/grafana_conf"
 grafana_volumes:
   - "{{grafana_data_dir}}:/var/lib/grafana"
   - "{{grafana_conf_dir}}:/etc/grafana/provisioning/"
@@ -293,15 +271,8 @@ promtail_image_name: grafana/promtail:latest
 promtail_container_name: promtail
 promtail_user_id: "0:0"
 promtail_config_dir: "{{ home_dir }}/promtail_conf"
-local_promtail_conf_dir: "{{inventory_dir}}/../promtail_conf"
 promtail_start_args: >
   -config.file=/mnt/config/config.yml
-promtail_volumes:
-  - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-  - "{{promtail_config_dir}}:/mnt/config"
-  - "/etc/machine-id:/etc/machine-id:ro"
-  - /var/log:/var/log:ro
-promtail_memory: 5000M
 
 
 ##############################################
@@ -319,18 +290,3 @@ loki_volumes:
   - "{{loki_config_dir}}:/mnt/config"
   - "{{loki_data_dir}}:/loki"
 loki_memory: 5000M
-
-
-##############################################
-# cadvisor settings
-##############################################
-cadvisor_image_name: gcr.io/cadvisor/cadvisor:v0.47.1
-cadvisor_container_name: cadvisor
-cadvisor_exporter_volumes:
-  - "/etc/machine-id:/etc/machine-id:ro"
-  - "/:/rootfs:ro"
-  - "/var/run:/var/run:rw"
-  - "/sys:/sys:ro"
-  - "/var/lib/docker/:/var/lib/docker:ro"
-cadvisor_exporter_memory: 5000M
-cadvisor_exporter_user_id: "0:0"

@@ -1,4 +1,13 @@
 ---
+- name: Stop validator and clear validator data
+  shell: |
+    # Stop validator container and unregister metrics
+    sudo rm -f {{ prometheus_file_sd_dir }}/validator.yml
+    docker rm -f {{validator_container_name}} || true
+
+    # remove data
+    sudo rm -rf {{validator_node_dir}}
+
 - name: Check if {{ validator_node_dir }} is empty before proceeding
   find:
     paths: "{{ validator_node_dir }}"
@@ -7,13 +16,10 @@
 - name: Generate keys
   when: filesFound.examined == 0
   block:
-    - name: Include mnemonic variables PREMERGE
-      when: TESTS[runningTest][3] == 'premerge'
-      include_vars: "{{local_custom_config_data_host_dir}}/{{runningTest}}/secret_mnemonics.yaml"
-
-    - name: Include mnemonic variables POSTMERGE
-      when: TESTS[runningTest][3] == 'postmerge'
-      include_vars: "{{local_custom_config_data_host_dir}}/{{runningTest}}/config/cl/secret_mnemonics.yaml"
+    - name: Set indexes
+      set_fact:
+        MIN_INDEX: "{{ (VALIDATORS_PER_INSTANCE * groups[runningTest + '_validator'].index(inventory_hostname)) + 1 }}"
+        MAX_INDEX: "{{ (VALIDATORS_PER_INSTANCE * groups[runningTest + '_validator'].index(inventory_hostname)) + VALIDATORS_PER_INSTANCE + 1 }}"
 
     - name: Remove temp_data if exists
       become: true
@@ -21,7 +27,7 @@
         rm -rf {{home_dir}}/temp_data
 
     - name: Generate keys
-      shell: "docker run --rm -v {{home_dir}}/temp_data:/data ethstaker/eth-val-tools keystores --insecure --prysm-pass='{{PRYSM_PASSWORD}}' --source-min=1 --source-max={{VALIDATORS_PER_INSTANCE + 1}} --source-mnemonic='{{ vars[inventory_hostname] }}' --out-loc='/data/generated'"
+      shell: "docker run --rm -v {{home_dir}}/temp_data:/data ethstaker/eth-val-tools keystores --insecure --prysm-pass='{{PRYSM_PASSWORD}}' --source-min={{MIN_INDEX}} --source-max={{MAX_INDEX}} --source-mnemonic='{{ EL_AND_CL_MNEMONIC }}' --out-loc='/data/generated'"
 
     - name: Prepare keys for lighthouse
       become: true

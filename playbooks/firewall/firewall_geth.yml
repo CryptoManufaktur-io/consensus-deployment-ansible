@@ -16,16 +16,19 @@
     - name: Configure ufw docker
       import_tasks: configure_ufw_docker.yml
 
-    - name: Allow ports through firewall
+    - name: Allow TCP ports through firewall
       ufw:
         rule: allow
-        port: "{{ item.0 }}"
-        proto: "{{ item.1 }}"
-        comment: "{{ item.2 }}"
-      loop:
-        - ["22", "tcp", "Allow SSH"]
-        - ["30303", "tcp", "Allow Go Ethereum TCP"]
-        - ["30303", "udp", "Allow Go Ethereum UDP"]
+        port: "22,30303"
+        proto: "tcp"
+        comment: "Allow SSH, Go Ethereum TCP"
+
+    - name: Allow UDP ports through firewall
+      ufw:
+        rule: allow
+        port: "30303"
+        proto: "udp"
+        comment: "Allow Go Ethereum UDP"
 
     - name: Run python to get subnet ips
       delegate_to: localhost
@@ -44,31 +47,13 @@
         subnet_ips: "{{subnet_ips[inventory_hostname]}}"
 
     - name: Allow GETH API 8545
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "8545"
-        proto: "tcp"
-        comment: "Allow GETH API 8545"
-      with_items: "{{ subnet_ips }}"
+      shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 8545 proto tcp comment 'Allow GETH API 8545'"
 
     - name: Allow GETH WS API 8546
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "8546"
-        proto: "tcp"
-        comment: "Allow GETH WS API 8546"
-      with_items: "{{ subnet_ips }}"
+      shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 8546 proto tcp comment 'Allow GETH WS API 8546'"
 
     - name: Allow GETH AUTH RPC API 8551
-      ufw:
-        rule: allow
-        src: "{{ item }}"
-        port: "8551"
-        proto: "tcp"
-        comment: "Allow GETH AUTH RPC API 8551"
-      with_items: "{{ subnet_ips }}"
+      shell: "echo -n '{{ subnet_ips | join(',') }}' | sudo xargs -d ',' -I {} ufw allow from {} to any port 8551 proto tcp comment 'Allow GETH AUTH RPC API 8551'"
 
     - name: Enable UFW
       ufw:
